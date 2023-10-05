@@ -3,7 +3,6 @@ from enum import Enum
 from queue import Queue
 import socket
 from threading import Thread
-from test_receiv import receive
 import socket
 import time
 
@@ -34,7 +33,7 @@ class RobotCommunicationHandler:
                 if not data:
                     print("Connection closed by the server")
                     break
-                print(f"Received: {data.decode('utf-8')}")
+                print(f"Main_Received: {data.decode('utf-8')}")
             except Exception as e:
                 print(f"Error: {e}")
                 break
@@ -81,28 +80,63 @@ class RobotCommunicationHandler:
                 print('Sent:', send_data)
 
 
-if __name__ == '__main__':
-    # ポート番号をコマンドライン引数から取得する
-    communication_handler = RobotCommunicationHandler()
-
+def test_send_data():
+    """
+    通信スレッドからの送信をテストする。
+    2つのソケットに0.1秒間隔で交互に送信する。
+    受信した側は、送信したデータを標準出力に出力する。
+    """
+    from test_receiv import receive
     # 別スレッドで、自身からの通信を待ち受けるサーバプログラムを起動する
     receive_thread1 = Thread(target=receive, args=(TEST_PORT1,))
     receive_thread2 = Thread(target=receive, args=(TEST_PORT2,))
     receive_thread1.start()
     receive_thread2.start()
 
+    communication_thread.start()
+
+    # キューで送信要求を送る
+    for i in range(10):
+        send_data = f"hello_{i}"
+        send_queue.put(send_data)
+        time.sleep(0.1)
+
+    receive_thread1.join()
+    receive_thread2.join()
+    receive_queue.put("exit")
+
+
+def test_receiv_data():
+    """
+    通信スレッドの受信をテストする。
+    2つのソケットから、1秒ごとに交互にデータを受信する。
+    受信したデータを標準出力に出力する。
+    """
+    from test_send import send
+
+    # データを送信するスレッドを2つ作成し、それぞれ別のポートで同時に待ち受ける
+    send_thread1 = Thread(target=send, args=(TEST_PORT1, 1))
+    send_thread2 = Thread(target=send, args=(TEST_PORT2, 2))
+    send_thread1.start()
+    send_thread2.start()
+
+    communication_thread.start()
+
+    send_thread1.join()
+    send_thread2.join()
+
+
+if __name__ == '__main__':
+    # ポート番号をコマンドライン引数から取得する
+    communication_handler = RobotCommunicationHandler()
+
+    # 送信要求を入れるキューと、受信したデータを入れるキューを作成
     send_queue = Queue()
     receive_queue = Queue()
     communication_thread = Thread(
         target=communication_handler.communication_loop, args=(send_queue, receive_queue))
 
-    communication_thread.start()
-    for i in range(10):
-        send_data = f"hello_{i}"
-        send_queue.put(send_data)
-        time.sleep(0.1)
-    receive_thread1.join()
-    receive_thread2.join()
-    receive_queue.put("exit")
+    test_receiv_data()
+    # test_send_data()
     TEST_stop_flag = True
     print("receive_thread joined")
