@@ -1,7 +1,6 @@
 # coding: utf-8
 
 from enum import Enum
-from dataclasses import dataclass
 from common_data_type import *
 from queue import Queue
 from typing import Union, List, Tuple
@@ -26,7 +25,6 @@ class GUIDesigner:
             receive_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー
         """
         pass
-
 
 
 class DBAccessHandler:
