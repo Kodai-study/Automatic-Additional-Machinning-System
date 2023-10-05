@@ -7,7 +7,7 @@ from test_receiv import receive
 import socket
 import time
 
-port = 5000
+PORT = 5000
 
 
 class RobotCommunicationHandler:
@@ -33,7 +33,6 @@ class RobotCommunicationHandler:
         self.receive_queue = receive_queue
 
         HOST = 'localhost'
-        PORT = 5000
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((HOST, PORT))
@@ -46,6 +45,14 @@ class RobotCommunicationHandler:
                     # 取り出した値を接続先に送信
                     s.sendall(send_data.encode('utf-8'))
                     print('Sent:', send_data)
+
+
+                if not self.receive_queue.empty():
+                    # receive_queueから値を取り出す
+                    receive_data = self.receive_queue.get()
+                    print('receiv :', receive_data)
+                    if receive_data == "exit":
+                        break
                 time.sleep(0.1)
 
 
@@ -54,7 +61,7 @@ if __name__ == '__main__':
     communication_handler = RobotCommunicationHandler()
 
     # 別スレッドで、自身からの通信を待ち受けるサーバプログラムを起動する
-    receive_thread = Thread(target=receive, args=(port,))
+    receive_thread = Thread(target=receive, args=(PORT,))
     receive_thread.start()
     send_queue = Queue()
     receive_queue = Queue()
@@ -67,4 +74,5 @@ if __name__ == '__main__':
         send_queue.put(send_data)
         time.sleep(0.1)
     receive_thread.join()
-    communication_thread.join()
+    receive_queue.put("exit")
+    print("receive_thread joined")

@@ -1,5 +1,8 @@
 import socket
 import sys
+import socket
+import sys
+import time
 
 
 def receive(port):
@@ -12,11 +15,16 @@ def receive(port):
         conn, addr = s.accept()
         with conn:
             print(f"Connected by {addr}")
+            conn.settimeout(5)  # 10秒間受信がなかったら、処理を終了する
             while True:
-                data = conn.recv(1024)
-                if not data:
+                try:
+                    data = conn.recv(1024)
+                    if not data:
+                        break
+                    print(data.decode())
+                except socket.timeout:
+                    print("Timeout: No data received for 10 seconds.")
                     break
-                print(data.decode())
 
 
 if __name__ == '__main__':
