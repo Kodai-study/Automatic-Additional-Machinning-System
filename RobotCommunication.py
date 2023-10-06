@@ -1,5 +1,6 @@
 # coding: utf-8
 from queue import Queue
+from enum import Enum, auto
 import socket
 from threading import Thread
 import socket
@@ -12,11 +13,38 @@ TEST_PORT2 = 5001
 TEST_stop_flag = False
 
 
+class TransmissionTarget(Enum):
+    """
+    送信先を表す列挙型
+    """
+
+    TEST_TARGET_1 = auto()
+
+    TEST_TARGET_2 = auto()
+
+    UR = auto()
+    """
+    URに送信する
+    """
+    CFD = auto()
+    """
+    CFDに送信する
+    """
+
+
 class RobotCommunicationHandler:
     """
     ロボットとの通信を管理するクラス
     常にロボットとのソケット接続を確立しておき、
     送信要求や受信に関する処理を行う
+
+    送信を行うときは、send_queueに送信要求を入れる。形式はdictを使用し、
+        {"target": TransmissionTarget, "message": str}
+    のようにする。TransmissionTargetをインポートし、送信先を指定する。
+
+    受信は、同じようにreceive_queueから受け取る。形式はdictを使用し、
+        {"target": TransmissionTarget, "message": str}
+    のようになる。
     """
 
     def __init__(self):
@@ -24,7 +52,7 @@ class RobotCommunicationHandler:
         self.receive_queue = None
         self.samp_stop_flag = False
 
-    def test_receive_string(self, sock: socket.socket):
+    def test_receive_string(self, target: TransmissionTarget, sock: socket.socket):
         """
         テスト用関数。
         ソケットからデータを受信し、標準出力に出力する。
@@ -39,7 +67,10 @@ class RobotCommunicationHandler:
                 if not data:
                     print("Connection closed by the server")
                     break
-                print(f"Main_Received: {data.decode('utf-8')}")
+                # print(f"Main_Received: {data.decode('utf-8')}")
+
+                receive_queue.put(
+                    {"target": target, "message": data.decode('utf-8')})
             except Exception as e:
                 print(f"Error: {e}")
                 break
@@ -69,10 +100,10 @@ class RobotCommunicationHandler:
 
         # 2つのソケットと同時に通信するためのスレッドを2つ作成
         receive_thread1 = Thread(
-            target=self.test_receive_string, args=(self.samp_socket1,))
+            target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_1, self.samp_socket1))
         receive_thread1.start()
         receive_thread2 = Thread(
-            target=self.test_receive_string, args=(self.samp_socket2,))
+            target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_2, self.samp_socket2))
         receive_thread2.start()
 
         while not TEST_stop_flag:
@@ -80,10 +111,16 @@ class RobotCommunicationHandler:
             if not self.send_queue.empty():
                 # send_queueから値を取り出す
                 send_data = self.send_queue.get()
-                # 取り出した値を接続先に送信
-                self.samp_socket1.sendall(send_data.encode('utf-8'))
-                self.samp_socket2.sendall(send_data.encode('utf-8'))
-                print('Sent:', send_data)
+
+                if (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
+                    self.samp_socket1.sendall(
+                        send_data['message'].encode('utf-8'))
+                    # 取り出した値を接続先に送信
+                elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
+                    self.samp_socket2.sendall(
+                        send_data['message'].encode('utf-8'))
+                print(f'target: {send_data["target"]}, message: {
+                      send_data["message"]}')
 
 
 def test_send_data():
@@ -103,7 +140,12 @@ def test_send_data():
 
     # キューで送信要求を送る
     for i in range(10):
-        send_data = f"hello_{i}"
+        if (i % 2 == 0):
+            send_data = {"target": TransmissionTarget.TEST_TARGET_1,
+                         "message": f"sendNumber = 1 , cnt = {i}"}
+        else:
+            send_data = {"target": TransmissionTarget.TEST_TARGET_2,
+                         "message": f"sendNumber = 2 , cnt = {i}"}
         send_queue.put(send_data)
         time.sleep(0.1)
 
@@ -132,6 +174,16 @@ def test_receiv_data():
     send_thread2.join()
 
 
+def queue_surveillance():
+    """
+    receiv_queueを監視し、データが入っていたら標準出力に出力する。
+    """
+    while not TEST_stop_flag:
+        if not receive_queue.empty():
+            print("receive_queue:", f"target: {receive_queue.get()[
+                  'target']}, message: {receive_queue.get()['message']}")
+
+
 # 通信スレッドと、受信もしくは送信スレッドを立ち上げることで、通信のテストを行う
 if __name__ == '__main__':
     communication_handler = RobotCommunicationHandler()
@@ -139,6 +191,9 @@ if __name__ == '__main__':
     # 送信要求を入れるキューと、受信したデータを入れるキューを作成
     send_queue = Queue()
     receive_queue = Queue()
+
+    queue_surveillance_thread = Thread(target=queue_surveillance)
+    queue_surveillance_thread.start()
     communication_thread = Thread(
         target=communication_handler.communication_loop, args=(send_queue, receive_queue))
 
