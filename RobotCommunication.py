@@ -180,8 +180,9 @@ def queue_surveillance():
     """
     while not TEST_stop_flag:
         if not receive_queue.empty():
-            print("receive_queue:", f"target: {receive_queue.get()[
-                  'target']}, message: {receive_queue.get()['message']}")
+            receiv_data = receive_queue.get()
+            print("receive_queue:", f"target: {receiv_data['target']}, message: {
+                  receiv_data['message']}")
 
 
 # 通信スレッドと、受信もしくは送信スレッドを立ち上げることで、通信のテストを行う
@@ -198,6 +199,6 @@ if __name__ == '__main__':
         target=communication_handler.communication_loop, args=(send_queue, receive_queue))
 
     test_receiv_data()
-    # test_send_data()
+    #test_send_data()
     TEST_stop_flag = True
     print("receive_thread joined")
