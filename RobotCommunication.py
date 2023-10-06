@@ -1,12 +1,10 @@
 # coding: utf-8
-from enum import Enum
 from queue import Queue
 import socket
 from threading import Thread
 import socket
 import time
 
-TEST_PORT = 5000
 TEST_HOST = 'localhost'
 TEST_PORT1 = 5000
 TEST_PORT2 = 5001
@@ -26,7 +24,15 @@ class RobotCommunicationHandler:
         self.receive_queue = None
         self.samp_stop_flag = False
 
-    def receive_string(self, sock: socket.socket) -> str:
+    def test_receive_string(self, sock: socket.socket):
+        """
+        テスト用関数。
+        ソケットからデータを受信し、標準出力に出力する。
+
+        Args:
+            sock (socket.socket): 受信するソケット。
+            接続が完了しているものを渡す。
+        """
         while not TEST_stop_flag:
             try:
                 data = sock.recv(1024)
@@ -63,10 +69,10 @@ class RobotCommunicationHandler:
 
         # 2つのソケットと同時に通信するためのスレッドを2つ作成
         receive_thread1 = Thread(
-            target=self.receive_string, args=(self.samp_socket1,))
+            target=self.test_receive_string, args=(self.samp_socket1,))
         receive_thread1.start()
         receive_thread2 = Thread(
-            target=self.receive_string, args=(self.samp_socket2,))
+            target=self.test_receive_string, args=(self.samp_socket2,))
         receive_thread2.start()
 
         while not TEST_stop_flag:
@@ -86,10 +92,10 @@ def test_send_data():
     2つのソケットに0.1秒間隔で交互に送信する。
     受信した側は、送信したデータを標準出力に出力する。
     """
-    from test_receiv import receive
+    from test_receiv import test_receive
     # 別スレッドで、自身からの通信を待ち受けるサーバプログラムを起動する
-    receive_thread1 = Thread(target=receive, args=(TEST_PORT1,))
-    receive_thread2 = Thread(target=receive, args=(TEST_PORT2,))
+    receive_thread1 = Thread(target=test_receive, args=(TEST_PORT1,))
+    receive_thread2 = Thread(target=test_receive, args=(TEST_PORT2,))
     receive_thread1.start()
     receive_thread2.start()
 
@@ -112,11 +118,11 @@ def test_receiv_data():
     2つのソケットから、1秒ごとに交互にデータを受信する。
     受信したデータを標準出力に出力する。
     """
-    from test_send import send
+    from test_send import test_send
 
     # データを送信するスレッドを2つ作成し、それぞれ別のポートで同時に待ち受ける
-    send_thread1 = Thread(target=send, args=(TEST_PORT1, 1))
-    send_thread2 = Thread(target=send, args=(TEST_PORT2, 2))
+    send_thread1 = Thread(target=test_send, args=(TEST_PORT1, 1))
+    send_thread2 = Thread(target=test_send, args=(TEST_PORT2, 2))
     send_thread1.start()
     send_thread2.start()
 
@@ -126,8 +132,8 @@ def test_receiv_data():
     send_thread2.join()
 
 
+# 通信スレッドと、受信もしくは送信スレッドを立ち上げることで、通信のテストを行う
 if __name__ == '__main__':
-    # ポート番号をコマンドライン引数から取得する
     communication_handler = RobotCommunicationHandler()
 
     # 送信要求を入れるキューと、受信したデータを入れるキューを作成

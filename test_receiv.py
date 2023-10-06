@@ -1,11 +1,7 @@
 import socket
-import sys
-import socket
-import sys
-import time
 
 
-def receive(port):
+def test_receive(port):
     # ソケットを作成し、指定されたポートで接続を待つ
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(('localhost', port))
@@ -21,11 +17,11 @@ def receive(port):
                     data = conn.recv(1024)
                     if not data:
                         break
-                    print(data.decode())
+                    print("receiv_task", data.decode())
                 except socket.timeout:
                     print("Timeout: No data received for 10 seconds.")
                     break
 
 
 if __name__ == '__main__':
-    receive(5000)
+    test_receive(5000)
