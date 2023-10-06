@@ -80,6 +80,8 @@ class Application:
 
         self.current_frame.pack()
 
+        #aaaaaaaa
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = Application(root)
