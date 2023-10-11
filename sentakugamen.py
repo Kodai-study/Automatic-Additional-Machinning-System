@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import simpledialog
 
+
 class NumberPad(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
@@ -12,7 +13,8 @@ class NumberPad(tk.Toplevel):
         self.result = tk.StringVar()
         self.result.set("0")
 
-        entry = tk.Entry(self, textvariable=self.result, font=("Helvetica", 24), justify="right")
+        entry = tk.Entry(self, textvariable=self.result,
+                         font=("Helvetica", 24), justify="right")
         entry.pack(fill="both", expand=True)
 
         number_frame = tk.Frame(self)
@@ -27,7 +29,8 @@ class NumberPad(tk.Toplevel):
 
         row, col = 0, 0
         for button_text in buttons:
-            button = tk.Button(number_frame, text=button_text, font=("Helvetica", 18), command=lambda b=button_text: self.on_button_click(b))
+            button = tk.Button(number_frame, text=button_text, font=(
+                "Helvetica", 18), command=lambda b=button_text: self.on_button_click(b))
             button.grid(row=row, column=col, sticky="nsew", padx=1, pady=1)
             col += 1
             if col > 2:
@@ -47,6 +50,7 @@ class NumberPad(tk.Toplevel):
         elif button_text == "OK":
             self.destroy()
 
+
 class Application:
     def __init__(self, root):
         self.root = root
@@ -63,7 +67,8 @@ class Application:
             self.current_frame.destroy()
 
     def add_data_from_file(self):
-        file_path = filedialog.askopenfilename(title="ファイルを選択してください", filetypes=(("テキストファイル", "*.txt"), ("すべてのファイル", "*.*")))
+        file_path = filedialog.askopenfilename(
+            title="ファイルを選択してください", filetypes=(("テキストファイル", "*.txt"), ("すべてのファイル", "*.*")))
         if file_path:
             file_name = file_path.split("/")[-1]  # ファイル名を取得
 
@@ -80,17 +85,20 @@ class Application:
         self.current_frame = tk.Frame(self.root)
 
         # データを表示する表（Treeview）
-        table = ttk.Treeview(self.current_frame, columns=("Data", "Quantity"), show="headings", selectmode="extended")
+        table = ttk.Treeview(self.current_frame, columns=(
+            "Data", "Quantity"), show="headings", selectmode="extended")
         table.heading("Data", text="データ")
         table.heading("Quantity", text="個数")
         table.pack(padx=10, pady=10)
 
         # 選択したデータと個数を取得するボタン
-        get_selected_button = tk.Button(self.current_frame, text="選択したデータと個数を取得", command=self.get_selected_data, font=("Helvetica", 18))
+        get_selected_button = tk.Button(
+            self.current_frame, text="選択したデータと個数を取得", command=self.get_selected_data, font=("Helvetica", 18))
         get_selected_button.pack(padx=10, pady=10)
 
         # ファイルを参照してデータを追加するボタン
-        add_data_button = tk.Button(self.current_frame, text="ファイルを参照してデータを追加", command=self.add_data_from_file, font=("Helvetica", 18))
+        add_data_button = tk.Button(self.current_frame, text="ファイルを参照してデータを追加",
+                                    command=self.add_data_from_file, font=("Helvetica", 18))
         add_data_button.pack(padx=10, pady=10)
 
         self.current_frame.pack()
@@ -105,10 +113,13 @@ class Application:
         selected_items = []
         selected_rows = self.current_frame.children["!treeview"].selection()
         for row in selected_rows:
-            data = self.current_frame.children["!treeview"].item(row)["values"][0]
-            quantity = self.current_frame.children["!treeview"].item(row)["values"][1]
+            data = self.current_frame.children["!treeview"].item(row)[
+                "values"][0]
+            quantity = self.current_frame.children["!treeview"].item(row)[
+                "values"][1]
             selected_items.append((data, quantity))
         print(selected_items)
+
 
 if __name__ == "__main__":
     root = tk.Tk()

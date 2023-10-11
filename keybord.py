@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog
 
+
 class NumberPad(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -26,17 +27,20 @@ class NumberPad(tk.Toplevel):
         col_val = 0
 
         for button in buttons:
-            tk.Button(self, text=button, width=5, height=2, command=lambda b=button: self.add_digit(b)).grid(row=row_val, column=col_val)
+            tk.Button(self, text=button, width=5, height=2, command=lambda b=button: self.add_digit(
+                b)).grid(row=row_val, column=col_val)
             col_val += 1
             if col_val > 2:
                 col_val = 0
                 row_val += 1
 
     def create_clear_button(self):
-        tk.Button(self, text="C", width=5, height=2, command=self.clear).grid(row=4, column=0)
+        tk.Button(self, text="C", width=5, height=2,
+                  command=self.clear).grid(row=4, column=0)
 
     def create_ok_button(self):
-        tk.Button(self, text="OK", width=5, height=2, command=self.ok).grid(row=4, column=2)
+        tk.Button(self, text="OK", width=5, height=2,
+                  command=self.ok).grid(row=4, column=2)
 
     def add_digit(self, digit):
         current_value = self.result.get()
@@ -50,6 +54,7 @@ class NumberPad(tk.Toplevel):
 
     def ok(self):
         self.destroy()
+
 
 class Application:
     def __init__(self, root):
@@ -67,7 +72,8 @@ class Application:
         self.quantity_label = tk.Label(self.root, text=str(self.quantity))
         self.quantity_label.pack()
 
-        tk.Button(self.root, text="テンキーパッドを表示", command=self.show_number_pad).pack()
+        tk.Button(self.root, text="テンキーパッドを表示",
+                  command=self.show_number_pad).pack()
 
     def show_number_pad(self):
         number_pad = NumberPad(self.root)
@@ -80,6 +86,7 @@ class Application:
             self.quantity = 0
 
         self.quantity_label.config(text=str(self.quantity))
+
 
 if __name__ == "__main__":
     root = tk.Tk()
