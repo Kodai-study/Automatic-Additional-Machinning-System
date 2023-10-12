@@ -62,8 +62,10 @@ class Application:
         self.selection_frame = None  # フレームを初期化
         self.data_list = []
 
-        # フォントサイズを変更
+        # 選択したデータを保持するリスト
+        selected_items = []
 
+        # フォントサイズを変更
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
         style.configure("Treeview", font=("AR丸ゴシック体M", 18), rowheight=40)
@@ -100,10 +102,10 @@ class Application:
         password_entry.place(x=880, y=450)
 
         def perform_login():
-            # ログインの処理を実行（ここではダミーのログイン処理を行います）
+            # ログインの処理を実行
             username = username_entry.get()
             password = password_entry.get()
-            if username == "aaa" and password == "aaa":
+            if username == "" and password == "":
                 print("ログイン成功")
                 self.login_frame.destroy()
                 # ログイン画面を破棄
@@ -118,10 +120,7 @@ class Application:
 
     def create_selection_frame(self):
 
-        # データ選択画面を作成
-        self.selection_frame = tk.Frame(
-            self.root, pady=5, padx=5, bd=2)  # フレームを設定
-
+        self.selection_frame = tk.Frame(self.root)
         # データを表示する表（Treeview）
         self.table = ttk.Treeview(self.selection_frame, columns=(
             "Data", "Quantity"), show="headings")
@@ -132,6 +131,10 @@ class Application:
         self.table.heading("Quantity", text="個数", anchor='center')
         self.table.heading("#0", text=" ", anchor='center')
 
+        # 列の設定
+        self.table.column('Data', anchor='center')
+        self.table.column('Quantity', anchor='center')
+
         # スクロールバーの追加
         scrollbar = ttk.Scrollbar(
             self.selection_frame, orient=tk.VERTICAL, command=self.table.yview)
@@ -139,17 +142,17 @@ class Application:
 
         # ボタン
         go_monitor_button = tk.Button(self.selection_frame, text="モニタ画面",
-                                      command=self.create_check_frame, font=("AR丸ゴシック体M", 18), width=22)
-        go_check_button = tk.Button(self.selection_frame, text="確認画面",
                                     command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
+        go_check_button = tk.Button(self.selection_frame, text="確認画面",
+                                    command=lambda: self.create_check_frame(self.data_list), font=("AR丸ゴシック体M", 18), width=22)
         add_data_button = tk.Button(self.selection_frame, text="ファイル参照",
                                     command=self.add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
 
         # ウィジェットの配置
         self.selection_frame.pack(fill="both", expand=True)
-        self.table.place(relheigh=0.6, relwidth=0.7, x=130)
-        scrollbar.place(relheigh=0.6, x=1464)
-        add_data_button.place(rely=0.2, x=1500)
+        self.table.place(relheigh=0.6, relwidth=0.7, x=130,y=70)
+        scrollbar.place(relheigh=0.6, x=1464,y=70)
+        add_data_button.place(rely=0.2, x=1530,y=200)
         go_monitor_button.place(rely=0.85, relx=0.1)
         go_check_button.place(rely=0.85, relx=0.75)
 
@@ -177,13 +180,43 @@ class Application:
             for data, quantity in self.data_list:
                 table.insert("", "end", values=(data, quantity))
 
-    def create_check_frame(self):
+    def create_check_frame(self, selected_items):
+        if self.selection_frame:
+            self.selection_frame.destroy()
 
-        self.selection_frame.destroy()
+        self.check_frame = tk.Frame(self.root)
 
-        self.check_frame = tk.Frame(
-            self.root, pady=5, padx=5, bd=2, bg="blue")  # フレームを設定
-        self.check_frame.pack(fill="both", expand=True, padx=0, pady=0)
+        label = tk.Label(self.check_frame, text="選択した加工データ:", font=("AR丸ゴシック体M", 24))
+        decoy_label = tk.Label(self.check_frame, text="                                                 ", 
+                                    font=("AR丸ゴシック体M", 24))
+
+        # リストボックスを作成
+        listbox = tk.Listbox(self.check_frame, font=("AR丸ゴシック体M", 18), selectmode=tk.MULTIPLE, width=80,height=30, justify="center")
+        
+        for item in selected_items:
+            listbox.insert(tk.END, f"{item[0]} - 個数: {item[1]}")
+
+        # スクロールバーを作成し、リストボックスに配置
+        scrollbar = tk.Scrollbar(self.check_frame, orient=tk.VERTICAL, command=listbox.yview)
+        listbox.config(yscrollcommand=scrollbar.set)
+        
+        def confirm_selected_data():
+            selected_indices = listbox.curselection()
+            for index in selected_indices:
+                item = selected_items[int(index)]
+                print(f"選択したデータ: {item[0]}, 個数: {item[1]}")
+
+        confirm_button = tk.Button(self.check_frame, text="確認", command=confirm_selected_data, font=("AR丸ゴシック体M", 24))
+        
+        # ウィジェットの配置
+        self.check_frame.pack(fill="both", expand=True)
+        decoy_label.grid(row=0, column=0)
+        label.grid(row=0, column=1,pady=40)
+        listbox.grid(row=1, column=1)
+        scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
+
+        confirm_button.pack()
+
 
     def create_monitor_frame(self):
 
