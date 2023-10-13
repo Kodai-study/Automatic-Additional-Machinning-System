@@ -240,7 +240,9 @@ class PreProcessingInspectionResult:
     serial_number: int
     """"""
     dimensions: float
-    """"""
+    """
+    実際に検査したワークの大きさ
+    """
 # 精度検査のデータクラス
 
 

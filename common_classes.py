@@ -59,7 +59,7 @@ class DBAccessHandler:
     def __init__(self):
         pass
 
-    def fetch_data_from_database(self, sql_query: str) -> dict:
+    def fetch_data_from_database(self, sql_query: str) -> List[dict]:
         """
         データベースからデータを取得する
 
@@ -86,8 +86,9 @@ class DBAccessHandler:
 
 
 class ImageInspectionController:
-    def __init__(self, global_tool_attributes: ToolInspectionData):
-        self.global_tool_attributes = global_tool_attributes
+
+    def __init__(self):
+        pass
 
     def perform_image_inspection(self, inspection_type: InspectionType, inspection_data: Union[PreProcessingInspectionData, ToolInspectionData, List[HoleCheckInfo]]):
         """
@@ -98,3 +99,8 @@ class ImageInspectionController:
             inspection_data (Union[PreProcessingInspectionData, WorkPieceShape, List[HoleCheckInfo]]): 検査に必要なデータ。検査の種類によってデータの型が異なる
         """
         pass
+
+
+
+
+
