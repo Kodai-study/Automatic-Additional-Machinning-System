@@ -44,8 +44,10 @@ class GUIDesigner:
             send_queue (Queue): 統合ソフトに送るデータを入れるキュー\n
             receive_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー
         """
-        self.root.mainloop()
         
+        self.send_queue = send_queue
+        self.receive_queue = receive_queue
+        self.root.mainloop()
 
     def create_login_frame(self):
         self.login_frame = tk.Frame(self.root)
@@ -224,7 +226,9 @@ class GUIDesigner:
             if self.is_pochi_pressed:
                 self.current_img = self.green_lamp_img
                 pochi_button["text"] = "OFF"
+                self.send_queue.put("ON")
             else:
                 self.current_img = self.red_lamp_img
                 pochi_button["text"] = "ON"
+                self.send_queue.put("OFF")
             label_lamp.config(image=self.current_img)
