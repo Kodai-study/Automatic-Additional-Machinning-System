@@ -1,5 +1,7 @@
 from queue import Queue
+from threading import Thread
 from GUIDesigner.GUIDesigner import GUIDesigner
+from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 
 
@@ -17,5 +19,10 @@ def test_communicaion():
     communication_handler.communication_loop(send_queue, receive_queue)
 
 
+def test_integration():
+    integration = Integration()
+    integration.main()
+
+
 if __name__ == "__main__":
-    test_communicaion()
+    test_integration()
