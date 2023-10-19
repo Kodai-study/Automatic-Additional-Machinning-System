@@ -1,5 +1,6 @@
 from queue import Queue
 from enum import Enum, auto
+import time
 
 stop_flag = False
 
@@ -53,3 +54,5 @@ class RobotCommunicationHandler:
             else:
                 self.receive_queue.put(
                     {"target": TransmissionTarget.TEST_TARGET_2, "message": "test2"})
+
+            time.sleep(1)
