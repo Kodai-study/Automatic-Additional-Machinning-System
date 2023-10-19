@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import simpledialog
 
+
 class NumberPad(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
@@ -12,7 +13,8 @@ class NumberPad(tk.Toplevel):
         self.result = tk.StringVar()
         self.result.set("0")
 
-        entry = tk.Entry(self, textvariable=self.result, font=("Helvetica", 24), justify="right")
+        entry = tk.Entry(self, textvariable=self.result,
+                         font=("Helvetica", 24), justify="right")
         entry.pack(fill="both", expand=True)
 
         number_frame = tk.Frame(self)
@@ -27,7 +29,8 @@ class NumberPad(tk.Toplevel):
 
         row, col = 0, 0
         for button_text in buttons:
-            button = tk.Button(number_frame, text=button_text, font=("Helvetica", 18), command=lambda b=button_text: self.on_button_click(b))
+            button = tk.Button(number_frame, text=button_text, font=(
+                "Helvetica", 18), command=lambda b=button_text: self.on_button_click(b))
             button.grid(row=row, column=col, sticky="nsew", padx=1, pady=1)
             col += 1
             if col > 2:
@@ -47,6 +50,7 @@ class NumberPad(tk.Toplevel):
         elif button_text == "OK":
             self.destroy()
 
+
 class Application:
     def __init__(self, root):
         self.root = root
@@ -62,8 +66,10 @@ class Application:
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
         style.configure("Treeview", font=("AR丸ゴシック体M", 18), rowheight=40)
 
-        self.red_lamp_img = tk.PhotoImage(file="./resource/images/red_lamp.png")
-        self.green_lamp_img = tk.PhotoImage(file="./resource/images/green_lamp.png")
+        self.red_lamp_img = tk.PhotoImage(
+            file="./resource/images/red_lamp.png")
+        self.green_lamp_img = tk.PhotoImage(
+            file="./resource/images/green_lamp.png")
         self.current_img = self.red_lamp_img
 
         self.create_login_frame()
@@ -72,7 +78,8 @@ class Application:
         self.login_frame = tk.Frame(self.root)
         self.login_frame.pack(fill="both", expand=True)
 
-        username_label = tk.Label(self.login_frame, text="ID:", font=("AR丸ゴシック体M", 24))
+        username_label = tk.Label(
+            self.login_frame, text="ID:", font=("AR丸ゴシック体M", 24))
         username_label.pack()
         username_label.place(x=830, y=400)
 
@@ -80,13 +87,18 @@ class Application:
         username_entry.pack()
         username_entry.place(x=880, y=400)
 
-        password_label = tk.Label(self.login_frame, text="pass:", font=("AR丸ゴシック体M", 24))
+        password_label = tk.Label(
+            self.login_frame, text="pass:", font=("AR丸ゴシック体M", 24))
         password_label.pack()
         password_label.place(x=797, y=450)
 
-        password_entry = tk.Entry(self.login_frame, show="*", font=("AR丸ゴシック体M", 24))
+        password_entry = tk.Entry(
+            self.login_frame, show="*", font=("AR丸ゴシック体M", 24))
         password_entry.pack()
         password_entry.place(x=880, y=450)
+
+        error_label = tk.Label(self.check_frame, text="IDかパスワードが間違っています",
+                         font=("AR丸ゴシック体M", 24),fg="red")
 
         def perform_login():
             username = username_entry.get()
@@ -97,8 +109,10 @@ class Application:
                 self.create_selection_frame()
             else:
                 print("ログイン失敗")
+                error_label.place(x=800, y=700)
 
-        login_button = tk.Button(self.login_frame, text="Login", command=perform_login, font=("AR丸ゴシック体M", 21))
+        login_button = tk.Button(
+            self.login_frame, text="Login", command=perform_login, font=("AR丸ゴシック体M", 21))
         login_button.pack()
         login_button.place(x=1270, y=550)
 
@@ -108,7 +122,8 @@ class Application:
 
         self.selection_frame = tk.Frame(self.root)
 
-        self.table = ttk.Treeview(self.selection_frame, columns=("Data", "Quantity"), show="headings")
+        self.table = ttk.Treeview(self.selection_frame, columns=(
+            "Data", "Quantity"), show="headings")
 
         self.table.heading("#0", text=" ")
         self.table.heading("Data", text="加工データ", anchor='center')
@@ -118,12 +133,16 @@ class Application:
         self.table.column('Data', anchor='center')
         self.table.column('Quantity', anchor='center')
 
-        scrollbar = ttk.Scrollbar(self.selection_frame, orient=tk.VERTICAL, command=self.table.yview)
+        scrollbar = ttk.Scrollbar(
+            self.selection_frame, orient=tk.VERTICAL, command=self.table.yview)
         self.table.configure(yscroll=scrollbar.set)
 
-        go_monitor_button = tk.Button(self.selection_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
-        go_check_button = tk.Button(self.selection_frame, text="確認画面", command=lambda: self.create_check_frame(self.data_list), font=("AR丸ゴシック体M", 18), width=22)
-        add_data_button = tk.Button(self.selection_frame, text="ファイル参照", command=self.add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
+        go_monitor_button = tk.Button(self.selection_frame, text="モニタ画面",
+                                      command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
+        go_check_button = tk.Button(self.selection_frame, text="確認画面", command=lambda: self.create_check_frame(
+            self.data_list), font=("AR丸ゴシック体M", 18), width=22)
+        add_data_button = tk.Button(self.selection_frame, text="ファイル参照",
+                                    command=self.add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
 
         if selected_items:
             for data, quantity in selected_items:
@@ -160,16 +179,20 @@ class Application:
 
         self.check_frame = tk.Frame(self.root)
 
-        label = tk.Label(self.check_frame, text="選択した加工データ:", font=("AR丸ゴシック体M", 24))
-        decoy_label = tk.Label(self.check_frame, text="                                                 ", font=("AR丸ゴシック体M", 24))
+        label = tk.Label(self.check_frame, text="選択した加工データ:",
+                         font=("AR丸ゴシック体M", 24))
+        decoy_label = tk.Label(
+            self.check_frame, text="                                                 ", font=("AR丸ゴシック体M", 24))
         label_lamp = tk.Label(self.check_frame, image=self.current_img)
 
-        listbox = tk.Listbox(self.check_frame, font=("AR丸ゴシック体M", 18), selectmode=tk.MULTIPLE, width=80, height=25, justify="center")
+        listbox = tk.Listbox(self.check_frame, font=(
+            "AR丸ゴシック体M", 18), selectmode=tk.MULTIPLE, width=80, height=25, justify="center")
 
         for item in selected_items:
             listbox.insert(tk.END, f"{item[0]} - 個数: {item[1]}")
 
-        scrollbar = tk.Scrollbar(self.check_frame, orient=tk.VERTICAL, command=listbox.yview)
+        scrollbar = tk.Scrollbar(
+            self.check_frame, orient=tk.VERTICAL, command=listbox.yview)
         listbox.config(yscrollcommand=scrollbar.set)
 
         def toggle_ready_state():
@@ -181,9 +204,12 @@ class Application:
                 self.current_img = self.red_lamp_img
             label_lamp.config(image=self.current_img)
 
-        back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=("AR丸ゴシック体M", 18), width=22)
-        go_monitor_button = tk.Button(self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
-        ready_button = tk.Button(self.check_frame, text="準備完了", command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
+        back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=(
+            "AR丸ゴシック体M", 18), width=22)
+        go_monitor_button = tk.Button(
+            self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
+        ready_button = tk.Button(self.check_frame, text="準備完了",
+                                 command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
 
         self.check_frame.pack(fill="both", expand=True)
         decoy_label.grid(row=0, column=0)
@@ -209,7 +235,8 @@ class Application:
         self.monitor_frame = tk.Frame(self.root)
 
         label_lamp = tk.Label(self.monitor_frame, image=self.current_img)
-        pochi_button = tk.Button(self.monitor_frame, command=lambda: toggle_pochi_state(pochi_button, label_lamp), text="ON", font=("AR丸ゴシック体M", 18), width=22)
+        pochi_button = tk.Button(self.monitor_frame, command=lambda: toggle_pochi_state(
+            pochi_button, label_lamp), text="ON", font=("AR丸ゴシック体M", 18), width=22)
 
         if self.is_pochi_pressed:
             self.current_img = self.green_lamp_img
@@ -228,6 +255,7 @@ class Application:
                 self.current_img = self.red_lamp_img
                 pochi_button["text"] = "ON"
             label_lamp.config(image=self.current_img)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
