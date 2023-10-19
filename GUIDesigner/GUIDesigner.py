@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from . import NumberPad
+from .NumberPad import NumberPad
 from queue import Queue
 
 
@@ -45,6 +45,7 @@ class GUIDesigner:
             receive_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー
         """
         self.root.mainloop()
+        
 
     def create_login_frame(self):
         self.login_frame = tk.Frame(self.root)
