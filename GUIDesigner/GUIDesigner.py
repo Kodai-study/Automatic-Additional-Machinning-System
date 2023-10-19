@@ -1,15 +1,9 @@
 # coding: utf-8
-
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from tkinter import simpledialog
-from NumberPad import NumberPad
-# from ..common_data_type import *
-
+from . import NumberPad
 from queue import Queue
-
-from ..common_data_type import WorkPieceShape
 
 
 class GUIDesigner:
@@ -87,7 +81,7 @@ class GUIDesigner:
                 error_label.place(x=800, y=700)
 
         error_label = tk.Label(self.login_frame, text="IDかパスワードが間違っています",
-                        font=("AR丸ゴシック体M", 24), fg="red")
+                               font=("AR丸ゴシック体M", 24), fg="red")
 
         login_button = tk.Button(
             self.login_frame, text="Login", command=perform_login, font=("AR丸ゴシック体M", 21))
@@ -116,7 +110,7 @@ class GUIDesigner:
         self.table.configure(yscroll=scrollbar.set)
 
         go_monitor_button = tk.Button(self.selection_frame, text="モニタ画面",
-                                        command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
+                                      command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
         go_check_button = tk.Button(self.selection_frame, text="確認画面", command=lambda: self.create_check_frame(
             self.data_list), font=("AR丸ゴシック体M", 18), width=22)
         add_data_button = tk.Button(self.selection_frame, text="ファイル参照",
@@ -158,7 +152,7 @@ class GUIDesigner:
         self.check_frame = tk.Frame(self.root)
 
         label = tk.Label(self.check_frame, text="選択した加工データ:",
-                            font=("AR丸ゴシック体M", 24))
+                         font=("AR丸ゴシック体M", 24))
         decoy_label = tk.Label(
             self.check_frame, text="                                                 ", font=("AR丸ゴシック体M", 24))
         label_lamp = tk.Label(self.check_frame, image=self.current_img)
@@ -187,7 +181,7 @@ class GUIDesigner:
         go_monitor_button = tk.Button(
             self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
         ready_button = tk.Button(self.check_frame, text="準備完了",
-                                    command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
+                                 command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
 
         self.check_frame.pack(fill="both", expand=True)
         decoy_label.grid(row=0, column=0)
@@ -233,11 +227,3 @@ class GUIDesigner:
                 self.current_img = self.red_lamp_img
                 pochi_button["text"] = "ON"
             label_lamp.config(image=self.current_img)
-
-
-if __name__ == "__main__":
-    gui = GUIDesigner()
-    send_queue = Queue()
-    receive_queue = Queue()
-    gui.start_gui(send_queue, receive_queue)
-    work = WorkPieceShape()

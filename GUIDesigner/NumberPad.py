@@ -1,7 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
-from tkinter import simpledialog
 
 
 class NumberPad(tk.Toplevel):
@@ -49,4 +46,3 @@ class NumberPad(tk.Toplevel):
             self.result.set("0")
         elif button_text == "OK":
             self.destroy()
-
