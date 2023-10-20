@@ -10,6 +10,8 @@ from test_flags import TEST_UR_CONN
 
 
 TEST_HOST = 'localhost'
+UR_HOST = '192.168.16.8'
+CFD_HOST = '192.168.16.9'
 TEST_PORT1 = 5000
 TEST_PORT2 = 5001
 TEST_UR_PORT = 8765
@@ -97,13 +99,15 @@ class RobotCommunicationHandler:
             if not TEST_UR_CONN:
                 self.samp_socket_ur = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
-                self.samp_socket_cfd = socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM)
-                self.samp_socket_ur.connect((TEST_HOST, TEST_PORT1))
-                self.samp_socket_cfd.connect((TEST_HOST, TEST_PORT2))
+
+                # self.samp_socket_cfd = socket.socket(
+                #     socket.AF_INET, socket.SOCK_STREAM)
+                # self.samp_socket_cfd.connect((TEST_HOST, TEST_PORT2))
 
                 self.samp_socket_ur.bind((TEST_HOST, TEST_PORT1))
                 self.samp_socket_ur.listen()
+                print(f"UR との接続を待機中... IPアドレス:{
+                      TEST_HOST} ポート番号: {TEST_PORT1}, ")
                 self.samp_socket_ur, _ = self.samp_socket_ur.accept()
 
             else:
