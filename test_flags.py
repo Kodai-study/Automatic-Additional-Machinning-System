@@ -1,0 +1,3 @@
+
+TEST_UR_CONN = True
+TEST_GUI_REQUEST = True
