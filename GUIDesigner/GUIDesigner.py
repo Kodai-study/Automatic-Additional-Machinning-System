@@ -44,7 +44,7 @@ class GUIDesigner:
             send_queue (Queue): 統合ソフトに送るデータを入れるキュー\n
             receive_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー
         """
-        
+
         self.send_queue = send_queue
         self.receive_queue = receive_queue
         self.root.mainloop()

@@ -1,5 +1,9 @@
 # coding: utf-8
 
+from ImageInspectionController import OperationType
+from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
+from ImageInspectionController.InspectionResults import PreProcessingInspectionResult, ToolInspectionResult
+from ImageInspectionController.ProcessDatas import HoleCheckInfo
 from common_data_type import *
 from typing import Union, List
 

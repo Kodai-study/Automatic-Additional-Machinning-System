@@ -3,6 +3,7 @@
 from common_data_type import *
 from typing import List, Tuple
 
+
 class DBAccessHandler:
     """
     データベースへのアクセスを管理するクラス
