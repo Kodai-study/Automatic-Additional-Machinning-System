@@ -5,11 +5,13 @@ import socket
 from threading import Thread
 import socket
 import time
+from RobotCommunicationHandler.ProcessingReportOperation import send_input_command
 
-from test_flags import TEST_UR_CONN
+from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONN
 
 
 TEST_HOST = 'localhost'
+HOST_LINUX = '192.168.16.101'
 UR_HOST = '192.168.16.8'
 CFD_HOST = '192.168.16.9'
 TEST_PORT1 = 5000
@@ -104,10 +106,10 @@ class RobotCommunicationHandler:
                 #     socket.AF_INET, socket.SOCK_STREAM)
                 # self.samp_socket_cfd.connect((TEST_HOST, TEST_PORT2))
 
-                self.samp_socket_ur.bind((TEST_HOST, TEST_PORT1))
+                self.samp_socket_ur.bind((HOST_LINUX, TEST_UR_PORT))
                 self.samp_socket_ur.listen()
                 print(f"UR との接続を待機中... IPアドレス:{
-                      TEST_HOST} ポート番号: {TEST_PORT1}, ")
+                      HOST_LINUX} ポート番号: {TEST_UR_PORT}, ")
                 self.samp_socket_ur, _ = self.samp_socket_ur.accept()
 
             else:
@@ -124,6 +126,10 @@ class RobotCommunicationHandler:
 
         except Exception as e:
             print('Socket Error: ', e)
+
+        if TEST_PROCESSING_REPORT:
+            # 2つのソケットと同時に通信するためのスレッドを2つ作成
+            send_input_command(self.samp_socket_ur)
 
         if TEST_UR_CONN:
             # 2つのソケットと同時に通信するためのスレッドを2つ作成
