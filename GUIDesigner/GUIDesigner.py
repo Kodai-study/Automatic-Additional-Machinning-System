@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
-#　カスタムモジュールから必要なクラスをインポート
+# 　カスタムモジュールから必要なクラスをインポート
 from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
 from queue import Queue
@@ -39,7 +39,6 @@ class GUIDesigner:
         self.green_lamp_img = tk.PhotoImage(
             file="./resource/images/green_lamp.png")
         self.current_img = self.red_lamp_img
-        
 
     def start_gui(self, send_queue: Queue, receive_queue: Queue):
         """
@@ -52,8 +51,9 @@ class GUIDesigner:
 
         self.send_queue = send_queue
         self.receive_queue = receive_queue
-        
-        wait_connect_cfd_thread = Thread(target=self.create_connection_waiting_frame)
+
+        wait_connect_cfd_thread = Thread(
+            target=self.create_connection_waiting_frame)
         wait_connect_cfd_thread.start()
 
         self.root.mainloop()
@@ -61,8 +61,8 @@ class GUIDesigner:
     # キューを受け取る関数
     def connection_is_successful(self):
         while True:
-            if not self.receive_queue.empty():
-                received_data = self.receive_queue.get()
+            if not self.send_queue.empty():
+                received_data = self.send_queue.get()
                 if received_data[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
                     # self.create_login_frame()
                     return True

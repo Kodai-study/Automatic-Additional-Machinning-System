@@ -20,8 +20,10 @@ def compare_string(ur_socket: socket.socket, compare_string: str):
 
 
 def send_input_command(ur_socket: socket.socket):
+    print("connected! please input command")
     while True:
         data = input()
+        data = data + "\n"
         if data == "bye":
             return
         ur_socket.sendall(data.encode())

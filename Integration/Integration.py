@@ -46,14 +46,14 @@ class Integration:
                     {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data)})
             time.sleep(0.1)
 
-    def test_watching_receive_queue(self):
-        while True:
-            if not self.gui_request_queue.empty():
-                # send_queueから値を取り出す
-                send_data = self.gui_request_queue.get()
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data)})
-            time.sleep(0.1)
+    # def test_watching_receive_queue(self):
+    #     while True:
+    #         if not self.gui_request_queue.empty():
+    #             # send_queueから値を取り出す
+    #             send_data = self.gui_request_queue.get()
+    #             self.send_request_queue.put(
+    #                 {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data)})
+    #         time.sleep(0.1)
 
     def test_watching_receive_queue(self):
         while True:
@@ -61,8 +61,8 @@ class Integration:
                 # send_queueから値を取り出す
                 receiv_data = self.comm_receiv_queue.get()
                 if receiv_data == "UR_CONN_SUCCESS":
-                    self.send_request_queue.put(
-                        (GUISignalCategory.ROBOT_CONNECTION_SUCCESS))
+                    self.gui_request_queue.put(
+                        (GUISignalCategory.ROBOT_CONNECTION_SUCCESS,))
                 else:
                     self.send_request_queue.put(
                         {"target": TransmissionTarget.TEST_TARGET_1, "message": str(receiv_data)})
