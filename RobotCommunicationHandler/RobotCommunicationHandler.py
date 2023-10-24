@@ -7,7 +7,7 @@ import socket
 import time
 from RobotCommunicationHandler.ProcessingReportOperation import send_input_command
 
-from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONN
+from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONN, TEST_Windows
 
 
 TEST_HOST = 'localhost'
@@ -106,11 +106,21 @@ class RobotCommunicationHandler:
                 #     socket.AF_INET, socket.SOCK_STREAM)
                 # self.samp_socket_cfd.connect((TEST_HOST, TEST_PORT2))
 
-                self.samp_socket_ur.bind((HOST_LINUX, TEST_UR_PORT))
-                self.samp_socket_ur.listen()
-                print(f"UR との接続を待機中... IPアドレス:{
-                      HOST_LINUX} ポート番号: {TEST_UR_PORT}, ")
+                if TEST_Windows:
+                    self.samp_socket_ur.bind((TEST_HOST, TEST_UR_PORT))
+                    self.samp_socket_ur.listen()
+                    print(f"UR との接続を待機中... IPアドレス:{
+                        TEST_HOST} ポート番号: {TEST_UR_PORT}, ")
+                else:
+                    self.samp_socket_ur.bind((HOST_LINUX, TEST_UR_PORT))
+                    self.samp_socket_ur.listen()
+                    print(f"UR との接続を待機中... IPアドレス:{
+                        HOST_LINUX} ポート番号: {TEST_UR_PORT}, ")
+                    self.samp_socket_ur, _ = self.samp_socket_ur.accept()
+
                 self.samp_socket_ur, _ = self.samp_socket_ur.accept()
+                # TODO: 統合スレッドとの通信体系をわかりやすい形にする
+                receive_queue.put("UR_CONN_SUCCESS")
 
             else:
                 self.dummy_ur_socket = socket.socket(

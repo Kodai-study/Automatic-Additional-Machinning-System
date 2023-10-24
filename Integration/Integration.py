@@ -8,9 +8,6 @@ from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_UR_CONN
 
 
-TEST_UR_CONN = True
-
-
 class Integration:
 
     def __init__(self):
@@ -32,6 +29,15 @@ class Integration:
             if not self.send_queue.empty():
                 # send_queueから値を取り出す
                 send_data = self.send_queue.get()
+                self.ur_send_queue.put(
+                    {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data)})
+            time.sleep(0.1)
+
+    def test_watching_receive_queue(self):
+        while True:
+            if not self.receiv_queue.empty():
+                # send_queueから値を取り出す
+                send_data = self.receiv_queue.get()
                 self.ur_send_queue.put(
                     {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data)})
             time.sleep(0.1)
