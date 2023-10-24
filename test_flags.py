@@ -2,4 +2,4 @@
 TEST_UR_CONN = False
 TEST_GUI_REQUEST = True
 TEST_PROCESSING_REPORT = True
-TEST_Windows = True
+TEST_Windows = False
