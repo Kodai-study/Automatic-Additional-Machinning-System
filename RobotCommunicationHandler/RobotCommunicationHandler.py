@@ -123,6 +123,8 @@ class RobotCommunicationHandler:
                 self.dummy_ur_socket.bind((TEST_HOST, TEST_PORT1))
                 self.dummy_ur_socket.listen()
                 self.dummy_ur_socket, _ = self.dummy_ur_socket.accept()
+                # TODO: 統合スレッドとの通信体系をわかりやすい形にする
+                receive_queue.put("UR_CONN_SUCCESS")
 
         except Exception as e:
             print('Socket Error: ', e)

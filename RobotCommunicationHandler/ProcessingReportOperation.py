@@ -3,7 +3,7 @@ import socket
 import time
 
 operation_start = "WRK 0,TAP_FIN"
-move_end_machining = "SIG ATT DRL READY"
+move_end_machining = "SIG ATT_DRL_READY"
 ejject_attatch = "EJCT 0,ATTACH"
 
 # ソケット通信で受け取った文字列を引数と比較する関数
