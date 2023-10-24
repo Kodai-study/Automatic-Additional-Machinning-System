@@ -1,7 +1,11 @@
 # coding: utf-8
+from threading import Thread
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+
+#　カスタムモジュールから必要なクラスをインポート
+from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
 from queue import Queue
 
@@ -24,17 +28,18 @@ class GUIDesigner:
         self.data_list = []
         self.is_pochi_pressed = False
 
+        # ttkスタイルの設定
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
         style.configure("Treeview", font=("AR丸ゴシック体M", 18), rowheight=40)
 
+        # 画像ファイルの読み込み
         self.red_lamp_img = tk.PhotoImage(
             file="./resource/images/red_lamp.png")
         self.green_lamp_img = tk.PhotoImage(
             file="./resource/images/green_lamp.png")
         self.current_img = self.red_lamp_img
-
-        self.create_login_frame()
+        
 
     def start_gui(self, send_queue: Queue, receive_queue: Queue):
         """
@@ -47,7 +52,41 @@ class GUIDesigner:
 
         self.send_queue = send_queue
         self.receive_queue = receive_queue
+        
+        wait_connect_cfd_thread = Thread(target=self.create_connection_waiting_frame)
+        wait_connect_cfd_thread.start()
+
         self.root.mainloop()
+
+    # キューを受け取る関数
+    def connection_is_successful(self):
+        while True:
+            if not self.receive_queue.empty():
+                received_data = self.receive_queue.get()
+                if received_data[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
+                    # self.create_login_frame()
+                    return True
+
+    def create_connection_waiting_frame(self):
+        self.connection_waiting_frame = tk.Frame(self.root)
+        self.connection_waiting_frame.pack(fill="both", expand=True)
+
+        message_label = tk.Label(
+            self.connection_waiting_frame, text="通信接続を待っています...", font=("AR丸ゴシック体M", 24))
+        message_label.pack(pady=200)
+
+        # 通信接続完了の確認を行う処理を追加
+        def check_connection():
+            if self.connection_is_successful():  # 通信接続が成功した場合
+                self.connection_waiting_frame.destroy()  # 通信待ちフレームを破棄
+                self.create_login_frame()  # ログイン画面を表示
+
+            else:
+                # 通信がまだ確立されていない場合、定期的に確認する
+                self.root.after(1000, check_connection)
+
+        # 通信確認をスタート
+        check_connection()
 
     def create_login_frame(self):
         self.login_frame = tk.Frame(self.root)
