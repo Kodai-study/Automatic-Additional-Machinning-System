@@ -49,14 +49,15 @@ class Integration:
                         {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
             time.sleep(0.1)
 
-    # def test_watching_receive_queue(self):
-    #     while True:
-    #         if not self.gui_request_queue.empty():
-    #             # send_queueから値を取り出す
-    #             send_data = self.gui_request_queue.get()
-    #             self.send_request_queue.put(
-    #                 {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data)})
-    #         time.sleep(0.1)
+    def test_watching_guiResponce_queue(self):
+        while True:
+            if not self.gui_responce_queue.empty():
+                # send_queueから値を取り出す
+                send_data = self.gui_responce_queue.get()
+                if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
+                    self.send_request_queue.put(
+                        {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
+            time.sleep(0.1)
 
     def test_watching_receive_queue(self):
         while True:
@@ -90,5 +91,10 @@ class Integration:
             test_send_thread = Thread(
                 target=self.test_watching_receive_queue)
             test_send_thread.start()
-
+            # test_watching_guiRequest_queue_thread = Thread(
+            #     target=self.test_watching_guiRequest_queue)
+            # test_watching_guiRequest_queue_thread.start()
+            test_watching_guiResponce_queue_thread = Thread(
+                target=self.test_watching_guiResponce_queue)
+            test_watching_guiResponce_queue_thread.start()
         guiDesigner.start_gui(self.gui_request_queue, self.gui_responce_queue)

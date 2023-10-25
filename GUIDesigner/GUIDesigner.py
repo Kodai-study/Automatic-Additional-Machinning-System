@@ -264,13 +264,13 @@ class GUIDesigner:
                     self.detach_button["state"] = "normal"
                     self.pochi_button["state"] = "disabled"
                     self.attach_button["state"] = "disabled"
-                elif data[1] == "FINISH":
-                    self.pochi_button["state"] = "normal"
-                    self.detach_button["state"] = "disabled"
-                    self.attach_button["state"] = "disabled"
-                    self.current_img = self.green_lamp_img
-                    self.label_lamp.config(image=self.current_img)
-                    state = "READY_START"
+            elif data[1] == "FINISH":
+                self.pochi_button["state"] = "normal"
+                self.detach_button["state"] = "disabled"
+                self.attach_button["state"] = "disabled"
+                self.current_img = self.green_lamp_img
+                self.label_lamp.config(image=self.current_img)
+                state = "READY_START"
 
     def create_monitor_frame(self):
         if self.selection_frame:
@@ -278,22 +278,21 @@ class GUIDesigner:
         if self.check_frame:
             self.check_frame.destroy()
 
-
         def toggle_pochi_state(pochi_button, label_lamp):
             self.current_img = self.red_lamp_img
             label_lamp.config(image=self.current_img)
-            self.pochi_button["state"] = "disabled"
-            self.send_queue.put(
-                GUIRequestType.ROBOT_OPERATION_REQUEST, "WRK 0,TAP_FIN\n")
-            
+            # self.pochi_button["state"] = "disabled"
+            self.receive_queue.put((
+                GUIRequestType.ROBOT_OPERATION_REQUEST, "WRK 0,TAP_FIN\n"))
+
         def push_attach_button():
-            self.send_queue.put(
-                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,ATTACH\n")
+            self.receive_queue.put((
+                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,ATTACH\n"))
             self.attach_button["state"] = "disabled"
 
         def push_detach_button():
-            self.send_queue.put(
-                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,DETACH\n")
+            self.receive_queue.put((
+                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,DETACH\n"))
             self.detach_button["state"] = "disabled"
         self.monitor_frame = tk.Frame(self.root)
 
@@ -323,5 +322,3 @@ class GUIDesigner:
         watching_queue_thread = Thread(
             target=self.update_button_state_with_queue)
         watching_queue_thread.start()
-
-
