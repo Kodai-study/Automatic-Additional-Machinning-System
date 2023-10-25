@@ -243,6 +243,27 @@ class GUIDesigner:
             self.check_frame.destroy()
         self.create_selection_frame(self.data_list)
 
+    def update_button_state_with_queue(self):
+        state = "READY_START"
+        while True:
+            if self.send_queue.empty():
+                time.sleep(0.1)
+                continue
+            data = self.send_queue.get()
+            if data[0] != RobotInteractionType.MESSAGE_RECEIVED:
+                continue
+            if data[1] == "SIG DET" or data[1] == "SIG 0,ATT_DRL_READY" or data[1] == "SIG 0,ATT_IMP_READY":
+                if state == "READY_START" or state == "READY_DETACH":
+                    state = "READY_ATTACH"
+                    self.pochi_button["state"] = "disabled"
+                    self.detach_button["state"] = "disabled"
+                    self.attach_button["state"] = "normal"
+                elif state == "READY_ATTACH":
+                    state = "READY_DETACH"
+                    self.detach_button["state"] = "normal"
+                    self.pochi_button["state"] = "disabled"
+                    self.attach_button["state"] = "disabled"
+
     def create_monitor_frame(self):
         if self.selection_frame:
             self.selection_frame.destroy()
@@ -258,12 +279,10 @@ class GUIDesigner:
         # デタッチボタンを作成
         self.detach_button = tk.Button(
             self.monitor_frame, text="デタッチ", width=30, font=("AR丸ゴシック体M", 22),  height=10, fg="white", bg="blue", state="disabled")
-        # detach_button.pack(side="left", padx=10, pady=10)
 
         # アタッチボタンを作成
         self.attach_button = tk.Button(
             self.monitor_frame, text="アタッチ", width=30,  font=("AR丸ゴシック体M", 22), height=10, fg="white", bg="blue", state="disabled")
-        # attach_button.pack(side="left", padx=10, pady=10)
 
         if self.is_pochi_pressed:
             self.current_img = self.green_lamp_img
@@ -272,9 +291,10 @@ class GUIDesigner:
         self.monitor_frame.pack(fill="both", expand=True)
         self.pochi_button.place(rely=0.50, relx=0.35)
         label_lamp.place(rely=0.48, relx=0.6)
-        self.detach_button.place(rely=0.6, relx=0.5)
-        self.attach_button.place(rely=0.8, relx=0.5)
-        watching_queue_thread = Thread(self.update_button_state_with_queue)
+        self.attach_button.place(rely=0.6, relx=0.5)
+        self.detach_button.place(rely=0.8, relx=0.5)
+        watching_queue_thread = Thread(
+            target=self.update_button_state_with_queue)
         watching_queue_thread.start()
 
         def toggle_pochi_state(pochi_button, label_lamp):
@@ -288,24 +308,3 @@ class GUIDesigner:
                 pochi_button["text"] = "ON"
                 self.send_queue.put("OFF")
             label_lamp.config(image=self.current_img)
-
-    def update_button_state_with_queue(self):
-        state = "READY_START"
-        while True:
-            if self.receive_queue.empty():
-                time.sleep(0.1)
-                continue
-            data = self.receive_queue.get()
-            if data[0] != RobotInteractionType.MESSAGE_RECEIVED:
-                continue
-            if data[1] == "SIG DET":
-                if state == "READY_START" or state == "READY_DETACH":
-                    state = "READY_ATTACH"
-                    self.pochi_button["state"] = "disabled"
-                    self.detach_button["state"] = "disabled"
-                    self.attach_button["state"] = "normal"
-                elif state == "READY_ATTACH":
-                    state = "READY_DETACH"
-                    self.detach_button["state"] = "normal"
-                    self.pochi_button["state"] = "disabled"
-                    self.attach_button["state"] = "disabled"
