@@ -6,6 +6,7 @@ from threading import Thread
 import socket
 import time
 from RobotCommunicationHandler.ProcessingReportOperation import send_input_command
+from common_data_type import TransmissionTarget
 from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONN, TEST_Windows
 
 
@@ -17,24 +18,6 @@ TEST_PORT1 = 5000
 TEST_PORT2 = 5001
 UR_PORT_NUMBER = 8765
 CFD_PORT_NUMBER = 8766
-
-
-class TransmissionTarget(Enum):
-    """
-    送信先を表す列挙型
-    """
-    TEST_TARGET_1 = auto()
-
-    TEST_TARGET_2 = auto()
-
-    UR = auto()
-    """
-    URに送信する
-    """
-    CFD = auto()
-    """
-    CFDに送信する
-    """
 
 
 class RobotCommunicationHandler:
@@ -107,7 +90,6 @@ class RobotCommunicationHandler:
                     self.samp_socket_ur.bind(
                         (TEST_HOST_ADDRESS, UR_PORT_NUMBER))
                     self.samp_socket_ur.listen()
-                    print(TEST_HOST_ADDRESS, UR_PORT_NUMBER)
                     print(f"""UR との接続を待機中... IPアドレス:{
                         TEST_HOST_ADDRESS} ポート番号: {UR_PORT_NUMBER}, """)
 

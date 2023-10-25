@@ -24,3 +24,21 @@ class Point:
     """
     x_potision: float
     y_potision: float
+
+
+class TransmissionTarget(Enum):
+    """
+    送信先を表す列挙型
+    """
+    TEST_TARGET_1 = auto()
+
+    TEST_TARGET_2 = auto()
+
+    UR = auto()
+    """
+    URに送信する
+    """
+    CFD = auto()
+    """
+    CFDに送信する
+    """

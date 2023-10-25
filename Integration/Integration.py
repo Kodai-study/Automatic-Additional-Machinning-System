@@ -4,11 +4,12 @@ from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from RobotCommunicationHandler.RobotCommunicationHandler \
-    import TEST_PORT1, RobotCommunicationHandler, TransmissionTarget
+    import TEST_PORT1, RobotCommunicationHandler
 from threading import Thread
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_GUI_REQUEST, TEST_UR_CONN
+from common_data_type import TransmissionTarget
 
 
 class Integration:
