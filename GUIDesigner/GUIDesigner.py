@@ -1,8 +1,11 @@
 # coding: utf-8
 from threading import Thread
+import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+
+from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 
 # 　カスタムモジュールから必要なクラスをインポート
 from .GUISignalCategory import GUISignalCategory
@@ -249,16 +252,30 @@ class GUIDesigner:
         self.monitor_frame = tk.Frame(self.root)
 
         label_lamp = tk.Label(self.monitor_frame, image=self.current_img)
-        pochi_button = tk.Button(self.monitor_frame, command=lambda: toggle_pochi_state(
-            pochi_button, label_lamp), text="ON", font=("AR丸ゴシック体M", 18), width=22)
+        self.pochi_button = tk.Button(self.monitor_frame, command=lambda: toggle_pochi_state(
+            self.pochi_button, label_lamp), text="START", font=("AR丸ゴシック体M", 18), width=22)
+
+        # デタッチボタンを作成
+        self.detach_button = tk.Button(
+            self.monitor_frame, text="デタッチ", width=30, font=("AR丸ゴシック体M", 22),  height=10, fg="white", bg="blue", state="disabled")
+        # detach_button.pack(side="left", padx=10, pady=10)
+
+        # アタッチボタンを作成
+        self.attach_button = tk.Button(
+            self.monitor_frame, text="アタッチ", width=30,  font=("AR丸ゴシック体M", 22), height=10, fg="white", bg="blue", state="disabled")
+        # attach_button.pack(side="left", padx=10, pady=10)
 
         if self.is_pochi_pressed:
             self.current_img = self.green_lamp_img
             label_lamp.config(image=self.current_img)
 
         self.monitor_frame.pack(fill="both", expand=True)
-        pochi_button.place(rely=0.50, relx=0.35)
+        self.pochi_button.place(rely=0.50, relx=0.35)
         label_lamp.place(rely=0.48, relx=0.6)
+        self.detach_button.place(rely=0.6, relx=0.5)
+        self.attach_button.place(rely=0.8, relx=0.5)
+        watching_queue_thread = Thread(self.update_button_state_with_queue)
+        watching_queue_thread.start()
 
         def toggle_pochi_state(pochi_button, label_lamp):
             self.is_pochi_pressed = not self.is_pochi_pressed
@@ -271,3 +288,24 @@ class GUIDesigner:
                 pochi_button["text"] = "ON"
                 self.send_queue.put("OFF")
             label_lamp.config(image=self.current_img)
+
+    def update_button_state_with_queue(self):
+        state = "READY_START"
+        while True:
+            if self.receive_queue.empty():
+                time.sleep(0.1)
+                continue
+            data = self.receive_queue.get()
+            if data[0] != RobotInteractionType.MESSAGE_RECEIVED:
+                continue
+            if data[1] == "SIG DET":
+                if state == "READY_START" or state == "READY_DETACH":
+                    state = "READY_ATTACH"
+                    self.pochi_button["state"] = "disabled"
+                    self.detach_button["state"] = "disabled"
+                    self.attach_button["state"] = "normal"
+                elif state == "READY_ATTACH":
+                    state = "READY_DETACH"
+                    self.detach_button["state"] = "normal"
+                    self.pochi_button["state"] = "disabled"
+                    self.attach_button["state"] = "disabled"
