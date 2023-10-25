@@ -142,9 +142,9 @@ class RobotCommunicationHandler:
 
         if TEST_PROCESSING_REPORT:
             # 2つのソケットと同時に通信するためのスレッドを2つ作成
-            receive_thread1 = Thread(
-                target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_1, self.samp_socket_ur))
-            receive_thread1.start()
+            # receive_thread1 = Thread(
+            #     target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_1, self.samp_socket_ur))
+            # receive_thread1.start()
             send_input_command(self.samp_socket_ur)
 
         if TEST_UR_CONN:
