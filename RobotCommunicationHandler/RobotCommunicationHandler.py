@@ -6,26 +6,23 @@ from threading import Thread
 import socket
 import time
 from RobotCommunicationHandler.ProcessingReportOperation import send_input_command
-
 from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONN, TEST_Windows
 
 
-TEST_HOST = 'localhost'
-HOST_LINUX = '192.168.16.101'
-UR_HOST = '192.168.16.8'
-CFD_HOST = '192.168.16.9'
+TEST_HOST_ADDRESS = 'localhost'
+HOST_LINUX_ADDRESS = '192.168.16.101'
+UR_HOST_ADDRESS = '192.168.16.8'
+CFD_HOST_ADDRESS = '192.168.16.9'
 TEST_PORT1 = 5000
 TEST_PORT2 = 5001
-TEST_UR_PORT = 8765
-TEST_CFD_PORT = 8766
-TEST_stop_flag = False
+UR_PORT_NUMBER = 8765
+CFD_PORT_NUMBER = 8766
 
 
 class TransmissionTarget(Enum):
     """
     送信先を表す列挙型
     """
-
     TEST_TARGET_1 = auto()
 
     TEST_TARGET_2 = auto()
@@ -70,7 +67,7 @@ class RobotCommunicationHandler:
             接続が完了しているものを渡す。
         """
 
-        while not TEST_stop_flag:
+        while True:
             try:
                 data = sock.recv(1024)
                 if not data:
@@ -78,8 +75,8 @@ class RobotCommunicationHandler:
                     break
                 print(f"Main_Received: {data.decode('utf-8')}")
 
-                # self.receive_queue.put(
-                #     {"target": target, "message": data.decode('utf-8')})
+                self.receive_queue.put(
+                    {"target": target, "message": data.decode('utf-8')})
             except Exception as e:
                 print(f"Error: {e}")
                 continue
@@ -107,16 +104,18 @@ class RobotCommunicationHandler:
                 # self.samp_socket_cfd.connect((TEST_HOST, TEST_PORT2))
 
                 if TEST_Windows:
-                    self.samp_socket_ur.bind((TEST_HOST, TEST_UR_PORT))
+                    self.samp_socket_ur.bind(
+                        (TEST_HOST_ADDRESS, UR_PORT_NUMBER))
                     self.samp_socket_ur.listen()
-                    print(TEST_HOST, TEST_UR_PORT)
-                    # print(f"UR との接続を待機中... IPアドレス:{
-                    #     TEST_HOST} ポート番号: {TEST_UR_PORT}, ")
+                    print(TEST_HOST_ADDRESS, UR_PORT_NUMBER)
+                    print(f"""UR との接続を待機中... IPアドレス:{
+                        TEST_HOST_ADDRESS} ポート番号: {UR_PORT_NUMBER}, """)
 
                 else:
-                    self.samp_socket_ur.bind((HOST_LINUX, TEST_UR_PORT))
+                    self.samp_socket_ur.bind(
+                        (HOST_LINUX_ADDRESS, UR_PORT_NUMBER))
                     self.samp_socket_ur.listen()
-                    print(HOST_LINUX, TEST_UR_PORT)
+                    print(HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
 
                 self.samp_socket_ur, _ = self.samp_socket_ur.accept()
                 # TODO: 統合スレッドとの通信体系をわかりやすい形にする
@@ -131,7 +130,7 @@ class RobotCommunicationHandler:
                 #     socket.AF_INET, socket.SOCK_STREAM)
                 # self.dummy_cfd_socket.connect((TEST_HOST, TEST_PORT2))
 
-                self.dummy_ur_socket.bind((TEST_HOST, TEST_PORT1))
+                self.dummy_ur_socket.bind((TEST_HOST_ADDRESS, TEST_PORT1))
                 self.dummy_ur_socket.listen()
                 self.dummy_ur_socket, _ = self.dummy_ur_socket.accept()
                 # TODO: 統合スレッドとの通信体系をわかりやすい形にする
@@ -156,17 +155,16 @@ class RobotCommunicationHandler:
         #     target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_2, self.samp_socket_cfd))
         # receive_thread2.start()
 
-        while not TEST_stop_flag:
             # send_queueに値が入っているか監視
-            if not self.send_queue.empty():
-                # send_queueから値を取り出す
-                send_data = self.send_queue.get()
+        if not self.send_queue.empty():
+            # send_queueから値を取り出す
+            send_data = self.send_queue.get()
 
-                if (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
-                    target_socket = self.samp_socket_ur if not TEST_UR_CONN else self.dummy_ur_socket
-                elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
-                    target_socket = self.samp_socket_cfd if not TEST_UR_CONN else self.dummy_cfd_socket
+            if (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
+                target_socket = self.samp_socket_ur if not TEST_UR_CONN else self.dummy_ur_socket
+            elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
+                target_socket = self.samp_socket_cfd if not TEST_UR_CONN else self.dummy_cfd_socket
 
-                target_socket.sendall(
-                    send_data['message'].encode('utf-8'))
-            time.sleep(0.1)
+            target_socket.sendall(
+                send_data['message'].encode('utf-8'))
+        time.sleep(0.1)

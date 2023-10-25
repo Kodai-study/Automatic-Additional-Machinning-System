@@ -1,8 +1,8 @@
 from queue import Queue
-from threading import Thread
 from GUIDesigner.GUIDesigner import GUIDesigner
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
+
 
 def test_gui():
     send_queue = Queue()
