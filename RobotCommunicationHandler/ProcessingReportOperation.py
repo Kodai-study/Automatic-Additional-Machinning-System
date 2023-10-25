@@ -54,24 +54,24 @@ def operation_sequence_start(ur_socket: socket.socket):
     ur_socket.sendall(cmd_operation_start.encode())
     print("command_send: ", cmd_operation_start)  # 加工が終了したことを通知
 
-    wait_until_match_command(
-        ur_socket, cmd_move_end_machining)  # 加工部のワークがある部分に移動
+    # wait_until_match_command(
+    #     ur_socket, cmd_move_end_machining)  # 加工部のワークがある部分に移動
 
     ur_socket.sendall(cmd_eject_attatch.encode())
     print("command_send: ", cmd_eject_attatch)  # 吸着が完了→加工部から検査部へ移動
 
-    wait_until_match_command(ur_socket, cmd_eject_detach_ready)
+    # wait_until_match_command(ur_socket, cmd_eject_detach_ready)
 
     ur_socket.sendall(cmd_eject_detach.encode())  # 吸着を解除
     print("command_send: ", cmd_eject_detach)
 
-    wait_until_match_command(
-        ur_socket, cmd_move_imp_machining)  # 搬入部へ移動したことを通知
+    # wait_until_match_command(
+    #     ur_socket, cmd_move_imp_machining)  # 搬入部へ移動したことを通知
 
     ur_socket.sendall(cmd_eject_attatch.encode())  # 吸着が完了したことを通知
     print("command_send: ", cmd_eject_attatch)
 
-    wait_until_match_command(ur_socket, cmd_eject_detach_ready)
+    # wait_until_match_command(ur_socket, cmd_eject_detach_ready)
 
     ur_socket.sendall(cmd_eject_detach.encode())  # 吸着を解除
     print("command_send: ", cmd_eject_detach)

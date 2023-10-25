@@ -5,6 +5,7 @@ from GUIDesigner.GUISignalCategory import GUISignalCategory
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, RobotCommunicationHandler, TransmissionTarget
 from threading import Thread
+from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_GUI_REQUEST, TEST_UR_CONN
 
@@ -63,9 +64,9 @@ class Integration:
                 if receiv_data == "UR_CONN_SUCCESS":
                     self.gui_request_queue.put(
                         (GUISignalCategory.ROBOT_CONNECTION_SUCCESS,))
-                else:
-                    self.send_request_queue.put(
-                        {"target": TransmissionTarget.TEST_TARGET_1, "message": str(receiv_data)})
+                elif receiv_data["target"] == TransmissionTarget.TEST_TARGET_1:
+                    self.gui_request_queue.put(
+                        (RobotInteractionType.MESSAGE_RECEIVED, receiv_data["message"]))
             time.sleep(0.1)
 
     def main(self):
