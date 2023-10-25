@@ -1,6 +1,7 @@
 from queue import Queue
 import time
 from GUIDesigner.GUIDesigner import GUIDesigner
+from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, RobotCommunicationHandler, TransmissionTarget
@@ -43,8 +44,9 @@ class Integration:
             if not self.gui_request_queue.empty():
                 # send_queueから値を取り出す
                 send_data = self.gui_request_queue.get()
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data)})
+                if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
+                    self.send_request_queue.put(
+                        {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
             time.sleep(0.1)
 
     # def test_watching_receive_queue(self):

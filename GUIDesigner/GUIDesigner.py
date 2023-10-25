@@ -4,6 +4,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from GUIDesigner.GUIRequestType import GUIRequestType
 
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 
@@ -263,6 +264,13 @@ class GUIDesigner:
                     self.detach_button["state"] = "normal"
                     self.pochi_button["state"] = "disabled"
                     self.attach_button["state"] = "disabled"
+                elif data[1] == "FINISH":
+                    self.pochi_button["state"] = "normal"
+                    self.detach_button["state"] = "disabled"
+                    self.attach_button["state"] = "disabled"
+                    self.current_img = self.green_lamp_img
+                    self.label_lamp.config(image=self.current_img)
+                    state = "READY_START"
 
     def create_monitor_frame(self):
         if self.selection_frame:
@@ -270,41 +278,50 @@ class GUIDesigner:
         if self.check_frame:
             self.check_frame.destroy()
 
+
+        def toggle_pochi_state(pochi_button, label_lamp):
+            self.current_img = self.red_lamp_img
+            label_lamp.config(image=self.current_img)
+            self.pochi_button["state"] = "disabled"
+            self.send_queue.put(
+                GUIRequestType.ROBOT_OPERATION_REQUEST, "WRK 0,TAP_FIN\n")
+            
+        def push_attach_button():
+            self.send_queue.put(
+                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,ATTACH\n")
+            self.attach_button["state"] = "disabled"
+
+        def push_detach_button():
+            self.send_queue.put(
+                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,DETACH\n")
+            self.detach_button["state"] = "disabled"
         self.monitor_frame = tk.Frame(self.root)
 
-        label_lamp = tk.Label(self.monitor_frame, image=self.current_img)
+        self.label_lamp = tk.Label(self.monitor_frame, image=self.current_img)
         self.pochi_button = tk.Button(self.monitor_frame, command=lambda: toggle_pochi_state(
-            self.pochi_button, label_lamp), text="START", font=("AR丸ゴシック体M", 18), width=22)
+            self.pochi_button, self.label_lamp), text="START", font=("AR丸ゴシック体M", 18), width=22)
 
         # デタッチボタンを作成
         self.detach_button = tk.Button(
-            self.monitor_frame, text="デタッチ", width=30, font=("AR丸ゴシック体M", 22),  height=10, fg="white", bg="blue", state="disabled")
+            self.monitor_frame, text="デタッチ", width=30, font=("AR丸ゴシック体M", 22),  height=10, fg="white", bg="blue", state="disabled",
+            command=push_detach_button)
 
         # アタッチボタンを作成
         self.attach_button = tk.Button(
-            self.monitor_frame, text="アタッチ", width=30,  font=("AR丸ゴシック体M", 22), height=10, fg="white", bg="blue", state="disabled")
+            self.monitor_frame, text="アタッチ", width=30,  font=("AR丸ゴシック体M", 22), height=10, fg="white", bg="blue", state="disabled",
+            command=push_attach_button)
 
         if self.is_pochi_pressed:
             self.current_img = self.green_lamp_img
-            label_lamp.config(image=self.current_img)
+            self.label_lamp.config(image=self.current_img)
 
         self.monitor_frame.pack(fill="both", expand=True)
         self.pochi_button.place(rely=0.50, relx=0.35)
-        label_lamp.place(rely=0.48, relx=0.6)
+        self.label_lamp.place(rely=0.48, relx=0.6)
         self.attach_button.place(rely=0.6, relx=0.5)
         self.detach_button.place(rely=0.8, relx=0.5)
         watching_queue_thread = Thread(
             target=self.update_button_state_with_queue)
         watching_queue_thread.start()
 
-        def toggle_pochi_state(pochi_button, label_lamp):
-            self.is_pochi_pressed = not self.is_pochi_pressed
-            if self.is_pochi_pressed:
-                self.current_img = self.green_lamp_img
-                pochi_button["text"] = "OFF"
-                self.send_queue.put("ON")
-            else:
-                self.current_img = self.red_lamp_img
-                pochi_button["text"] = "ON"
-                self.send_queue.put("OFF")
-            label_lamp.config(image=self.current_img)
+
