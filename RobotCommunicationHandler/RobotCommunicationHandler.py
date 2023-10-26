@@ -149,7 +149,7 @@ class RobotCommunicationHandler:
         elif TEST_PROCESSING_REPORT:
             # 2つのソケットと同時に通信するためのスレッドを2つ作成
             receive_thread1 = Thread(
-                target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_1, self.samp_socket_ur))
+                target=self.test_receive_string, args=(TransmissionTarget.UR, self.samp_socket_ur))
             receive_thread1.start()
             # send_input_command(self.samp_socket_ur)
 
@@ -159,10 +159,12 @@ class RobotCommunicationHandler:
                 # send_queueから値を取り出す
                 send_data = self.send_queue.get()
 
-                if (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
-                    target_socket = self.samp_socket_ur if not TEST_UR_CONN else self.dummy_ur_socket
-                elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
+                if (send_data['target'] == TransmissionTarget.UR):
+                    target_socket = self.samp_socket_ur
+                elif (send_data['target'] == TransmissionTarget.CFD):
                     target_socket = self.samp_socket_cfd if not TEST_UR_CONN else self.dummy_cfd_socket
+                elif (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
+                    target_socket = self.dummy_ur_socket
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))

@@ -3,6 +3,7 @@ import time
 from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
+from Integration.ManageRobotReceive import ManageRobotReceive
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, RobotCommunicationHandler
 from threading import Thread
@@ -27,17 +28,9 @@ class Integration:
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
         if TEST_UR_CONN:
             self.test_ur = _test_ur(TEST_PORT1)
+        self.robot_message_handler = ManageRobotReceive(self)
 
-    def test_send(self):
-        """
-        GUIからの要求をシミュレートし、送信キューに値を入れるテスト関数
-        """
-        while True:
-            self.send_request_queue.put(
-                {"target": TransmissionTarget.TEST_TARGET_1, "message": "test"})
-            time.sleep(5)
-
-    def test_watching_guiResponce_queue(self):
+    def _test_watching_guiResponce_queue(self):
         """
         テスト用関数。  GUIから、ロボットへの操作要求があると、そのコマンドを送信する
         """
@@ -50,23 +43,35 @@ class Integration:
                         {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
             time.sleep(0.1)
 
-    def test_watching_receive_queue(self):
+    def _test_watching_receive_queue(self):
+        """
+        通信スレッドからの受信キューを監視し、受信したデータをGUIに送信する
+        """
         while True:
             if not self.comm_receiv_queue.empty():
                 # send_queueから値を取り出す
                 receiv_data = self.comm_receiv_queue.get()
                 if receiv_data == "UR_CONN_SUCCESS":
                     self.gui_request_queue.put(
-                        (GUISignalCategory.ROBOT_CONNECTION_SUCCESS,))
+                        (GUISignalCategory.ROBOT_CONNECTION_SUCCESS, "UR"))
+                elif receiv_data["target"] == TransmissionTarget.UR:
+                    self.gui_request_queue.put(
+                        (RobotInteractionType.MESSAGE_RECEIVED, receiv_data["message"]))
                 elif receiv_data["target"] == TransmissionTarget.TEST_TARGET_1:
                     self.gui_request_queue.put(
                         (RobotInteractionType.MESSAGE_RECEIVED, receiv_data["message"]))
             time.sleep(0.1)
 
-    def main(self):
+    def _test_robot_message_handler(self):
+        self.robot_message_handler = ManageRobotReceive(self)
+        self.robot_message_handler.handle_receiv_message(
+            {"target": TransmissionTarget.UR, "message": "SIG 0,ATT_IMP_READY"})
 
+    def main(self):
+        self._test_robot_message_handler()
         communicationHandler = RobotCommunicationHandler()
         guiDesigner = GUIDesigner()
+
         # 通信スレッドを立ち上げる
         self.communication_thread = Thread(
             target=communicationHandler.communication_loop,
@@ -81,9 +86,9 @@ class Integration:
         if TEST_GUI_REQUEST:
             # GUIからの送信要求をそのまま相手に送信するスレッドを立ち上げる
             test_send_thread = Thread(
-                target=self.test_watching_receive_queue)
+                target=self._test_watching_receive_queue)
             test_send_thread.start()
             test_watching_guiResponce_queue_thread = Thread(
-                target=self.test_watching_guiResponce_queue)
+                target=self._test_watching_guiResponce_queue)
             test_watching_guiResponce_queue_thread.start()
         guiDesigner.start_gui(self.gui_request_queue, self.gui_responce_queue)
