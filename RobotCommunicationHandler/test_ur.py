@@ -1,6 +1,7 @@
 import socket
+from threading import Thread
 import time
-import tkinter as Tk
+import tkinter as tk
 
 
 class _test_ur:
@@ -11,19 +12,20 @@ class _test_ur:
             socket.AF_INET, socket.SOCK_STREAM)
 
     def _start_test_ur_screen(self):
-        root = Tk.Tk()
-        root.title("UR")
-        root.geometry("300x300")
-        self.label = Tk.Label(root, text="UR")
-        self.label.pack()
-        self.button = Tk.Button(root, text="Echo Back")
-        self.button.pack()
-        root.mainloop()
+        root2 = tk.Tk()
+        root2.title("Send Message")
+        tk.Label(root2, text="Enter message:").grid(row=0, column=0)
+        message_entry = tk.Entry(root2)
+        message_entry.grid(row=0, column=1)
+        send_button = tk.Button(
+            root2, text="Send", command=lambda: self.send_message(message_entry.get()))
+        send_button.grid(row=1, column=0, columnspan=2)
+        root2.mainloop()
 
     def start(self):
         self._connect()
-        self._start_test_ur_screen()
-
+        simulate_thread = Thread(target=self._start_test_ur_screen)
+        simulate_thread.start()
         while True:
             data = self.com_to_pc_socket.recv(1024)
             if not data:
@@ -36,7 +38,6 @@ class _test_ur:
                 self.com_to_pc_socket.sendall(("cfd : " + data).encode())
 
     def _connect(self):
-        # ソケットが接続されるまで待つ
         while True:
             try:
                 self.com_to_pc_socket.connect(('localhost', self.port))
@@ -46,3 +47,6 @@ class _test_ur:
                 print("Connection failed. Retrying...")
                 time.sleep(1)
         print(f"Connected by {self.port}")
+
+    def send_message(self, message):
+        self.com_to_pc_socket.sendall(message.encode())
