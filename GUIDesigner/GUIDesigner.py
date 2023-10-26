@@ -200,7 +200,7 @@ class GUIDesigner:
                          font=("AR丸ゴシック体M", 24))
         decoy_label = tk.Label(
             self.check_frame, text="                                                 ", font=("AR丸ゴシック体M", 24))
-        label_lamp = tk.Label(self.check_frame, image=self.current_img)
+        self.label_lamp = tk.Label(self.check_frame, image=self.current_img)
 
         listbox = tk.Listbox(self.check_frame, font=(
             "AR丸ゴシック体M", 18), selectmode=tk.MULTIPLE, width=80, height=25, justify="center")
@@ -219,7 +219,7 @@ class GUIDesigner:
             else:
                 ready_button["text"] = "準備完了"
                 self.current_img = self.red_lamp_img
-            label_lamp.config(image=self.current_img)
+            self.label_lamp.config(image=self.current_img)
 
         back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=(
             "AR丸ゴシック体M", 18), width=22)
@@ -234,7 +234,7 @@ class GUIDesigner:
         listbox.grid(row=1, column=1)
         scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
         back_button.place(rely=0.85, relx=0.75)
-        label_lamp.place(rely=0.80, relx=0.6)
+        self.label_lamp.place(rely=0.80, relx=0.6)
         go_monitor_button.place(rely=0.85, relx=0.1)
         ready_button.place(rely=0.80, relx=0.37)
 
@@ -267,7 +267,7 @@ class GUIDesigner:
                 self.pochi_button["state"] = "normal"
                 self.detach_button["state"] = "disabled"
                 self.attach_button["state"] = "disabled"
-                self.current_img = self.green_lamp_img
+                self.current_img = self.red_lamp_img
                 self.label_lamp.config(image=self.current_img)
                 state = "READY_START"
 
@@ -301,12 +301,12 @@ class GUIDesigner:
 
         # デタッチボタンを作成
         self.detach_button = tk.Button(
-            self.monitor_frame, text="デタッチ", width=22, font=("AR丸ゴシック体M", 22),  height=4, fg="black", bg="orange", state="disabled",
+            self.monitor_frame, text="デタッチ完了", width=22, font=("AR丸ゴシック体M", 22),  height=4, fg="black", bg="orange", state="disabled",
             command=push_detach_button)
 
         # アタッチボタンを作成
         self.attach_button = tk.Button(
-            self.monitor_frame, text="アタッチ", width=22,  font=("AR丸ゴシック体M", 22), height=4, fg="black", bg="cyan", state="disabled",
+            self.monitor_frame, text="アタッチ完了", width=22,  font=("AR丸ゴシック体M", 22), height=4, fg="black", bg="cyan", state="disabled",
             command=push_attach_button)
 
         if self.is_pochi_pressed:
