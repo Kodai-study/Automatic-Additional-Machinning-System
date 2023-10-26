@@ -1,5 +1,5 @@
 
-TEST_UR_CONN = False
+TEST_UR_CONN = True
 TEST_GUI_REQUEST = True
 TEST_PROCESSING_REPORT = True
-TEST_Windows = False
+TEST_Windows = True

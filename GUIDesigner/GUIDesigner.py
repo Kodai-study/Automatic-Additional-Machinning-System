@@ -278,9 +278,9 @@ class GUIDesigner:
             self.check_frame.destroy()
 
         def toggle_pochi_state(pochi_button, label_lamp):
-            self.current_img = self.red_lamp_img
+            self.current_img = self.green_lamp_img
             label_lamp.config(image=self.current_img)
-            # self.pochi_button["state"] = "disabled"
+            pochi_button["state"] = "disabled"
             self.integration_msg_queue.put((
                 GUIRequestType.ROBOT_OPERATION_REQUEST, "WRK 0,TAP_FIN\n"))
 
@@ -301,12 +301,12 @@ class GUIDesigner:
 
         # デタッチボタンを作成
         self.detach_button = tk.Button(
-            self.monitor_frame, text="デタッチ", width=30, font=("AR丸ゴシック体M", 22),  height=10, fg="white", bg="blue", state="disabled",
+            self.monitor_frame, text="デタッチ", width=22, font=("AR丸ゴシック体M", 22),  height=4, fg="black", bg="orange", state="disabled",
             command=push_detach_button)
 
         # アタッチボタンを作成
         self.attach_button = tk.Button(
-            self.monitor_frame, text="アタッチ", width=30,  font=("AR丸ゴシック体M", 22), height=10, fg="white", bg="blue", state="disabled",
+            self.monitor_frame, text="アタッチ", width=22,  font=("AR丸ゴシック体M", 22), height=4, fg="black", bg="cyan", state="disabled",
             command=push_attach_button)
 
         if self.is_pochi_pressed:
@@ -314,10 +314,10 @@ class GUIDesigner:
             self.label_lamp.config(image=self.current_img)
 
         self.monitor_frame.pack(fill="both", expand=True)
-        self.pochi_button.place(rely=0.50, relx=0.35)
-        self.label_lamp.place(rely=0.48, relx=0.6)
-        self.attach_button.place(rely=0.6, relx=0.5)
-        self.detach_button.place(rely=0.8, relx=0.5)
+        self.pochi_button.place(rely=0.4, relx=0.38)
+        self.label_lamp.place(rely=0.38, relx=0.6)
+        self.attach_button.place(rely=0.6, relx=0.25)
+        self.detach_button.place(rely=0.6, relx=0.6)
         watching_queue_thread = Thread(
             target=self.update_button_state_with_queue)
         watching_queue_thread.start()
