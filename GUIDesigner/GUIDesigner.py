@@ -5,13 +5,12 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from GUIDesigner.GUIRequestType import GUIRequestType
-
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
+from queue import Queue
 
 # 　カスタムモジュールから必要なクラスをインポート
 from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
-from queue import Queue
 
 
 class GUIDesigner:
@@ -53,8 +52,8 @@ class GUIDesigner:
             receive_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー
         """
 
-        self.send_queue = send_queue
-        self.receive_queue = receive_queue
+        self.gui_request_queue = send_queue
+        self.integration_msg_queue = receive_queue
 
         wait_connect_cfd_thread = Thread(
             target=self.create_connection_waiting_frame)
@@ -62,11 +61,11 @@ class GUIDesigner:
 
         self.root.mainloop()
 
-    # キューを受け取る関数
+    # CFDとの接続を待つ関数。接続が完了するまで待ち続ける
     def connection_is_successful(self):
         while True:
-            if not self.send_queue.empty():
-                received_data = self.send_queue.get()
+            if not self.gui_request_queue.empty():
+                received_data = self.gui_request_queue.get()
                 if received_data[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
                     # self.create_login_frame()
                     return True
@@ -247,10 +246,10 @@ class GUIDesigner:
     def update_button_state_with_queue(self):
         state = "READY_START"
         while True:
-            if self.send_queue.empty():
+            if self.gui_request_queue.empty():
                 time.sleep(0.1)
                 continue
-            data = self.send_queue.get()
+            data = self.gui_request_queue.get()
             if data[0] != RobotInteractionType.MESSAGE_RECEIVED:
                 continue
             if data[1] == "SIG DET" or data[1] == "SIG 0,ATT_DRL_READY" or data[1] == "SIG 0,ATT_IMP_READY":
@@ -282,16 +281,16 @@ class GUIDesigner:
             self.current_img = self.red_lamp_img
             label_lamp.config(image=self.current_img)
             # self.pochi_button["state"] = "disabled"
-            self.receive_queue.put((
+            self.integration_msg_queue.put((
                 GUIRequestType.ROBOT_OPERATION_REQUEST, "WRK 0,TAP_FIN\n"))
 
         def push_attach_button():
-            self.receive_queue.put((
+            self.integration_msg_queue.put((
                 GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,ATTACH\n"))
             self.attach_button["state"] = "disabled"
 
         def push_detach_button():
-            self.receive_queue.put((
+            self.integration_msg_queue.put((
                 GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,DETACH\n"))
             self.detach_button["state"] = "disabled"
         self.monitor_frame = tk.Frame(self.root)

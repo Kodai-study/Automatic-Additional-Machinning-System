@@ -37,20 +37,10 @@ class Integration:
                 {"target": TransmissionTarget.TEST_TARGET_1, "message": "test"})
             time.sleep(5)
 
-    def test_watching_guiRequest_queue(self):
-        """
-        テスト用関数。  GUIからの送信要求があると、そのまま通信スレッドのキューに入れて送信する
-        """
-        while True:
-            if not self.gui_request_queue.empty():
-                # send_queueから値を取り出す
-                send_data = self.gui_request_queue.get()
-                if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
-                    self.send_request_queue.put(
-                        {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
-            time.sleep(0.1)
-
     def test_watching_guiResponce_queue(self):
+        """
+        テスト用関数。  GUIから、ロボットへの操作要求があると、そのコマンドを送信する
+        """
         while True:
             if not self.gui_responce_queue.empty():
                 # send_queueから値を取り出す
@@ -74,6 +64,7 @@ class Integration:
             time.sleep(0.1)
 
     def main(self):
+
         communicationHandler = RobotCommunicationHandler()
         guiDesigner = GUIDesigner()
         # 通信スレッドを立ち上げる
@@ -92,9 +83,6 @@ class Integration:
             test_send_thread = Thread(
                 target=self.test_watching_receive_queue)
             test_send_thread.start()
-            # test_watching_guiRequest_queue_thread = Thread(
-            #     target=self.test_watching_guiRequest_queue)
-            # test_watching_guiRequest_queue_thread.start()
             test_watching_guiResponce_queue_thread = Thread(
                 target=self.test_watching_guiResponce_queue)
             test_watching_guiResponce_queue_thread.start()

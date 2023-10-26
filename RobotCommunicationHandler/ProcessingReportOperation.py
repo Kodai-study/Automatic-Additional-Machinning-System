@@ -20,6 +20,7 @@ Main_Received: SIG 0,ATT_IMP_READY
 EJCT 0,ATTACH
 Main_Received: SIG DET
 EJCT 0,DETACH
+FINISH
 """
 
 
