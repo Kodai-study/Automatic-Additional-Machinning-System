@@ -8,7 +8,7 @@ import time
 from RobotCommunicationHandler.ProcessingReportOperation import send_input_command
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONN, TEST_Windows
+from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONNECTION_LOCAL, TEST_Windows
 
 
 TEST_HOST_ADDRESS = 'localhost'
@@ -99,7 +99,7 @@ class RobotCommunicationHandler:
         # UR、CFD用の2つのソケットの作成(現在はサンプル)
         try:
 
-            if not TEST_UR_CONN:
+            if not TEST_UR_CONNECTION_LOCAL:
                 self.samp_socket_ur = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
 
@@ -115,7 +115,6 @@ class RobotCommunicationHandler:
                     self.samp_socket_ur = self.connect_to_ur(
                         self.samp_socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
 
-                # TODO: 統合スレッドとの通信体系をわかりやすい形にする
                 receive_queue.put({"target": TransmissionTarget.UR,
                                   "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
@@ -134,14 +133,14 @@ class RobotCommunicationHandler:
                 else:
                     self.dummy_ur_socket = self.connect_to_ur(
                         self.dummy_ur_socket, HOST_LINUX_ADDRESS, TEST_PORT1)
-                # TODO: 統合スレッドとの通信体系をわかりやすい形にする
+
                 receive_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
                                   "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
         except Exception as e:
             print('Socket Error: ', e)
 
-        if TEST_UR_CONN:
+        if TEST_UR_CONNECTION_LOCAL:
             # 2つのソケットと同時に通信するためのスレッドを2つ作成
             receive_thread1 = Thread(
                 target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_1, self.dummy_ur_socket))
@@ -166,7 +165,7 @@ class RobotCommunicationHandler:
                 if (send_data['target'] == TransmissionTarget.UR):
                     target_socket = self.samp_socket_ur
                 elif (send_data['target'] == TransmissionTarget.CFD):
-                    target_socket = self.samp_socket_cfd if not TEST_UR_CONN else self.dummy_cfd_socket
+                    target_socket = self.samp_socket_cfd if not TEST_UR_CONNECTION_LOCAL else self.dummy_cfd_socket
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
                     target_socket = self.dummy_ur_socket
 

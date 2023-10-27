@@ -9,7 +9,7 @@ from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from queue import Queue
 
 from common_data_type import TransmissionTarget
-from test_flags import TEST_UR_CONN
+from test_flags import TEST_UR_CONNECTION_LOCAL
 
 # 　カスタムモジュールから必要なクラスをインポート
 from .GUISignalCategory import GUISignalCategory
@@ -70,9 +70,9 @@ class GUIDesigner:
             if not self.gui_request_queue.empty():
                 received_data = self.gui_request_queue.get()
                 if received_data[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
-                    if not TEST_UR_CONN and received_data[1] == TransmissionTarget.UR:
+                    if not TEST_UR_CONNECTION_LOCAL and received_data[1] == TransmissionTarget.UR:
                         return True
-                    elif TEST_UR_CONN and received_data[1] == TransmissionTarget.TEST_TARGET_1:
+                    elif TEST_UR_CONNECTION_LOCAL and received_data[1] == TransmissionTarget.TEST_TARGET_1:
                         return True
 
     def create_connection_waiting_frame(self):

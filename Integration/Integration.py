@@ -8,7 +8,7 @@ from RobotCommunicationHandler.RobotCommunicationHandler \
 from threading import Thread
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_GUI_REQUEST, TEST_UR_CONN
+from test_flags import TEST_GUI_REQUEST, TEST_UR_CONNECTION_LOCAL
 from common_data_type import TransmissionTarget
 
 
@@ -25,7 +25,7 @@ class Integration:
         self.gui_responce_queue = Queue()  # GUIからの要求に対する応答を返すキュー
 
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
-        if TEST_UR_CONN:
+        if TEST_UR_CONNECTION_LOCAL:
             self.test_ur = _test_ur(TEST_PORT1)
         self.robot_message_handler = ManageRobotReceive(self)
 
@@ -68,7 +68,7 @@ class Integration:
         self.communication_thread.start()
 
         # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
-        if TEST_UR_CONN:
+        if TEST_UR_CONNECTION_LOCAL:
             test_ur_thread = Thread(target=self.test_ur.start)
             test_ur_thread.start()
 

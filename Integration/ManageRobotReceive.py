@@ -1,7 +1,7 @@
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_UR_CONN
+from test_flags import TEST_UR_CONNECTION_LOCAL
 
 
 class ManageRobotReceive:
@@ -57,7 +57,7 @@ class ManageRobotReceive:
             message (str): 送信するコマンド文字列
         """
         self._integration_instance.send_request_queue.put(
-            {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONN else TransmissionTarget.UR,
+            {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
              "message": message})
         # print("send to ur: ", message)
 
