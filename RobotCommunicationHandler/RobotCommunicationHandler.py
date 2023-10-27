@@ -6,6 +6,7 @@ from threading import Thread
 import socket
 import time
 from RobotCommunicationHandler.ProcessingReportOperation import send_input_command
+from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
 from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONN, TEST_Windows
 
@@ -59,7 +60,8 @@ class RobotCommunicationHandler:
                 print(f"Main_Received: {data.decode('utf-8')}")
 
                 self.receive_queue.put(
-                    {"target": target, "message": data.decode('utf-8')})
+                    {"target": target, "message": data.decode('utf-8'),
+                     "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
             except Exception as e:
                 print(f"Error: {e}")
                 continue
@@ -114,7 +116,8 @@ class RobotCommunicationHandler:
                         self.samp_socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
 
                 # TODO: 統合スレッドとの通信体系をわかりやすい形にする
-                receive_queue.put("UR_CONN_SUCCESS")
+                receive_queue.put({"target": TransmissionTarget.UR,
+                                  "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
             else:
 
@@ -132,7 +135,8 @@ class RobotCommunicationHandler:
                     self.dummy_ur_socket = self.connect_to_ur(
                         self.dummy_ur_socket, HOST_LINUX_ADDRESS, TEST_PORT1)
                 # TODO: 統合スレッドとの通信体系をわかりやすい形にする
-                receive_queue.put("UR_CONN_SUCCESS")
+                receive_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
+                                  "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
         except Exception as e:
             print('Socket Error: ', e)

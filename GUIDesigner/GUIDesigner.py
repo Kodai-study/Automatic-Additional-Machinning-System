@@ -8,6 +8,9 @@ from GUIDesigner.GUIRequestType import GUIRequestType
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from queue import Queue
 
+from common_data_type import TransmissionTarget
+from test_flags import TEST_UR_CONN
+
 # 　カスタムモジュールから必要なクラスをインポート
 from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
@@ -67,8 +70,10 @@ class GUIDesigner:
             if not self.gui_request_queue.empty():
                 received_data = self.gui_request_queue.get()
                 if received_data[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
-                    # self.create_login_frame()
-                    return True
+                    if not TEST_UR_CONN and received_data[1] == TransmissionTarget.UR:
+                        return True
+                    elif TEST_UR_CONN and received_data[1] == TransmissionTarget.TEST_TARGET_1:
+                        return True
 
     def create_connection_waiting_frame(self):
         self.connection_waiting_frame = tk.Frame(self.root)
