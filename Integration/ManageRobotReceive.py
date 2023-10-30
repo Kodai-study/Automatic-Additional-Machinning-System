@@ -116,4 +116,6 @@ class ManageRobotReceive:
         elif receiv_data["target"] == TransmissionTarget.TEST_TARGET_2:
             handler = self._report_test_handlers.get(receiv_data["message"])
 
+        if not handler:
+            handler = self._undefine
         handler(receiv_data["message"])

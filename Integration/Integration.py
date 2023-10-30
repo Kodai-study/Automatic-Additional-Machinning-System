@@ -38,8 +38,12 @@ class Integration:
                 # send_queueから値を取り出す
                 send_data = self.gui_responce_queue.get()
                 if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
-                    self.send_request_queue.put(
-                        {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
+                    if TEST_UR_CONNECTION_LOCAL:
+                        self.send_request_queue.put(
+                            {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
+                    else:
+                        self.send_request_queue.put(
+                            {"target": TransmissionTarget.UR, "message": str(send_data[1])})
             time.sleep(0.1)
 
     def _robot_message_handle(self):
