@@ -8,7 +8,7 @@ from RobotCommunicationHandler.RobotCommunicationHandler \
 from threading import Thread
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_GUI_REQUEST, TEST_UR_CONNECTION_LOCAL
+from test_flags import TEST_UR_CONNECTION_LOCAL
 from common_data_type import TransmissionTarget
 
 
@@ -76,12 +76,11 @@ class Integration:
             test_ur_thread = Thread(target=self.test_ur.start)
             test_ur_thread.start()
 
-        if TEST_GUI_REQUEST:
-            # GUIからの送信要求をそのまま相手に送信するスレッドを立ち上げる
-            test_send_thread = Thread(
-                target=self._robot_message_handle)
-            test_send_thread.start()
-            test_watching_guiResponce_queue_thread = Thread(
-                target=self._test_watching_guiResponce_queue)
-            test_watching_guiResponce_queue_thread.start()
+        # GUIからの送信要求をそのまま相手に送信するスレッドを立ち上げる
+        test_send_thread = Thread(
+            target=self._robot_message_handle)
+        test_send_thread.start()
+        test_watching_guiResponce_queue_thread = Thread(
+            target=self._test_watching_guiResponce_queue)
+        test_watching_guiResponce_queue_thread.start()
         guiDesigner.start_gui(self.gui_request_queue, self.gui_responce_queue)
