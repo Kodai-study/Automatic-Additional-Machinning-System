@@ -1,11 +1,9 @@
 # coding: utf-8
 from queue import Queue
-from enum import Enum, auto
 import socket
 from threading import Thread
 import socket
 import time
-from RobotCommunicationHandler.ProcessingReportOperation import send_input_command
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
 from test_flags import TEST_PROCESSING_REPORT, TEST_UR_CONNECTION_LOCAL, TEST_Windows
@@ -37,8 +35,8 @@ class RobotCommunicationHandler:
     """
 
     def __init__(self):
-        self.send_queue = None
-        self.receive_queue = None
+        self.request_send_queue = None
+        self.receive_data_queue = None
         self.samp_stop_flag = False
 
     def test_receive_string(self, target: TransmissionTarget, sock: socket.socket):
@@ -59,7 +57,7 @@ class RobotCommunicationHandler:
                     break
                 print(f"Main_Received: {data.decode('utf-8')}")
 
-                self.receive_queue.put(
+                self.receive_data_queue.put(
                     {"target": target, "message": data.decode('utf-8'),
                      "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
             except Exception as e:
@@ -85,7 +83,7 @@ class RobotCommunicationHandler:
         socket, _ = socket.accept()
         return socket
 
-    def communication_loop(self, send_queue: Queue, receive_queue: Queue):
+    def communication_loop(self, request_send_queue: Queue, receive_data_queue: Queue):
         """
         受信する、統合スレッドからの送信要求の待ち受けのループを開始する
 
@@ -93,8 +91,8 @@ class RobotCommunicationHandler:
             send_queue (Queue): 統合スレッドからの送信要求を受け取るキュー\n
             receive_queue (Queue): 統合スレッドへ受け取ったデータを渡すキュー
         """
-        self.send_queue = send_queue
-        self.receive_queue = receive_queue
+        self.request_send_queue = request_send_queue
+        self.receive_data_queue = receive_data_queue
 
         # UR、CFD用の2つのソケットの作成(現在はサンプル)
         try:
@@ -115,7 +113,7 @@ class RobotCommunicationHandler:
                     self.samp_socket_ur = self.connect_to_ur(
                         self.samp_socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
 
-                receive_queue.put({"target": TransmissionTarget.UR,
+                receive_data_queue.put({"target": TransmissionTarget.UR,
                                   "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
             else:
@@ -134,7 +132,7 @@ class RobotCommunicationHandler:
                     self.dummy_ur_socket = self.connect_to_ur(
                         self.dummy_ur_socket, HOST_LINUX_ADDRESS, TEST_PORT1)
 
-                receive_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
+                receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
                                   "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
         except Exception as e:
@@ -158,9 +156,9 @@ class RobotCommunicationHandler:
 
         while True:
             # send_queueに値が入っているか監視
-            if not self.send_queue.empty():
+            if not self.request_send_queue.empty():
                 # send_queueから値を取り出す
-                send_data = self.send_queue.get()
+                send_data = self.request_send_queue.get()
 
                 if (send_data['target'] == TransmissionTarget.UR):
                     target_socket = self.samp_socket_ur

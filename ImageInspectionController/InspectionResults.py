@@ -3,7 +3,8 @@ from ast import List
 from ctypes import Union
 from dataclasses import dataclass
 
-from ImageInspectionController.ProcessDatas import HoleCheckInfo, ToolType
+from ImageInspectionController.ProcessDatas import  HoleCheckInfo
+from common_data_type import CameraType, LightingType, ToolType
 
 
 @dataclass
@@ -77,4 +78,44 @@ class AccuracyInspectionResult:
     hole_result: List[HoleCheckInfo]
     """
     各穴の検査結果を格納する
+    """
+
+
+@dataclass
+class LightningControlResult:
+    """
+    照明のON/OFF操作の結果を格納するデータクラス
+    """
+    is_success: bool
+    """
+    操作が成功したかどうか
+    """
+    lighting_type: LightingType
+    """
+    操作した照明の種類
+    """
+    lighting_state: bool
+    """
+    操作によって変化した後の照明の状態(ON/OFF)\n
+    操作が失敗してそのままの場合は、変化前の状態が入ってくることになる
+    """
+
+
+@dataclass
+class CameraControlResult:
+    """
+    検査カメラの画像撮影の結果を格納するデータクラス\n
+    カメラごとに結果を返す
+    """
+    is_success: bool
+    """
+    撮影とファイル保存が成功したかどうか
+    """
+    camera_type: CameraType
+    """
+    撮影したカメラの種類
+    """
+    image_path: str
+    """
+    撮影後の画像の保存先のパス
     """

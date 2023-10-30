@@ -42,3 +42,60 @@ class TransmissionTarget(Enum):
     """
     CFDに送信する
     """
+
+
+class ToolType(Enum):
+    """
+    工具の種類を表す列挙型
+    ストッカに、この中のいずれかの工具が入っている
+    """
+    M2_DRILL = auto()
+    M3_DRILL = auto()
+    M4_DRILL = auto()
+    M5_DRILL = auto()
+    M6_DRILL = auto()
+    M7_DRILL = auto()
+    M8_DRILL = auto()
+    M2_TAP = auto()
+    M3_TAP = auto()
+    M4_TAP = auto()
+    M5_TAP = auto()
+    M6_TAP = auto()
+    M7_TAP = auto()
+    M8_TAP = auto()
+
+
+class CameraType(Enum):
+    """
+    検査カメラの種類を表す列挙型
+    """
+    TOOL_CAMERA = auto()
+    """
+    工具検査用のカメラ
+    """
+    PRE_PROCESSING_CAMERA = auto()
+    """
+    加工前検査用のカメラ
+    """
+    ACCURACY_CAMERA = auto()
+    """
+    加工穴の精度検査用のカメラ
+    """
+
+
+class LightingType(Enum):
+    """
+    照明の種類を表す列挙型
+    """
+    TOOL_LIGHTING = auto()
+    """
+    工具検査用のリング照明
+    """
+    PRE_PROCESSING_LIGHTING = auto()
+    """
+    加工前検査用のバー照明
+    """
+    ACCURACY_LIGHTING = auto()
+    """
+    精度検査用のバックライト照明
+    """

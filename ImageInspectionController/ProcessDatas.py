@@ -1,28 +1,20 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 
-from common_data_type import Point
+from common_data_type import Point, ToolType
 
 
-class ToolType(Enum):
+class HoleType(Enum):
     """
-    工具の種類を表す列挙型
-    ストッカに、この中のいずれかの工具が入っている
+    穴の種類を表す列挙型
     """
-    M2_DRILL = auto()
-    M3_DRILL = auto()
-    M4_DRILL = auto()
-    M5_DRILL = auto()
-    M6_DRILL = auto()
-    M7_DRILL = auto()
-    M8_DRILL = auto()
-    M2_TAP = auto()
-    M3_TAP = auto()
-    M4_TAP = auto()
-    M5_TAP = auto()
-    M6_TAP = auto()
-    M7_TAP = auto()
-    M8_TAP = auto()
+    M2_HOLE = auto()
+    M3_HOLE = auto()
+    M4_HOLE = auto()
+    M5_HOLE = auto()
+    M6_HOLE = auto()
+    M7_HOLE = auto()
+    M8_HOLE = auto()
 
 
 @dataclass
@@ -41,6 +33,13 @@ class HoleCheckInfo:
     データを渡すときには、加工穴の座標であり
     検査結果を格納するときには、実際の座標である
     """
+
+    hole_type: HoleType
+    """
+    加工穴の種類
+    穴の大きさを判別する
+    """
+
     hole_check_info: bool
     """
     チェックが通ったかどうかを表す\n
