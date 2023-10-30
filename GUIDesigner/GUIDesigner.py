@@ -46,7 +46,7 @@ class GUIDesigner:
             file="./resource/images/green_lamp.png")
         self.current_img = self.red_lamp_img
 
-    def start_gui(self, send_queue: Queue, receive_queue: Queue):
+    def start_gui(self, gui_request_queue: Queue, integration_msg_queue: Queue):
         """
         GUIを起動し、ループを開始する。
 
@@ -55,8 +55,8 @@ class GUIDesigner:
             receive_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー
         """
 
-        self.gui_request_queue = send_queue
-        self.integration_msg_queue = receive_queue
+        self.gui_request_queue = gui_request_queue
+        self.integration_msg_queue = integration_msg_queue
 
         wait_connect_cfd_thread = Thread(
             target=self.create_connection_waiting_frame)
