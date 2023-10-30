@@ -30,11 +30,6 @@ class GUIRequestType(Enum):
     照明の制御を要求する
     照明の種類と、ON/OFFを送信する
     """
-    AVERAGE_PROCESSING_TIME_REQUEST = auto()
-    """
-    残りの加工時間を推測するために、ある型番の加工時間の平均を要求する
-    型番を送信する
-    """
     UPLOAD_PROCESSING_DETAILS = auto()
     """
     加工データが入力され、加工開始の準備ができたことを通知する

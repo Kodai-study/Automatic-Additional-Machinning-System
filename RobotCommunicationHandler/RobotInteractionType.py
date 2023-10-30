@@ -21,7 +21,3 @@ class RobotInteractionType(Enum):
     """
     ロボットへのコマンド送信に失敗したことを表す
     """
-    RESPOND_REQUEST = auto()
-    """
-    ロボットからの応答を要求することを表す
-    """
