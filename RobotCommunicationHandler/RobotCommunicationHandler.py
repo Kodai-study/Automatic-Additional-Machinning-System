@@ -114,7 +114,7 @@ class RobotCommunicationHandler:
                         self.samp_socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
 
                 receive_data_queue.put({"target": TransmissionTarget.UR,
-                                  "msg_type": RobotInteractionType.SOCKET_CONNECTED})
+                                        "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
             else:
 
@@ -133,7 +133,11 @@ class RobotCommunicationHandler:
                         self.dummy_ur_socket, HOST_LINUX_ADDRESS, TEST_PORT1)
 
                 receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
-                                  "msg_type": RobotInteractionType.SOCKET_CONNECTED})
+                                        "msg_type": RobotInteractionType.SOCKET_CONNECTED})
+
+                receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
+                                        "message": "CYL 001,ON",
+                                        "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
 
         except Exception as e:
             print('Socket Error: ', e)
