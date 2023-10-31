@@ -62,6 +62,15 @@ class GUIDesigner:
             target=self.create_connection_waiting_frame)
         wait_connect_cfd_thread.start()
 
+        def queue():
+            while True:
+                if self.gui_request_queue.empty():
+                    time.sleep(0.1)
+                    continue
+                data = self.gui_request_queue.get()
+                print("GUIへの要求がキューに入りました: ", data)
+        Thread(target=queue).start()
+
         self.root.mainloop()
 
     # CFDとの接続を待つ関数。接続が完了するまで待ち続ける
