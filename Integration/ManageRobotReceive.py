@@ -37,6 +37,11 @@ class ManageRobotReceive:
             "SIG DET": self._send_to_gui,
             "FINISH": self._send_to_gui
         }
+        self._special_command_handlers = {
+            "DR_STK_TURNED": self._start_tool_inspeciton,
+            "ISRESERVED": self._reservation_process,
+            "FIN_FST_POSITION": self._change_robot_first_position
+        }
 
     def _select_handler(self, command: str):
         """メッセージの種類に応じて、ハンドラを選択する
@@ -47,12 +52,17 @@ class ManageRobotReceive:
         Returns:
             function: ハンドラ
         """
+        if command in self._special_command_handlers:
+            return self._special_command_handlers[command]
+
         instruction, dev_num, detail = self._split_command(command)
         if instruction == "SIG":
             return self._select_handler_ur_sig(
                 dev_num, detail, command=command)
         elif instruction == "CYL":
             return self._select_handler_cyl(dev_num, detail, command=command)
+
+        return self._undefine
 
     def _test_select_handler_report(self, command: str):
         """メッセージの種類に応じて、ハンドラを選択する
@@ -224,24 +234,24 @@ class ManageRobotReceive:
             self._handle_connection_success(receiv_data["target"])
             return
 
-        if receiv_data["target"] == TransmissionTarget.UR:
-            handler = self._ur_command_handlers.get(receiv_data["message"])
-            # handler = self._report_test_handlers.get(receiv_data["message"])
-        elif receiv_data["target"] == TransmissionTarget.CFD:
-            handler = self._cfd_command_handlers.get(receiv_data["message"])
-            # handler = self._report_test_handlers.get(receiv_data["message"])
-        elif receiv_data["target"] == TransmissionTarget.TEST_TARGET_1:
+        if receiv_data["msg_type"] == RobotInteractionType.MESSAGE_RECEIVED:
             handler = self._select_handler(receiv_data["message"])
-        elif receiv_data["target"] == TransmissionTarget.TEST_TARGET_2:
-            handler = self._report_test_handlers.get(receiv_data["message"])
 
         if not handler:
             handler = self._undefine
         handler(receiv_data["message"])
-        print("message: ", receiv_data["message"])
 
     def _start_process(self, message: str):
         print("start process")
 
     def _start_inspection(self, message: str):
         print("start inspection")
+
+    def _start_tool_inspeciton(self, message: str):
+        print("start tool inspection")
+
+    def _reservation_process(self, message: str):
+        print("reservation process")
+
+    def _change_robot_first_position(self, message: str):
+        print("change robot first position")
