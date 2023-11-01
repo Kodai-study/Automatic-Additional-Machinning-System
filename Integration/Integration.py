@@ -28,6 +28,11 @@ class Integration:
         if TEST_UR_CONNECTION_LOCAL:
             self.test_ur = _test_ur(TEST_PORT1)
         self.robot_message_handler = ManageRobotReceive(self)
+        self.robot_status = {"sensor": {"sensor1": False, "sensor2": False},
+                             "cylinder": {1: False, 2: False}}
+
+        # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
+        self.is_monitor_mode = False
 
     def _test_watching_guiResponce_queue(self):
         """
@@ -61,7 +66,6 @@ class Integration:
              "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
 
     def main(self):
-        self._test_robot_message_handler()
         communicationHandler = RobotCommunicationHandler()
         guiDesigner = GUIDesigner()
 

@@ -62,15 +62,6 @@ class GUIDesigner:
             target=self.create_connection_waiting_frame)
         wait_connect_cfd_thread.start()
 
-        def queue():
-            while True:
-                if self.gui_request_queue.empty():
-                    time.sleep(0.1)
-                    continue
-                data = self.gui_request_queue.get()
-                print("GUIへの要求がキューに入りました: ", data)
-        Thread(target=queue).start()
-
         self.root.mainloop()
 
     # CFDとの接続を待つ関数。接続が完了するまで待ち続ける
@@ -95,6 +86,7 @@ class GUIDesigner:
         # 通信接続完了の確認を行う処理を追加
         def check_connection():
             if self.connection_is_successful():  # 通信接続が成功した場合
+
                 self.connection_waiting_frame.destroy()  # 通信待ちフレームを破棄
                 self.create_login_frame()  # ログイン画面を表示
 
@@ -104,6 +96,15 @@ class GUIDesigner:
 
         # 通信確認をスタート
         check_connection()
+
+        def queue():
+            while True:
+                if self.gui_request_queue.empty():
+                    time.sleep(0.1)
+                    continue
+                data = self.gui_request_queue.get()
+                print("GUIへの要求がキューに入りました: ", data)
+        Thread(target=queue).start()
 
     def create_login_frame(self):
         self.login_frame = tk.Frame(self.root)
