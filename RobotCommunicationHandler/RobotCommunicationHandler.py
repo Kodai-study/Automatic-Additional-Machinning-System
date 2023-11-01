@@ -205,9 +205,11 @@ class RobotCommunicationHandler:
                 if (send_data['target'] == TransmissionTarget.UR):
                     target_socket = self.samp_socket_ur
                 elif (send_data['target'] == TransmissionTarget.CFD):
-                    target_socket = self.samp_socket_cfd if not TEST_UR_CONNECTION_LOCAL else self.dummy_cfd_socket
+                    target_socket = self.samp_socket_cfd
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
                     target_socket = self.dummy_ur_socket
+                elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
+                    target_socket = self.dummy_cfd_socket
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))
