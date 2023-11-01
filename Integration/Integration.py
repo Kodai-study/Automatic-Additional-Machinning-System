@@ -2,6 +2,7 @@ from queue import Queue
 import time
 from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
+from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from Integration.ManageRobotReceive import ManageRobotReceive
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
@@ -35,6 +36,8 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {"sensor": {"sensor1": False, "sensor2": False},
                              "cylinder": {1: False, 2: False}}
+        
+        self.image_inspection_controller = ImageInspectionController()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False

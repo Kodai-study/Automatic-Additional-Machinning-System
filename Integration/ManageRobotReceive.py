@@ -1,6 +1,8 @@
 from GUIDesigner.GUISignalCategory import GUISignalCategory
+from ImageInspectionController.OperationType import OperationType
+from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
-from common_data_type import TransmissionTarget
+from common_data_type import Point, TransmissionTarget
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
@@ -127,7 +129,7 @@ class ManageRobotReceive:
         # CYL 003,ON
         elif dev_num == 3 and is_status_on:
             def _handler(message: str):
-                self._start_inspection(message)
+                self._start_accuracy_inspection_inspection(message)
                 change_cylinder_status(message)
             return _handler
 
@@ -237,8 +239,12 @@ class ManageRobotReceive:
     def _start_process(self, message: str):
         print("start process")
 
-    def _start_inspection(self, message: str):
-        print("start inspection")
+    def _start_accuracy_inspection_inspection(self, message: str):
+        test_list = [HoleCheckInfo(hole_id=1, hole_position=Point(
+            50.0, 50.0), hole_type=HoleType.M3_HOLE)]
+        accuracy_inspection_result = self._integration_instance.image_inspection_controller.perform_image_operation(
+            OperationType.ACCURACY_INSPECTION, test_list)
+        print("加工後の精度検査を行いました。 \n", accuracy_inspection_result)
 
     def _start_tool_inspeciton(self, message: str):
         print("start tool inspection")
