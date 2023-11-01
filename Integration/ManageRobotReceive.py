@@ -1,7 +1,7 @@
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_UR_CONNECTION_LOCAL
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
 class ManageRobotReceive:
@@ -13,30 +13,11 @@ class ManageRobotReceive:
 
     def __init__(self, integration_instance):
         """
-
         Args:
             integration_instance (Integration): 統合スレッドのインスタンス。
             このインスタンスから、キューなどにアクセスする。
         """
         self._integration_instance = integration_instance
-        self._ur_command_handlers = {
-            "SIG 0,ATT_IMP_READY": self._send_message_to_cfd,
-            "SIG 0,ATT_DRL_READY": self._send_message_to_cfd
-        }
-        self._cfd_command_handlers = {
-            "DR_STK_TURNED": self._send_message_to_ur,
-            "CYL 001,ON": self._undefine,
-            "CYL 003,ON": self._undefine,
-            "SNS 001,ON": self._undefine,
-            "SNS 002,ON": self._undefine,
-            "SIG 0,FST_POSITION": self._send_message_to_ur
-        }
-        self._report_test_handlers = {
-            "SIG 0,ATT_DRL_READY": self._send_to_gui,
-            "SIG 0,ATT_IMP_READY": self._send_to_gui,
-            "SIG DET": self._send_to_gui,
-            "FINISH": self._send_to_gui
-        }
         self._special_command_handlers = {
             "DR_STK_TURNED": self._start_tool_inspeciton,
             "ISRESERVED": self._reservation_process,
@@ -61,7 +42,8 @@ class ManageRobotReceive:
                 dev_num, detail, command=command)
         elif instruction == "CYL":
             return self._select_handler_cyl(dev_num, detail, command=command)
-
+        elif instruction == "WRK":
+            return self._select_handler_wrk(dev_num, detail, command=command)
         return self._undefine
 
     def _test_select_handler_report(self, command: str):
@@ -113,6 +95,8 @@ class ManageRobotReceive:
             return self._send_message_to_cfd
         elif detail == "ATT_DRL_READY":
             return self._send_message_to_cfd
+        elif detail == "FST_POSITION":
+            return self._send_message_to_cfd
 
         return self._undefine
 
@@ -134,13 +118,13 @@ class ManageRobotReceive:
 
         if self._integration_instance.is_monitor_mode:
             return change_cylinder_status
-
+        # CYL 001,ON
         if dev_num == 1 and is_status_on:
             def _handler(message: str):
                 self._start_process(message)
                 change_cylinder_status(message)
             return _handler
-
+        # CYL 003,ON
         elif dev_num == 3 and is_status_on:
             def _handler(message: str):
                 self._start_inspection(message)
@@ -149,6 +133,10 @@ class ManageRobotReceive:
 
         return change_cylinder_status
 
+    def _select_handler_wrk(self, dev_num: int, detail: str, command: str):
+        if dev_num == 0 and detail == "TAP_FIN":
+            return self._send_message_to_ur
+
     def _split_command(self, command: str):
         command_copy = command
         _split_list = command_copy.split(" ")
@@ -156,7 +144,10 @@ class ManageRobotReceive:
         if len(_split_list) == 2:
             command_copy = _split_list[1]
             _split_list = command_copy.split(",")
-            dev_num = int(_split_list[0])
+            try:
+                dev_num = int(_split_list[0])
+            except ValueError:
+                dev_num = _split_list[0]
             detail = _split_list[1] if len(_split_list) == 2 else None
 
         else:
@@ -171,9 +162,11 @@ class ManageRobotReceive:
         Args:
             message (str): 送信するコマンド文字列
         """
-        # self._integration_instance.send_request_queue.put(
-        #     {"target": TransmissionTarget.CFD, "message": message})
-        print("send to cfd: ", message)
+        if TEST_CFD_CONNECTION_LOCAL:
+            self._integration_instance.send_request_queue.put(
+                {"target": TransmissionTarget.TEST_TARGET_2, "message": message})
+        else:
+            print("send to cfd: ", message)
 
     def _send_message_to_ur(self, message: str):
         """
