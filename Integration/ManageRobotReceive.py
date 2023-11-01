@@ -1,8 +1,9 @@
 from GUIDesigner.GUISignalCategory import GUISignalCategory
+from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
-from common_data_type import Point, TransmissionTarget
+from common_data_type import Point, TransmissionTarget, WorkPieceShape
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
@@ -23,7 +24,8 @@ class ManageRobotReceive:
         self._special_command_handlers = {
             "DR_STK_TURNED": self._start_tool_inspeciton,
             "ISRESERVED": self._reservation_process,
-            "FIN_FST_POSITION": self._change_robot_first_position
+            "FIN_FST_POSITION": self._change_robot_first_position,
+            "TEST_PRE_INSPECTION": self._start_pre_processing_inspection
         }
 
     def _select_handler(self, command: str):
@@ -246,8 +248,15 @@ class ManageRobotReceive:
             OperationType.ACCURACY_INSPECTION, test_list)
         print("加工後の精度検査を行いました。 \n", accuracy_inspection_result)
 
+    def _start_pre_processing_inspection(self, message: str):
+        pre_processing_inspection_result = self._integration_instance.image_inspection_controller.perform_image_operation(
+            OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workpiece_shape=WorkPieceShape.SQUARE, work_dimension=30.0))
+        print("加工前の精度検査を行いました。 \n", pre_processing_inspection_result)
+
     def _start_tool_inspeciton(self, message: str):
-        print("start tool inspection")
+        inspection_result = self._integration_instance.image_inspection_controller.perform_image_operation(
+            OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=1))
+        print("工具の検査を行いました。 \n", inspection_result)
 
     def _reservation_process(self, message: str):
         print("reservation process")
