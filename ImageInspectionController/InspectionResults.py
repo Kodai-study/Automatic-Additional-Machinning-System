@@ -1,9 +1,8 @@
 # 工具検査のデータクラス
-from ast import List
-from ctypes import Union
+from typing import Union, List
 from dataclasses import dataclass
 
-from ImageInspectionController.ProcessDatas import  HoleCheckInfo
+from ImageInspectionController.ProcessDatas import HoleCheckInfo
 from common_data_type import CameraType, LightingType, ToolType
 
 
