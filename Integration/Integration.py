@@ -4,11 +4,12 @@ from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
 from Integration.ManageRobotReceive import ManageRobotReceive
 from RobotCommunicationHandler.RobotCommunicationHandler \
-    import TEST_PORT1, RobotCommunicationHandler
+    import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
 from threading import Thread
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
+from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_UR_CONNECTION_LOCAL
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from common_data_type import TransmissionTarget
 
 
@@ -27,6 +28,10 @@ class Integration:
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
         if TEST_UR_CONNECTION_LOCAL:
             self.test_ur = _test_ur(TEST_PORT1)
+
+        if TEST_CFD_CONNECTION_LOCAL:
+            self.test_cfd = _test_cfd(TEST_PORT2)
+
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {"sensor": {"sensor1": False, "sensor2": False},
                              "cylinder": {1: False, 2: False}}
@@ -80,7 +85,10 @@ class Integration:
             test_ur_thread = Thread(target=self.test_ur.start)
             test_ur_thread.start()
 
-        # GUIからの送信要求をそのまま相手に送信するスレッドを立ち上げる
+        if TEST_CFD_CONNECTION_LOCAL:
+            test_cfd_thread = Thread(target=self.test_cfd.start)
+            test_cfd_thread.start()
+
         test_send_thread = Thread(
             target=self._robot_message_handle)
         test_send_thread.start()
