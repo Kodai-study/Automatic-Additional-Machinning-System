@@ -1,13 +1,7 @@
-from GUIDesigner.GUISignalCategory import GUISignalCategory
-from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
-from ImageInspectionController.OperationType import OperationType
-from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
-# from Integration.Integration import Integration
+from threading import Thread
 from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
 from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
-from common_data_type import Point, TransmissionTarget, WorkPieceShape
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
 class ManageRobotReceive:
@@ -175,7 +169,7 @@ class ManageRobotReceive:
         if not handler:
             def handler(): self._undefine(receiv_data["message"])
 
-        handler()
+        Thread(target=handler).start()
 
     def _start_process(self):
         print("加工を開始します")
