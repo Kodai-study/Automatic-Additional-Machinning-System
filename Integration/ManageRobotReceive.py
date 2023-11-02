@@ -1,6 +1,7 @@
 from threading import Thread
 from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
 from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
+from Integration.handlers_robot_action import change_robot_first_position, reservation_process, start_process
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 
 
@@ -20,8 +21,8 @@ class ManageRobotReceive:
         self._integration_instance = integration_instance
         self._special_command_handlers = {
             "DR_STK_TURNED": lambda: _start_tool_inspeciton(self._integration_instance.image_inspection_controller),
-            "ISRESERVED": self._reservation_process,
-            "FIN_FST_POSITION": self._change_robot_first_position,
+            "ISRESERVED": reservation_process,
+            "FIN_FST_POSITION": change_robot_first_position,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller)
         }
 
@@ -94,7 +95,7 @@ class ManageRobotReceive:
         # CYL 001,ON
         if dev_num == 1 and is_status_on:
             def _handler():
-                self._start_process()
+                start_process()
                 change_cylinder_status()
             return _handler
 
@@ -170,12 +171,3 @@ class ManageRobotReceive:
             def handler(): self._undefine(receiv_data["message"])
 
         Thread(target=handler).start()
-
-    def _start_process(self):
-        print("加工を開始します")
-
-    def _reservation_process(self):
-        print("加工の予約ができるようになりました")
-
-    def _change_robot_first_position(self):
-        print("ロボットが初期位置に移動しました")
