@@ -1,5 +1,7 @@
 # coding: utf-8
 
+from threading import Lock
+import time
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.InspectionResults import AccuracyInspectionResult, CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
@@ -11,7 +13,7 @@ from typing import Tuple, Union, List
 class ImageInspectionController:
 
     def __init__(self):
-        pass
+        self.thread_lock = Lock()
 
     def perform_image_operation(self, operation_type: OperationType, inspection_data: Union[PreProcessingInspectionData, ToolInspectionData, List[HoleCheckInfo], Tuple[LightingType, bool], List[CameraType]]) \
             -> Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo], LightningControlResult, CameraControlResult]:
@@ -24,21 +26,22 @@ class ImageInspectionController:
         Returns:
             Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo]]: 検査の結果。合否と、検査で出された様々な値。検査の種類によって型が異なる
         """
+        with self.thread_lock:
+            time.sleep(5)
+            if (operation_type == OperationType.PRE_PROCESSING_INSPECTION):
+                return self._test_pass_preprocessing()
 
-        if (operation_type == OperationType.PRE_PROCESSING_INSPECTION):
-            return self._test_pass_preprocessing()
+            elif (operation_type == OperationType.TOOL_INSPECTION):
+                return self._test_pass_TOOL_INSPECTION(inspection_data)
 
-        elif (operation_type == OperationType.TOOL_INSPECTION):
-            return self._test_pass_TOOL_INSPECTION(inspection_data)
+            elif (operation_type == OperationType.ACCURACY_INSPECTION):
+                return self._test_pass_accuracy_inspection()
 
-        elif (operation_type == OperationType.ACCURACY_INSPECTION):
-            return self._test_pass_accuracy_inspection()
+            elif (operation_type == OperationType.CONTROL_LIGHTING):
+                return self._test_pass_control_lighting()
 
-        elif (operation_type == OperationType.CONTROL_LIGHTING):
-            return self._test_pass_control_lighting()
-
-        elif (operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT):
-            return self._test_pass_take_inspection_snapshot()
+            elif (operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT):
+                return self._test_pass_take_inspection_snapshot()
 
     def _test_pass_preprocessing(self):
         return PreProcessingInspectionResult(result=True, error_items=None, serial_number=0, dimensions=30.0)
