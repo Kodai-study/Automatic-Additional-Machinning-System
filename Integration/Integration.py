@@ -36,7 +36,7 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {"sensor": {"sensor1": False, "sensor2": False},
                              "cylinder": {1: False, 2: False}}
-        
+
         self.image_inspection_controller = ImageInspectionController()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する

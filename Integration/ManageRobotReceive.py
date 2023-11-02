@@ -2,6 +2,9 @@ from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
+# from Integration.Integration import Integration
+from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
+from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import Point, TransmissionTarget, WorkPieceShape
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
@@ -22,10 +25,10 @@ class ManageRobotReceive:
         """
         self._integration_instance = integration_instance
         self._special_command_handlers = {
-            "DR_STK_TURNED": self._start_tool_inspeciton,
+            "DR_STK_TURNED": lambda: _start_tool_inspeciton(self._integration_instance.image_inspection_controller),
             "ISRESERVED": self._reservation_process,
             "FIN_FST_POSITION": self._change_robot_first_position,
-            "TEST_PRE_INSPECTION": self._start_pre_processing_inspection
+            "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller)
         }
 
     def _select_handler(self, command: str):
@@ -48,7 +51,7 @@ class ManageRobotReceive:
             return self._select_handler_cyl(dev_num, detail, command=command)
         elif instruction == "WRK":
             return self._select_handler_wrk(dev_num, detail, command=command)
-        return self._undefine
+        return None
 
     def _test_select_handler_report(self, command: str):
         """メッセージの種類に応じて、ハンドラを選択する
@@ -61,85 +64,62 @@ class ManageRobotReceive:
         """
 
         if command == "SIG DET":
-            return self._send_to_gui
+            return lambda: _send_to_gui(self._integration_instance.gui_request_queue, command)
 
         instruction, dev_num, detail = self._split_command(command)
         if instruction == "SIG":
             if dev_num == 0:
-                if detail == "ATT_IMP_READY":
-                    return self._send_to_gui
-                elif detail == "ATT_DRL_READY":
-                    return self._send_to_gui
-
-    def _change_gui_status(self, device_type: str, device_num: int, status: bool):
-        """GUIの状態を変更する
-
-        Args:
-            message (str): メッセージの文字列
-        """
-        self._integration_instance.robot_status[device_type][device_num] = status
-        self._integration_instance.gui_request_queue.put(
-            (GUISignalCategory.SENSOR_STATUS_UPDATE,))
+                if detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY":
+                    return lambda: _send_to_gui(self._integration_instance.gui_request_queue, command)
 
     def _select_handler_ur_sig(self, dev_num: int, detail: str, command: str):
-        """SIG命令のハンドラを選択する
-
-        Args:
-            dev_num (int): デバイス番号
-            detail (str): デバイスの詳細
-            command (str): メッセージの本文全て
-
-        Returns:
-            function: ハンドラ
+        """
+        SIG命令のハンドラを選択する
         """
         if dev_num != 0:
             return self._undefine
 
-        if detail == "ATT_IMP_READY":
-            return self._send_message_to_cfd
-        elif detail == "ATT_DRL_READY":
-            return self._send_message_to_cfd
-        elif detail == "FST_POSITION":
-            return self._send_message_to_cfd
+        if detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY" or detail == "FST_POSITION":
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
 
         return self._undefine
 
     def _select_handler_cyl(self, dev_num: int, detail: str, command: str):
-        """CYL命令のハンドラを選択する
-
-        Args:
-            dev_num (int): デバイス番号
-            detail (str): デバイスの詳細
-            command (str): メッセージの本文全て
-
-        Returns:
-            function: ハンドラ
+        """
+        CYL命令のハンドラを選択する
         """
         is_status_on = detail == "ON"
 
-        def change_cylinder_status(x): return self._change_gui_status(
+        def change_cylinder_status(): return _change_gui_status(
+            self._integration_instance.gui_request_queue, self._integration_instance.robot_status,
             "cylinder", dev_num, is_status_on)
 
         if self._integration_instance.is_monitor_mode:
             return change_cylinder_status
+
         # CYL 001,ON
         if dev_num == 1 and is_status_on:
-            def _handler(message: str):
-                self._start_process(message)
-                change_cylinder_status(message)
+            def _handler():
+                self._start_process()
+                change_cylinder_status()
             return _handler
+
         # CYL 003,ON
         elif dev_num == 3 and is_status_on:
-            def _handler(message: str):
-                self._start_accuracy_inspection_inspection(message)
-                change_cylinder_status(message)
+            def _handler():
+                _start_accuracy_inspection_inspection(
+                    self._integration_instance.image_inspection_controller)
+                change_cylinder_status()
             return _handler
 
         return change_cylinder_status
 
     def _select_handler_wrk(self, dev_num: int, detail: str, command: str):
+        """
+        WRK命令のハンドラを選択する
+        """
         if dev_num == 0 and detail == "TAP_FIN":
-            return self._send_message_to_ur
+            return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
 
     def _split_command(self, command: str):
         command_copy = command
@@ -159,31 +139,6 @@ class ManageRobotReceive:
             detail = None
         return instruction, dev_num, detail
 
-    def _send_message_to_cfd(self, message: str):
-        """
-        メッセージのハンドラ。CFDにメッセージを送信する
-
-        Args:
-            message (str): 送信するコマンド文字列
-        """
-        if TEST_CFD_CONNECTION_LOCAL:
-            self._integration_instance.send_request_queue.put(
-                {"target": TransmissionTarget.TEST_TARGET_2, "message": message})
-        else:
-            print("send to cfd: ", message)
-
-    def _send_message_to_ur(self, message: str):
-        """
-        メッセージのハンドラ。URにメッセージを送信する
-
-        Args:
-            message (str): 送信するコマンド文字列
-        """
-        self._integration_instance.send_request_queue.put(
-            {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
-             "message": message})
-        # print("send to ur: ", message)
-
     def _undefine(self, message: str):
         """
         ハンドラ。適切な処理がまだ割り当てられていないメッセージを受け取ったときに呼び出される
@@ -191,24 +146,6 @@ class ManageRobotReceive:
             message (str): _description_
         """
         print("undefined message : ", message)
-
-    def _handle_connection_success(self, target: TransmissionTarget):
-        """接続成功時に呼び出されるハンドラ
-
-        Args:
-            target (TransmissionTarget): 接続成功した相手
-        """
-        self._integration_instance.gui_request_queue.put(
-            (GUISignalCategory.ROBOT_CONNECTION_SUCCESS, target))
-
-    def _send_to_gui(self, message: str):
-        """GUIに、ロボットから受け取ったメッセージをそのまま送信する
-
-        Args:
-            message (str): ロボットから受け取ったメッセージ
-        """
-        self._integration_instance.gui_request_queue.put(
-            (RobotInteractionType.MESSAGE_RECEIVED, message))
 
     def _write_database(self, message: str):
         pass
@@ -228,38 +165,23 @@ class ManageRobotReceive:
             return
 
         if receiv_data["msg_type"] == RobotInteractionType.SOCKET_CONNECTED:
-            self._handle_connection_success(receiv_data["target"])
+            _handle_connection_success(self._integration_instance.gui_request_queue,
+                                       receiv_data["target"])
             return
 
         if receiv_data["msg_type"] == RobotInteractionType.MESSAGE_RECEIVED:
             handler = self._select_handler(receiv_data["message"])
 
         if not handler:
-            handler = self._undefine
-        handler(receiv_data["message"])
+            def handler(): self._undefine(receiv_data["message"])
 
-    def _start_process(self, message: str):
-        print("start process")
+        handler()
 
-    def _start_accuracy_inspection_inspection(self, message: str):
-        test_list = [HoleCheckInfo(hole_id=1, hole_position=Point(
-            50.0, 50.0), hole_type=HoleType.M3_HOLE)]
-        accuracy_inspection_result = self._integration_instance.image_inspection_controller.perform_image_operation(
-            OperationType.ACCURACY_INSPECTION, test_list)
-        print("加工後の精度検査を行いました。 \n", accuracy_inspection_result)
+    def _start_process(self):
+        print("加工を開始します")
 
-    def _start_pre_processing_inspection(self, message: str):
-        pre_processing_inspection_result = self._integration_instance.image_inspection_controller.perform_image_operation(
-            OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workpiece_shape=WorkPieceShape.SQUARE, work_dimension=30.0))
-        print("加工前の精度検査を行いました。 \n", pre_processing_inspection_result)
+    def _reservation_process(self):
+        print("加工の予約ができるようになりました")
 
-    def _start_tool_inspeciton(self, message: str):
-        inspection_result = self._integration_instance.image_inspection_controller.perform_image_operation(
-            OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=1))
-        print("工具の検査を行いました。 \n", inspection_result)
-
-    def _reservation_process(self, message: str):
-        print("reservation process")
-
-    def _change_robot_first_position(self, message: str):
-        print("change robot first position")
+    def _change_robot_first_position(self):
+        print("ロボットが初期位置に移動しました")
