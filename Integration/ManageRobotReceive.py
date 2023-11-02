@@ -142,8 +142,6 @@ class ManageRobotReceive:
         """
         print("undefined message : ", message)
 
-    def _write_database(self, message: str):
-        pass
 
     def handle_receiv_message(self, receiv_data: dict):
         """

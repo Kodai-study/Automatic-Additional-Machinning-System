@@ -1,5 +1,6 @@
 from queue import Queue
 import time
+from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
@@ -38,6 +39,7 @@ class Integration:
                              "cylinder": {1: False, 2: False}}
 
         self.image_inspection_controller = ImageInspectionController()
+        self.database_accesser = DBAccessHandler()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
