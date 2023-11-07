@@ -1,3 +1,4 @@
+import datetime
 from queue import Queue
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
@@ -38,8 +39,13 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {"sensor": {"sensor1": False, "sensor2": False},
                              "cylinder": {1: False, 2: False}}
-        self.work_list = [
-            {"process": Processes.start, "serial_number": None}]
+        # self.work_list = [
+        #     {"process": Processes.start, "serial_number": None}]
+        # self.write_list = [{"process_type": Processes.start,
+        #                     "process_time": datetime.datetime.now()},
+        #                    {"process_type": Processes.move_to_process,
+        #                     "process_time": datetime.datetime.now()}]
+        self.work_list = []
         self.write_list = []
 
         self.image_inspection_controller = ImageInspectionController()
