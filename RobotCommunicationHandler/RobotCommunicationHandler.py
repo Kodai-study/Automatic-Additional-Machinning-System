@@ -55,8 +55,8 @@ class RobotCommunicationHandler:
                 if not data:
                     print("Connection closed by the server")
                     break
-                print(f"Main_Received  target = {
-                      target}, message = {data.decode('utf-8')}")
+                print(f"""Main_Received  target = {
+                      target}, message = {data.decode('utf-8')}""")
 
                 self.receive_data_queue.put(
                     {"target": target, "message": data.decode('utf-8'),
