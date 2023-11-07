@@ -1,6 +1,7 @@
 
 import datetime
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
+from Integration.process_number import get_process_number
 
 instruction_table_dictionary = {
     "SNS": "t_sensor_tracking",
@@ -16,29 +17,43 @@ def write_database(database_accesser: DBAccessHandler, instruction, dev_num, det
 def create_sql(instruction, dev_num, detail, sensor_date_time: datetime.datetime, serial_num: int):
     if instruction == "SNS":
         return _create_sql_sns(dev_num, detail, sensor_date_time, serial_num)
+    elif instruction == "SIG":
+        return _create_sql_sig(dev_num, detail, sensor_date_time, serial_num)
 
 
-def _single_insert(instruction):
-    return f"INSERT INTO {instruction_table_dictionary[instruction]} "
+def _single_insert(instruction): return f"INSERT INTO {
+    instruction_table_dictionary[instruction]} "
+
+
+def _change_mysql_time(sensor_date_time): return sensor_date_time.strftime(
+    '%Y-%m-%d %H:%M:%S')
 
 
 def _create_sql_sns(dev_num, detail: str, sensor_date_time: datetime.datetime, serial_num: int):
     sql = _single_insert("SNS")
     sensor_status = 1 if detail == "ON" else 0
     sql += f"""(sensor_id,sensor_status,sensor_date_time) VALUES ({
-        dev_num},{sensor_status},'{sensor_date_time.strftime('%Y-%m-%d %H:%M:%S')}');"""
+        dev_num},{sensor_status},'{_change_mysql_time(sensor_date_time)}');"""
 
-    is_write_process = False
-    if dev_num == 3 and detail == "ON":
-        process_num = 1
-        is_write_process = True
-    elif dev_num == 4 and detail == "ON":
-        process_num = 4
-        is_write_process = True
+    process_num = get_process_number("SNS", dev_num, detail)
 
-    if is_write_process:
+    if process_num is not None:
         sql += "\n"
-        sql += f"""INSERT INTO {instruction_table_dictionary["PROCESS"]} (serial_number,process_id,process_time) VALUES ({serial_num},{process_num},
-       '{sensor_date_time.strftime('%Y-%m-%d %H:%M:%S')}');"""
+        sql += _single_insert("PROCESS")
+        sql += f""" (serial_number,process_id,process_time) VALUES ({serial_num},{process_num},
+       '{_change_mysql_time(sensor_date_time)}');"""
 
+    return sql
+
+
+def _create_sql_sig(dev_num, detail: str, sensor_date_time: datetime.datetime, serial_num: int):
+    sql = _single_insert("PROCESS")
+
+    process_num = get_process_number("SIG", dev_num, detail)
+
+    if process_num is None:
+        return ""
+
+    sql += f""" (serial_number,process_id,process_time) VALUES \
+    ({serial_num},{process_num.value[0]},'{_change_mysql_time(sensor_date_time)}');"""
     return sql
