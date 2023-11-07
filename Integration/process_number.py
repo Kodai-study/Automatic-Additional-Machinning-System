@@ -14,6 +14,9 @@ class Processes(Enum):
 
 
 def get_process_number(instruction, dev_num, detail):
+    if instruction == "FIN_FST_POSITION":
+        return Processes.start
+
     if instruction == "SIG":
         if dev_num == 0 and detail == "ATT_IMP_READY":
             return Processes.attach_work_delivery
