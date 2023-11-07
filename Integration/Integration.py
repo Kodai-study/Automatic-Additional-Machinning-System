@@ -5,6 +5,7 @@ from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from Integration.ManageRobotReceive import ManageRobotReceive
+from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
 from threading import Thread
@@ -37,6 +38,9 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {"sensor": {"sensor1": False, "sensor2": False},
                              "cylinder": {1: False, 2: False}}
+        self.work_list = [
+            {"process": Processes.start, "serial_number": None}]
+        self.write_list = []
 
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
