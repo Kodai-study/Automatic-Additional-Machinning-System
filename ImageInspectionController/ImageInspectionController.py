@@ -43,8 +43,8 @@ class ImageInspectionController:
             elif (operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT):
                 return self._test_pass_take_inspection_snapshot()
 
-    def _test_pass_preprocessing(self):
-        return PreProcessingInspectionResult(result=True, error_items=None, serial_number=0, dimensions=30.0)
+    def _test_pass_preprocessing(self, serial_number: int = 123):
+        return PreProcessingInspectionResult(result=True, error_items=None, serial_number=serial_number, dimensions=30.0)
 
     def _test_fail_preprocessing(self):
         return PreProcessingInspectionResult(result=False, error_items=["ワークの大きさが一致していません", "QRコードの読み取りに失敗しました"], serial_number=None, dimensions=28.0)
