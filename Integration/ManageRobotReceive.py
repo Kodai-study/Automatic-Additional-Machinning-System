@@ -1,5 +1,7 @@
+import datetime
 from threading import Thread
 from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
+from Integration.handlers_database import write_database
 from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
 from Integration.handlers_robot_action import change_robot_first_position, reservation_process, start_process
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
@@ -46,6 +48,8 @@ class ManageRobotReceive:
             return self._select_handler_cyl(dev_num, detail, command=command)
         elif instruction == "WRK":
             return self._select_handler_wrk(dev_num, detail, command=command)
+        elif instruction == "SNS":
+            return self._select_handler_sensor(dev_num, detail, command=command)
         return None
 
     def _test_select_handler_report(self, command: str):
@@ -116,6 +120,27 @@ class ManageRobotReceive:
         if dev_num == 0 and detail == "TAP_FIN":
             return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
 
+    def _select_handler_sensor(self, dev_num: int, detail: str, command: str):
+        """
+        SNS命令のハンドラを選択する
+        """
+        is_on = detail == "ON"
+        sensor_time = datetime.datetime.now()
+        if dev_num == 1 and is_on:
+            def _handler():
+                write_database(
+                    self._integration_instance.database_accesser, "SNS", dev_num, detail, sensor_time, -1)
+                print("良品ワークが排出されました")
+            return _handler
+        elif dev_num == 2 and is_on:
+            def _handler():
+                write_database(
+                    self._integration_instance.database_accesser, "SNS", dev_num, detail, sensor_time, -1)
+                print("不良品ワークが排出されました")
+
+        return lambda: write_database(self._integration_instance.database_accesser,
+                                      "SNS", dev_num, detail, sensor_time, -1)
+
     def _split_command(self, command: str):
         command_copy = command
         _split_list = command_copy.split(" ")
@@ -141,7 +166,6 @@ class ManageRobotReceive:
             message (str): _description_
         """
         print("undefined message : ", message)
-
 
     def handle_receiv_message(self, receiv_data: dict):
         """
