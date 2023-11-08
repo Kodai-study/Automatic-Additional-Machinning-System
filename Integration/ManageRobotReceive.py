@@ -6,6 +6,7 @@ from Integration.handlers_image_inspection import _start_accuracy_inspection_ins
 from Integration.handlers_robot_action import change_robot_first_position, reservation_process, start_process
 from Integration.process_number import Processes, get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
+from common_data_type import TransmissionTarget
 
 
 class ManageRobotReceive:
@@ -26,7 +27,7 @@ class ManageRobotReceive:
             "DR_STK_TURNED": lambda: _start_tool_inspeciton(self._integration_instance.image_inspection_controller),
             "ISRESERVED": reservation_process,
             "FIN_FST_POSITION": change_robot_first_position,
-            "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list,self._integration_instance.write_list, self._integration_instance.database_accesser),
+            "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
         }
         self._handl_selectors = {
             "SIG": self._select_handler_ur_sig,
@@ -236,6 +237,10 @@ class ManageRobotReceive:
         if receiv_data["msg_type"] == RobotInteractionType.SOCKET_CONNECTED:
             _handle_connection_success(self._integration_instance.gui_request_queue,
                                        receiv_data["target"])
+            if receiv_data["target"] == TransmissionTarget.UR or receiv_data["target"] == TransmissionTarget.TEST_TARGET_1:
+                self._integration_instance.is_ur_connected = True
+            elif receiv_data["target"] == TransmissionTarget.CFD or receiv_data["target"] == TransmissionTarget.TEST_TARGET_2:
+                self._integration_instance.is_cfd_connected = True
             return
 
         if receiv_data["msg_type"] == RobotInteractionType.MESSAGE_RECEIVED:
