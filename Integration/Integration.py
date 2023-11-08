@@ -5,6 +5,8 @@ from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
+from ImageInspectionController.InspectDatas import ToolInspectionData
+from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
@@ -69,6 +71,9 @@ class Integration:
                     else:
                         self.send_request_queue.put(
                             {"target": TransmissionTarget.UR, "message": str(send_data[1])})
+
+                elif send_data[0] == GUIRequestType.UPLOAD_PROCESSING_DETAILS:
+                    self.is_registor_process_data = True
             time.sleep(0.1)
 
     def _robot_message_handle(self):
@@ -79,11 +84,20 @@ class Integration:
                 self.robot_message_handler.handle_receiv_message(receiv_data)
             time.sleep(0.1)
 
-    def _test_robot_message_handler(self):
-        self.robot_message_handler.handle_receiv_message(
-            {"target": TransmissionTarget.UR,
-             "message": "SIG 0,ATT_IMP_READY",
-             "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
+    def _initialization(self):
+        self.is_ur_connected = False
+        self.is_cfd_connected = False
+        self.is_registor_process_data = False
+        # 通信が確立するまで待機
+        while not (self.is_ur_connected and self.is_cfd_connected):
+            time.sleep(0.5)
+
+        while not self.is_registor_process_data:
+            time.sleep(1)
+
+        for stock_number in range(8):
+            print("検査", stock_number, self.image_inspection_controller.perform_image_operation(
+                OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number)))
 
     def main(self):
         communicationHandler = RobotCommunicationHandler()
@@ -104,6 +118,7 @@ class Integration:
             test_cfd_thread = Thread(target=self.test_cfd.start)
             test_cfd_thread.start()
 
+        Thread(target=self._initialization).start()
         test_send_thread = Thread(
             target=self._robot_message_handle)
         test_send_thread.start()
