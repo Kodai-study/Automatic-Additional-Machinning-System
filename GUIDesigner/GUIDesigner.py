@@ -258,81 +258,27 @@ class GUIDesigner:
             self.check_frame.destroy()
         self.create_selection_frame(self.data_list)
 
-    def update_button_state_with_queue(self):
-        state = "READY_START"
-        while True:
-            if self.gui_request_queue.empty():
-                time.sleep(0.1)
-                continue
-            data = self.gui_request_queue.get()
-            if data[0] != RobotInteractionType.MESSAGE_RECEIVED:
-                continue
-            if data[1] == "SIG DET" or data[1] == "SIG 0,ATT_DRL_READY" or data[1] == "SIG 0,ATT_IMP_READY":
-                if state == "READY_START" or state == "READY_DETACH":
-                    state = "READY_ATTACH"
-                    self.pochi_button["state"] = "disabled"
-                    self.detach_button["state"] = "disabled"
-                    self.attach_button["state"] = "normal"
-                elif state == "READY_ATTACH":
-                    state = "READY_DETACH"
-                    self.detach_button["state"] = "normal"
-                    self.pochi_button["state"] = "disabled"
-                    self.attach_button["state"] = "disabled"
-            elif data[1] == "FINISH":
-                self.pochi_button["state"] = "normal"
-                self.detach_button["state"] = "disabled"
-                self.attach_button["state"] = "disabled"
-                self.current_img = self.red_lamp_img
-                self.label_lamp.config(image=self.current_img)
-                state = "READY_START"
-
     def create_monitor_frame(self):
         if self.selection_frame:
             self.selection_frame.destroy()
         if self.check_frame:
             self.check_frame.destroy()
 
-        def toggle_pochi_state(pochi_button, label_lamp):
-            self.current_img = self.green_lamp_img
-            label_lamp.config(image=self.current_img)
-            pochi_button["state"] = "disabled"
-            self.integration_msg_queue.put((
-                GUIRequestType.ROBOT_OPERATION_REQUEST, "WRK 0,TAP_FIN\n"))
-
-        def push_attach_button():
-            self.integration_msg_queue.put((
-                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,ATTACH\n"))
-            self.attach_button["state"] = "disabled"
-
-        def push_detach_button():
-            self.integration_msg_queue.put((
-                GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,DETACH\n"))
-            self.detach_button["state"] = "disabled"
         self.monitor_frame = tk.Frame(self.root)
 
+        def toggle_pochi_state():
+            self.integration_msg_queue.put(
+                (GUIRequestType.UPLOAD_PROCESSING_DETAILS,))
+
+        button = tk.Button(self.monitor_frame, text="ポチッとする",
+                           command=toggle_pochi_state, font=("AR丸ゴシック体M", 18), width=22)
+        button.place(rely=0.6, relx=0.25)
+
         self.label_lamp = tk.Label(self.monitor_frame, image=self.current_img)
-        self.pochi_button = tk.Button(self.monitor_frame, command=lambda: toggle_pochi_state(
-            self.pochi_button, self.label_lamp), text="START", font=("AR丸ゴシック体M", 18), width=22)
-
-        # デタッチボタンを作成
-        self.detach_button = tk.Button(
-            self.monitor_frame, text="デタッチ完了", width=22, font=("AR丸ゴシック体M", 22),  height=4, fg="black", bg="orange", state="disabled",
-            command=push_detach_button)
-
-        # アタッチボタンを作成
-        self.attach_button = tk.Button(
-            self.monitor_frame, text="アタッチ完了", width=22,  font=("AR丸ゴシック体M", 22), height=4, fg="black", bg="cyan", state="disabled",
-            command=push_attach_button)
 
         if self.is_pochi_pressed:
             self.current_img = self.green_lamp_img
             self.label_lamp.config(image=self.current_img)
 
         self.monitor_frame.pack(fill="both", expand=True)
-        self.pochi_button.place(rely=0.4, relx=0.38)
         self.label_lamp.place(rely=0.38, relx=0.6)
-        self.attach_button.place(rely=0.6, relx=0.25)
-        self.detach_button.place(rely=0.6, relx=0.6)
-        watching_queue_thread = Thread(
-            target=self.update_button_state_with_queue)
-        watching_queue_thread.start()
