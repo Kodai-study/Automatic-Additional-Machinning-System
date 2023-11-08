@@ -28,11 +28,11 @@ def create_sql(instruction, dev_num, detail, sensor_date_time: datetime.datetime
         return _create_sql_sig(dev_num, detail, sensor_date_time, serial_num)
 
 
-def _single_insert(instruction): return f"INSERT INTO {
+def _single_insert(instruction: str): return f"INSERT INTO {
     instruction_table_dictionary[instruction]} "
 
 
-def _change_mysql_time(sensor_date_time): return sensor_date_time.strftime(
+def _change_mysql_time(sensor_date_time: datetime.datetime): return sensor_date_time.strftime(
     '%Y-%m-%d %H:%M:%S')
 
 
@@ -55,7 +55,6 @@ def _create_sql_sns(dev_num, detail: str, sensor_date_time: datetime.datetime, s
 
 def _create_sql_sig(dev_num, detail: str, sensor_date_time: datetime.datetime, serial_num: int):
     sql = _single_insert("PROCESS")
-
     process_num = get_process_number("SIG", dev_num, detail)
 
     if process_num is None:

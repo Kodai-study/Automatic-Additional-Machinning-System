@@ -68,7 +68,6 @@ class ImageInspectionController:
             55.0, 55.0), hole_type=HoleType.M3_HOLE, hole_check_info=True)]
         holecheck_list.append(HoleCheckInfo(hole_id=2, hole_position=Point(
             65.0, 65.0), hole_type=HoleType.M4_HOLE, hole_check_info=False))
-
         return AccuracyInspectionResult(result=False, error_items=["穴の位置が一致していません", "穴の種類が一致していません"], hole_check_infos=holecheck_list)
 
     def _test_pass_control_lighting(self, lighting_type: LightingType = LightingType.ACCURACY_LIGHTING):
