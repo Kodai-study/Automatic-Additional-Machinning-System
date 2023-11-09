@@ -21,7 +21,7 @@ def _start_pre_processing_inspection(image_inspection_controller: ImageInspectio
     max_process_item = max(
         (item for item in work_list if item["serial_number"] is None),
         key=lambda x: x["process"].value,
-        default=None  # デフォルト値をNoneに設定することで、条件に合う項目がない場合にはNoneを返す
+        default=None
     )
     max_process_item["serial_number"] = pre_processing_inspection_result.serial_number
     if not pre_processing_inspection_result.result:
@@ -31,7 +31,9 @@ def _start_pre_processing_inspection(image_inspection_controller: ImageInspectio
             write_database_process(
                 database_accesser, item["process_type"], pre_processing_inspection_result.serial_number)
         process_list.clear()
-    print("加工前の精度検査を行いました。 \n", pre_processing_inspection_result)
+
+    
+    print("加工前の検査を行いました。 \n", pre_processing_inspection_result)
 
 
 def _start_tool_inspeciton(image_inspection_controller: ImageInspectionController):

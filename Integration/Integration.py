@@ -58,7 +58,8 @@ class Integration:
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
         self.is_processing_mode = False
-        self.work_stock_position = 1
+        self.tool_stock_position = 1
+        self.work_stock_number = -1
 
     def _test_watching_guiResponce_queue(self):
         """
@@ -128,6 +129,12 @@ class Integration:
                 self.gui_request_queue.put(
                     GUISignalCategory.CANNOT_CONTINUE_PROCESSING, f"{stock_number}個の工具がエラーです")
                 return
+
+        # TODO ワークの個数を取得する
+        self._wait_command(
+            TransmissionTarget.TEST_TARGET_1, "SIG 0,ATT_IMP_READY")
+        
+            
 
     def main(self):
         communicationHandler = RobotCommunicationHandler()
