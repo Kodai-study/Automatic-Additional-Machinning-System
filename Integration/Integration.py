@@ -4,6 +4,7 @@ import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUIRequestType import GUIRequestType
+from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
@@ -30,7 +31,8 @@ class Integration:
         self.comm_receiv_queue = Queue()  # 通信ソフトが受信したデータの受け取りを行うキュー
         self.gui_request_queue = Queue()  # GUIからの要求を受け取るキュー
         self.gui_responce_queue = Queue()  # GUIからの要求に対する応答を返すキュー
-
+        self.wait_cmd_flag = None
+        self.wait_message = None
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
         if TEST_UR_CONNECTION_LOCAL:
             self.test_ur = _test_ur(TEST_PORT1)
@@ -55,6 +57,8 @@ class Integration:
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
+        self.is_processing_mode = False
+        self.work_stock_position = 1
 
     def _test_watching_guiResponce_queue(self):
         """
@@ -73,31 +77,57 @@ class Integration:
                             {"target": TransmissionTarget.UR, "message": str(send_data[1])})
 
                 elif send_data[0] == GUIRequestType.UPLOAD_PROCESSING_DETAILS:
-                    self.is_registor_process_data = True
+                    self.is_processing_mode = True
+                    if TEST_CFD_CONNECTION_LOCAL:
+                        self.send_request_queue.put(
+                            {"target": TransmissionTarget.TEST_TARGET_2, "message": "ISRESERVED"})
+                        self._start_process()
+
+                    else:
+                        self.send_request_queue.put(
+                            {"target": TransmissionTarget.CFD, "message": "ISRESERVED"})
+                        self._start_process()
+
             time.sleep(0.1)
+
+    def _wait_command(self, target: TransmissionTarget, message: str):
+        self.wait_cmd_flag = False
+        self.wait_message = {"target": target, "message": message}
+        while not self.wait_cmd_flag:
+            time.sleep(0.1)
+        self.wait_message = None
+        return True
 
     def _robot_message_handle(self):
         while True:
             if not self.comm_receiv_queue.empty():
                 # send_queueから値を取り出す
                 receiv_data = self.comm_receiv_queue.get()
+                if self.wait_message is not None:
+                    if self.wait_message["target"] == receiv_data["target"] and self.wait_message["message"] == receiv_data["message"]:
+                        self.wait_cmd_flag = True
+
                 self.robot_message_handler.handle_receiv_message(receiv_data)
             time.sleep(0.1)
 
     def _initialization(self):
         self.is_ur_connected = False
         self.is_cfd_connected = False
-        self.is_registor_process_data = False
         # 通信が確立するまで待機
         while not (self.is_ur_connected and self.is_cfd_connected):
             time.sleep(0.5)
 
-        while not self.is_registor_process_data:
-            time.sleep(1)
-
-        for stock_number in range(8):
-            print("検査", stock_number, self.image_inspection_controller.perform_image_operation(
-                OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number)))
+    def _start_process(self):
+        for stock_number in range(1, 9):
+            self._wait_command(
+                TransmissionTarget.TEST_TARGET_2, "DR_STK_TURNED")
+            result = self.image_inspection_controller.perform_image_operation(
+                OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
+            print(f"工具{stock_number}個めの検査 : 結果 {result}")
+            if not result.result:
+                self.gui_request_queue.put(
+                    GUISignalCategory.CANNOT_CONTINUE_PROCESSING, f"{stock_number}個の工具がエラーです")
+                return
 
     def main(self):
         communicationHandler = RobotCommunicationHandler()
