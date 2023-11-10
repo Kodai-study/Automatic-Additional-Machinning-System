@@ -1,0 +1,12 @@
+camera_information:
+  kougukensa:
+    serial_number: "111111"
+    kataban: "M132M"
+
+  kakoukensa:
+    serial_number: "222222"
+    kataban: "M133M"
+
+  seidokensa:
+    serial_number: "333333"
+    kataban: "M134M"
