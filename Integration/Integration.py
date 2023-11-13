@@ -3,17 +3,16 @@ from queue import Queue
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
-from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
+from Integration.handlers_gui_responce import GuiResponceHandler
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
 from threading import Thread
-from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
@@ -58,6 +57,8 @@ class Integration:
         self.is_processing_mode = False
         self.tool_stock_position = 1
         self.work_stock_number = -1
+        self.gui_responce_handler = GuiResponceHandler(
+            self, self.send_request_queue)
 
     def _test_insert_work_datas(self):
         self.work_list = [
@@ -75,26 +76,7 @@ class Integration:
             if not self.gui_responce_queue.empty():
                 # send_queueから値を取り出す
                 send_data = self.gui_responce_queue.get()
-                if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
-                    if TEST_UR_CONNECTION_LOCAL:
-                        self.send_request_queue.put(
-                            {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
-                    else:
-                        self.send_request_queue.put(
-                            {"target": TransmissionTarget.UR, "message": str(send_data[1])})
-
-                elif send_data[0] == GUIRequestType.UPLOAD_PROCESSING_DETAILS:
-                    self.is_processing_mode = True
-                    if TEST_CFD_CONNECTION_LOCAL:
-                        self.send_request_queue.put(
-                            {"target": TransmissionTarget.TEST_TARGET_2, "message": "ISRESERVED"})
-                        self._start_process()
-
-                    else:
-                        self.send_request_queue.put(
-                            {"target": TransmissionTarget.CFD, "message": "ISRESERVED"})
-                        self._start_process()
-
+                self.gui_responce_handler.handle(send_data)
             time.sleep(0.1)
 
     def _wait_command(self, target: TransmissionTarget, message: str):
