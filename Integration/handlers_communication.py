@@ -39,6 +39,10 @@ def _change_gui_status(gui_request_queue: Queue, robot_status: dict, device_type
         message (str): メッセージの文字列
     """
     robot_status[device_type][device_num] = status
+    notice_change_status(gui_request_queue)
+
+
+def notice_change_status(gui_request_queue: Queue):
     gui_request_queue.put(
         (GUISignalCategory.SENSOR_STATUS_UPDATE,))
 
