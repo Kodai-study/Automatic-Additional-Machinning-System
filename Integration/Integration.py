@@ -41,14 +41,12 @@ class Integration:
             self.test_cfd = _test_cfd(TEST_PORT2)
 
         self.robot_message_handler = ManageRobotReceive(self)
-        self.robot_status = {"sensor": {"sensor1": False, "sensor2": False},
-                             "cylinder": {1: False, 2: False}}
-        # self.work_list = [
-        #     {"process": Processes.start, "serial_number": None}]
-        # self.write_list = [{"process_type": Processes.start,
-        #                     "process_time": datetime.datetime.now()},
-        #                    {"process_type": Processes.move_to_process,
-        #                     "process_time": datetime.datetime.now()}]
+        self.robot_status = {"is_connection": False,
+                             "sensor": {1: False, 2: False, 3: False, 4: False, 5: False, 6: False},
+                             "reed_switch": {1: {"forward": False, "backward": False}}, 2: {"forward": False, "backward": False}, 3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False, 5: {"forward": False, "backward": False}},
+                             "door_status": {1: False, 2: False, 3: False, 4: False},
+                             "door_lock": {1: False, 2: False, 3: False, 4: False},
+                             "ejector": {"attach": False, "detach": False}}
         self.work_list = []
         self.write_list = []
 
@@ -60,6 +58,14 @@ class Integration:
         self.is_processing_mode = False
         self.tool_stock_position = 1
         self.work_stock_number = -1
+
+    def _test_insert_work_datas(self):
+        self.work_list = [
+            {"process": Processes.start, "serial_number": None}]
+        self.write_list = [{"process_type": Processes.start,
+                            "process_time": datetime.datetime.now()},
+                           {"process_type": Processes.move_to_process,
+                            "process_time": datetime.datetime.now()}]
 
     def _test_watching_guiResponce_queue(self):
         """
@@ -133,8 +139,6 @@ class Integration:
         # TODO ワークの個数を取得する
         self._wait_command(
             TransmissionTarget.TEST_TARGET_1, "SIG 0,ATT_IMP_READY")
-        
-            
 
     def main(self):
         communicationHandler = RobotCommunicationHandler()
