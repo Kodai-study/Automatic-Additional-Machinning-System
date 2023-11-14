@@ -28,8 +28,8 @@ def create_sql(instruction, dev_num, detail, sensor_date_time: datetime.datetime
         return _create_sql_sig(dev_num, detail, sensor_date_time, serial_num)
 
 
-def _single_insert(instruction: str): return f"INSERT INTO {
-    instruction_table_dictionary[instruction]} "
+def _single_insert(instruction: str): return f"""INSERT INTO {
+    instruction_table_dictionary[instruction]} """
 
 
 def _change_mysql_time(sensor_date_time: datetime.datetime): return sensor_date_time.strftime(

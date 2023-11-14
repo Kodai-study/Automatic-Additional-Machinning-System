@@ -34,6 +34,7 @@ class ManageRobotReceive:
             "CYL": self._select_handler_cyl,
             "WRK": self._select_handler_wrk,
             "SNS": self._select_handler_sensor,
+            "RDSW": self._select_handler_sensor_reed_switch,
         }
 
     def _select_handler(self, command: str):
