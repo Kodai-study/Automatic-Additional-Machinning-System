@@ -364,7 +364,7 @@ class GUIDesigner:
             self.selection_frame.destroy()
 
         def toggle_button(on_button, off_button):
-            if on_button["state"] == "normal":
+            if on_button["state"] == "normal" or on_button["state"] == "active":
                 on_button["state"] = "disabled"
                 off_button["state"] = "normal"
             else:
