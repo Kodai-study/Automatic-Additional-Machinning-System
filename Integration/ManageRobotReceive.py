@@ -1,6 +1,6 @@
 import datetime
 from threading import Thread
-from Integration.handlers_communication import _change_gui_status, _handle_connection_success, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
+from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
 from Integration.handlers_database import write_database
 from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
 from Integration.handlers_robot_action import change_robot_first_position, reservation_process, start_process
@@ -184,16 +184,21 @@ class ManageRobotReceive:
             def _handler():
                 write_database(
                     self._integration_instance.database_accesser, "SNS", dev_num, detail, sensor_time, serial_number)
+                _notice_finish_process(self._integration_instance.gui_request_queue, True)
                 print("良品ワークが排出されました")
             return _handler
+        
         elif dev_num == 2 and is_on:
             def _handler():
                 write_database(
                     self._integration_instance.database_accesser, "SNS", dev_num, detail, sensor_time, serial_number)
+                _notice_finish_process(self._integration_instance.gui_request_queue, False)
                 print("不良品ワークが排出されました")
+            return _handler
 
         return lambda: write_database(self._integration_instance.database_accesser,
                                       "SNS", dev_num, detail, sensor_time, serial_number)
+    
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None):
         door_number = (dev_num / 2) + 1
