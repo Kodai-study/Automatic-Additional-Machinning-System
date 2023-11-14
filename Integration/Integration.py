@@ -46,9 +46,10 @@ class Integration:
                              "door_status": {1: False, 2: False, 3: False, 4: False},
                              "door_lock": {1: False, 2: False, 3: False, 4: False},
                              "ejector": {"attach": False, "detach": False}}
+        self.process_data_list = []
         self.work_list = []
         self.write_list = []
-
+        self._test_insert_process_datas()
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
 
@@ -67,6 +68,21 @@ class Integration:
                             "process_time": datetime.datetime.now()},
                            {"process_type": Processes.move_to_process,
                             "process_time": datetime.datetime.now()}]
+
+    def _test_insert_process_datas(self):
+        self.process_data_list = [
+            {"process_id": 1, "model_name": "加工データ(型番)1",
+             "average_time": datetime.timedelta(minutes=1, seconds=23),
+             "regist_process_count": 10,
+             "process_time": datetime.timedelta(minutes=12, seconds=34),
+             "good_count": 7,
+             "remaining_count": 2},
+            {"process_id": 2, "model_name": "加工データ(型番)2",
+             "average_time": datetime.timedelta(minutes=2, seconds=34),
+                "regist_process_count": 20,
+                "process_time": datetime.timedelta(minutes=23, seconds=45),
+                "good_count": 8,
+                "remaining_count": 10}] 
 
     def _test_watching_guiResponce_queue(self):
         """
