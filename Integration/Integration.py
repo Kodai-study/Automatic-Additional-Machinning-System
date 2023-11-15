@@ -74,7 +74,7 @@ class Integration:
         self.tool_stock_position = 1
         self.work_stock_number = -1
         self.gui_responce_handler = GuiResponceHandler(
-            self, self.send_request_queue)
+            self, self.send_request_queue, self.gui_request_queue)
 
     def _test_insert_work_datas(self):
         self.work_list = [

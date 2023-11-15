@@ -1,13 +1,17 @@
 from queue import Queue
+from typing import List
+from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIRequestType import GUIRequestType
-from common_data_type import TransmissionTarget
+from GUIDesigner.GUISignalCategory import GUISignalCategory
+from common_data_type import CameraType, TransmissionTarget
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
 class GuiResponceHandler:
-    def __init__(self, integration, send_request_queue: Queue):
+    def __init__(self, integration, send_request_queue: Queue, gui_request_queue: Queue):
         self.send_request_queue = send_request_queue
         self.integration = integration
+        self.gui_request_queue = gui_request_queue
 
     def handle(self, send_data):
         if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
@@ -31,7 +35,7 @@ class GuiResponceHandler:
                 self.integration._start_process()
 
         elif send_data[0] == GUIRequestType.LOGIN_REQUEST:
-            pass
+            self._login(send_data[1]["id"], send_data[1]["password"])
 
         elif send_data[0] == GUIRequestType.CAMERA_FEED_REQUEST:
             pass
@@ -44,3 +48,19 @@ class GuiResponceHandler:
 
         elif send_data[0] == GUIRequestType.REQUEST_PROCESSING_DATA_LIST:
             pass
+
+    def _login(self, id: str, password: str, database_accesser: DBAccessHandler):
+        sql = f"""
+        SELECT t_login.employee_no, t_login.password, t_login.authority,
+            m_employee.employee_name, m_employee.affiliation
+        FROM t_login
+        JOIN m_employee ON t_login.employee_no = m_employee.employee_no
+        WHERE t_login.employee_no = {id} AND t_login.password = {password}
+        """
+        result = database_accesser.fetch_data_from_database(sql)
+        if len(result) != 1:
+            self.gui_request_queue.put(
+                GUIRequestType.LOGIN_REQUEST, {"is_success": False})
+        else:
+            self.gui_request_queue.put(GUISignalCategory.LOGIN_REQUEST,
+                                       {"is_success": True, "authority": result[0]["authority"]})
