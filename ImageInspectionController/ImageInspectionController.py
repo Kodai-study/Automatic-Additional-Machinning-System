@@ -16,7 +16,7 @@ class ImageInspectionController:
         self.thread_lock = Lock()
 
     def perform_image_operation(self, operation_type: OperationType, inspection_data: Union[PreProcessingInspectionData, ToolInspectionData, List[HoleCheckInfo], Tuple[LightingType, bool], List[CameraType]]) \
-            -> Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo], LightningControlResult, CameraControlResult]:
+            -> Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo], LightningControlResult, List[CameraControlResult]]:
         """
         画像検査を行って、結果を返す関数。
         Args:

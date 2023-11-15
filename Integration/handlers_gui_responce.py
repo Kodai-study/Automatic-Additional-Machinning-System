@@ -3,6 +3,9 @@ from typing import List
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
+from ImageInspectionController.ImageInspectionController import ImageInspectionController
+from ImageInspectionController.InspectionResults import CameraControlResult
+from ImageInspectionController.OperationType import OperationType
 from common_data_type import CameraType, TransmissionTarget
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
@@ -38,7 +41,8 @@ class GuiResponceHandler:
             self._login(send_data[1]["id"], send_data[1]["password"])
 
         elif send_data[0] == GUIRequestType.CAMERA_FEED_REQUEST:
-            pass
+            self._camera_feed(
+                self.integration.image_inspection_controller, send_data[1])
 
         elif send_data[0] == GUIRequestType.STATUS_REQUEST:
             pass
@@ -64,3 +68,15 @@ class GuiResponceHandler:
         else:
             self.gui_request_queue.put(GUISignalCategory.LOGIN_REQUEST,
                                        {"is_success": True, "authority": result[0]["authority"]})
+
+    def _camera_feed(self, image_inspection_controller: ImageInspectionController,  camera_list: List[CameraType]):
+        camera_control_result: List[CameraControlResult] = image_inspection_controller.perform_image_operation(
+            OperationType.TAKE_INSPECTION_SNAPSHOT, camera_list)
+        update_camera_list = []
+        for camera_result in camera_control_result:
+            if camera_result.is_success:
+                update_camera_list.append(
+                    (camera_result.camera_type, camera_result.image_path))
+
+        self.gui_request_queue.put(
+            GUIRequestType.CAMERA_FEED_REQUEST, update_camera_list)
