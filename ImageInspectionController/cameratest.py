@@ -15,7 +15,7 @@ import yaml
 
 # It is recommended that the settings of unused interfaces be removed.
 #  (U3v / Gev / GenTL)
-def initial_cam_setting(cam_num=3):
+def initial_cam_setting(cam_num=3)->pytelicam.pytelicam.CameraSystem:
     cam_system = pytelicam.get_camera_system( \
     int(pytelicam.CameraType.U3v) | \
     int(pytelicam.CameraType.Gev))
@@ -25,7 +25,8 @@ def initial_cam_setting(cam_num=3):
         return None
     return cam_system
 
-def setting_cam(serial_num:str,model:str,cam_system):
+def setting_cam(serial_num:str,model:str,cam_system:pytelicam.pytelicam.CameraSystem)\
+    ->(pytelicam.pytelicam.CameraDevice,pytelicam.pytelicam.SignalHandle):
     cam_device = cam_system.create_device_object_from_info(serial_num,model,"")
     cam_device.open()
 
@@ -43,8 +44,7 @@ def setting_cam(serial_num:str,model:str,cam_system):
     cam_device.cam_stream.open(receive_signal)
     return cam_device,receive_signal
 
-
-def take_picture(cam_device,cam_system,receive_signal):
+def take_picture(cam_device,cam_system,receive_signal) -> np.ndarray:
 
     cam_device.cam_stream.start()
 
