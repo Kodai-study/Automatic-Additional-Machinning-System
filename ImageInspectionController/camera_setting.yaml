@@ -1,12 +1,24 @@
 camera_information:
   kougukensa:
-    serial_number: "111111"
-    kataban: "M132M"
+    serial_number: "1000522"
+    kataban: "BU132M"
 
   kakoukensa:
-    serial_number: "222222"
-    kataban: "M133M"
+    serial_number: "1000101"
+    kataban: "BU602M"
 
   seidokensa:
-    serial_number: "333333"
-    kataban: "M134M"
+    serial_number: "1000143"
+    kataban: "BU602M"
+syoumei_information:
+  kougukensa:
+    ringu: 1
+  kakoumaekensa:
+    ba-: 2
+  seidokensa:
+    bakkuraito: 3
+  ON: 1
+  OFF: 0
+  gpio:
+    IOBOARD_PID: 2050
+    IOBOARD_VID: 10777
