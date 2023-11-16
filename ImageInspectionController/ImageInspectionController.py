@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from ImageInspectionController import OperationType
+from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
 from ImageInspectionController.ProcessDatas import HoleCheckInfo
@@ -24,4 +24,5 @@ class ImageInspectionController:
         Returns:
             Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo]]: 検査の結果。合否と、検査で出された様々な値。検査の種類によって型が異なる
         """
-        pass
+
+
