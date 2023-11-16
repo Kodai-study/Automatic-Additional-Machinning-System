@@ -43,48 +43,48 @@ def setting_cam(serial_num:str,model:str,cam_system):
     cam_device.cam_stream.open(receive_signal)
     return cam_device,receive_signal
 
+
 def take_picture(cam_device,cam_system,receive_signal):
 
     cam_device.cam_stream.start()
 
-    print('---------------------------------------------------------------------')
-    print('Press \'0\' + \'Enter\' key to issue \"Software Trigger\" and grab a frame.')
-    print('Press \'9\' + \'Enter\' key to quit application.');
-    print('---------------------------------------------------------------------')
 
+    res = cam_device.genapi.execute_command('TriggerSoftware')
+    if res != pytelicam.CamApiStatus.Success:
+        raise Exception("Can't execute TriggerSoftware.")
 
-    while True:
-        key = input()
-
-        if key == '0':
-            res = cam_device.genapi.execute_command('TriggerSoftware')
-            if res != pytelicam.CamApiStatus.Success:
-                raise Exception("Can't execute TriggerSoftware.")
-
-            res = cam_system.wait_for_signal(receive_signal)
-            if res != pytelicam.CamApiStatus.Success:
-                print('Grab error! status = {0}'.format(res))
-                break
+    res = cam_system.wait_for_signal(receive_signal)
+    if res != pytelicam.CamApiStatus.Success:
+        print('Grab error! status = {0}'.format(res))
+        return 
+    else:
+        # If you don't use 'with' statement, image_data.release() must be called after using image_data.
+        with cam_device.cam_stream.get_current_buffered_image() as image_data:
+            if image_data.status != pytelicam.CamApiStatus.Success:
+                print('Grab error! status = {0}'.format(image_data.status))
+                return
             else:
-                # If you don't use 'with' statement, image_data.release() must be called after using image_data.
-                with cam_device.cam_stream.get_current_buffered_image() as image_data:
-                    if image_data.status != pytelicam.CamApiStatus.Success:
-                        print('Grab error! status = {0}'.format(image_data.status))
-                        break
-                    else:
-                        np_arr = image_data.get_ndarray(pytelicam.OutputImageType.Bgr24)  
-                        print('shape      : {0}'.format(np_arr.shape))
-                        print('image data :\n {0}'.format(np_arr[0,]))
-                        print('average    : {0}\n'.format(np.average(np_arr)))
+                return image_data.get_ndarray(pytelicam.OutputImageType.Bgr24)  
 
-        elif key == '9':
-            break
 
 
 try:
     cam_system=initial_cam_setting(1)
     cam_device,receive_signal=setting_cam("1000143","BU602M",cam_system)
-    take_picture(cam_device,cam_system,receive_signal)
+    print('---------------------------------------------------------------------')
+    print('Press \'0\' + \'Enter\' key to issue \"Software Trigger\" and grab a frame.')
+    print('Press \'9\' + \'Enter\' key to quit application.');
+    print('---------------------------------------------------------------------')
+
+    while True:
+        key = input()
+        if key == '0':
+            np_arr = take_picture(cam_device,cam_system,receive_signal)
+            print('shape      : {0}'.format(np_arr.shape))
+            print('image data :\n {0}'.format(np_arr[0,]))
+            print('average    : {0}\n'.format(np.average(np_arr)))
+        elif key == '9':
+            break
 
 except pytelicam.PytelicamError as teli_exception:
     print('An error occurred!')
