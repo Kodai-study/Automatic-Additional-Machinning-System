@@ -180,25 +180,29 @@ class ManageRobotReceive:
         """
         is_on = detail == "ON"
         sensor_time = datetime.datetime.now()
+
+        def _common_sensor_handler():
+            write_database(self._integration_instance.database_accesser,
+                           "SNS", dev_num, detail, sensor_time, serial_number)
+            self._change_robot_status("sensor", dev_num, is_on)
+
         if dev_num == 1 and is_on:
             def _handler():
-                write_database(
-                    self._integration_instance.database_accesser, "SNS", dev_num, detail, sensor_time, serial_number)
-                _notice_finish_process(self._integration_instance.gui_request_queue, True)
+                _common_sensor_handler()
+                _notice_finish_process(
+                    self._integration_instance.gui_request_queue, True)
                 print("良品ワークが排出されました")
             return _handler
-        
+
         elif dev_num == 2 and is_on:
             def _handler():
-                write_database(
-                    self._integration_instance.database_accesser, "SNS", dev_num, detail, sensor_time, serial_number)
-                _notice_finish_process(self._integration_instance.gui_request_queue, False)
+                _common_sensor_handler()
+                _notice_finish_process(
+                    self._integration_instance.gui_request_queue, False)
                 print("不良品ワークが排出されました")
             return _handler
 
-        return lambda: write_database(self._integration_instance.database_accesser,
-                                      "SNS", dev_num, detail, sensor_time, serial_number)
-    
+        return _common_sensor_handler
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None):
         door_number = (dev_num / 2) + 1
@@ -263,3 +267,10 @@ class ManageRobotReceive:
             def handler(): self._undefine(receiv_data["message"])
 
         Thread(target=handler).start()
+
+    def _change_robot_status(self, device_kind: str, device_number, status):
+        self._integration_instance.robot_status[device_kind][device_number] = status
+        notice_change_status(self._integration_instance.gui_request_queue)
+
+    def _get_robot_status(self, device_kind: str, device_number):
+        return self._integration_instance.robot_status[device_kind][device_number]
