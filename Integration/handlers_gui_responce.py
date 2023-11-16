@@ -45,7 +45,7 @@ class GuiResponceHandler:
                 self.integration.image_inspection_controller, send_data[1])
 
         elif send_data[0] == GUIRequestType.STATUS_REQUEST:
-            pass
+            self._reload_status()
 
         elif send_data[0] == GUIRequestType.LIGHTING_CONTROL_REQUEST:
             pass
@@ -80,3 +80,23 @@ class GuiResponceHandler:
 
         self.gui_request_queue.put(
             GUIRequestType.CAMERA_FEED_REQUEST, update_camera_list)
+
+    def _reload_status(self):
+        fetch_status_commands = [
+            ("DOOR", [0, 1, 2, 3]),
+            ("DLC", [0, 1, 2, 3]),
+            ("RDSW", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            ("LMSW", [0]),
+            ("EMSW", [0]),
+            ("SNS", [0, 1, 2, 3, 4, 5]),
+            ("WRKSNS", [0])
+        ]
+        for command in fetch_status_commands:
+            for device_number in command[1]:
+                cmd = f"{command[0]} {device_number},ST"
+                if TEST_CFD_CONNECTION_LOCAL:
+                    self.send_request_queue.put(
+                        {"target": TransmissionTarget.TEST_TARGET_2, "message": cmd})
+                else:
+                    self.send_request_queue.put(
+                        {"target": TransmissionTarget.CFD, "message": cmd})
