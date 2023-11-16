@@ -3,7 +3,6 @@ from queue import Queue
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
-from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import ToolInspectionData
@@ -41,33 +40,37 @@ class Integration:
             self.test_cfd = _test_cfd(TEST_PORT2)
 
         self.robot_message_handler = ManageRobotReceive(self)
-        self.robot_status = {"is_connection": False,
-                             "limit_switch": False,
-                             "lighting": {
-                                 "back_light": False, "bar_light": False, "ring_light": False
-                             },
-                             "sensor": {
-                                 1: False, 2: False, 3: False, 4: False, 5: False, 6: False
-                             },
-                             "reed_switch": {
-                                 1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
-                                 3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
-                             },
-                             "door_status": {
-                                 1: False, 2: False, 3: False, 4: False
-                             },
-                             "door_lock": {
-                                 1: False, 2: False, 3: False, 4: False
-                             },
-                             "ejector": {
-                                 "attach": False, "detach": False
-                             }}
+        self.robot_status = {
+            "is_connection": False,
+            "limit_switch": False,
+            "lighting": {
+                "back_light": False, "bar_light": False, "ring_light": False
+            },
+            "sensor": {
+                1: False, 2: False, 3: False, 4: False, 5: False, 6: False
+            },
+            "reed_switch": {
+                1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
+                3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
+            },
+            "door_status": {
+                1: False, 2: False, 3: False, 4: False
+            },
+            "door_lock": {
+                1: False, 2: False, 3: False, 4: False
+            },
+            "ejector": {
+                "attach": False, "detach": False
+            }
+        }
         self.process_data_list = []
         self.work_list = []
         self.write_list = []
         self._test_insert_process_datas()
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
+        self.communicationHandler = RobotCommunicationHandler()
+        self.guiDesigner = GUIDesigner()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
@@ -95,10 +98,11 @@ class Integration:
              "remaining_count": 2},
             {"process_id": 2, "model_name": "加工データ(型番)2",
              "average_time": datetime.timedelta(minutes=2, seconds=34),
-                "regist_process_count": 20,
-                "process_time": datetime.timedelta(minutes=23, seconds=45),
-                "good_count": 8,
-                "remaining_count": 10}]
+             "regist_process_count": 20,
+             "process_time": datetime.timedelta(minutes=23, seconds=45),
+             "good_count": 8,
+             "remaining_count": 10}
+        ]
 
     def _test_watching_guiResponce_queue(self):
         """
@@ -155,12 +159,10 @@ class Integration:
             TransmissionTarget.TEST_TARGET_1, "SIG 0,ATT_IMP_READY")
 
     def main(self):
-        communicationHandler = RobotCommunicationHandler()
-        guiDesigner = GUIDesigner()
 
         # 通信スレッドを立ち上げる
         self.communication_thread = Thread(
-            target=communicationHandler.communication_loop,
+            target=self.communicationHandler.communication_loop,
             args=(self.send_request_queue, self.comm_receiv_queue))
         self.communication_thread.start()
 
@@ -180,4 +182,5 @@ class Integration:
         test_watching_guiResponce_queue_thread = Thread(
             target=self._test_watching_guiResponce_queue)
         test_watching_guiResponce_queue_thread.start()
-        guiDesigner.start_gui(self.gui_request_queue, self.gui_responce_queue)
+        self.guiDesigner.start_gui(
+            self.gui_request_queue, self.gui_responce_queue)
