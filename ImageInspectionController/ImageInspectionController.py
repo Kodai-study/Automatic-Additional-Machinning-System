@@ -30,8 +30,9 @@ class ImageInspectionController:
         img_pass=Taking.take_picuture(InspectionType.PRE_PROCESSING_INSPECTION)
         return img_pass
     
-    def test():
-        img_pass=Taking.take_picuture(InspectionType.PRE_PROCESSING_INSPECTION)
+    def test(kensamei:InspectionType):
+        img_pass=Taking.take_picuture(kensamei)
+        
         return img_pass       
      
 

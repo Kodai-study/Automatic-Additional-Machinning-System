@@ -1,6 +1,7 @@
 from queue import Queue
 from GUIDesigner.GUIDesigner import GUIDesigner
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
+from ImageInspectionController.ProcessDatas import InspectionType
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 
@@ -25,5 +26,5 @@ def test_integration():
 
 
 if __name__ == "__main__":
-    img_pass=ImageInspectionController.test()
+    img_pass=ImageInspectionController.test(InspectionType.PRE_PROCESSING_INSPECTION)
     print(img_pass) 
