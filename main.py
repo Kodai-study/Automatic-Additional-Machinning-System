@@ -1,7 +1,10 @@
 from queue import Queue
 from GUIDesigner.GUIDesigner import GUIDesigner
+from ImageInspectionController.ProcessDatas import InspectionType
+from ImageInspectionController.light import Light
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
+import light_control
 
 
 def test_gui():
@@ -24,4 +27,5 @@ def test_integration():
 
 
 if __name__ == "__main__":
-    test_integration()
+    L=Light()
+    L.light_switch(InspectionType.ACCURACY_INSPECTION,"OFF")
