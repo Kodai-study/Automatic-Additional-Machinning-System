@@ -11,20 +11,19 @@ class Light:
         #             Camera_type.Inspection: 2, Camera_type.Preprocessing: 3}
         self.IT = {InspectionType.ACCURACY_INSPECTION: 1,
                    InspectionType.PRE_PROCESSING_INSPECTION:2,InspectionType.TOOL_INSPECTION:3}
-    '''def light_on(kensamei:InspectionType,ONorOFF)->str:
-        if(kensamei==InspectionType.ACCURACY_INSPECTION):
-            ONorOFF="ON"
-            Light_control.light_switch(kensamei,ONorOFF)
-            
-        return "OK"
-    '''
-    def light_switch(self, camera: InspectionType, ONorOFF="NONE"):
-        """
-        任意の照明のON/OFFを制御する
+
+    def light_on(self, camera: InspectionType, ONorOFF="NONE")->str:
+        """指定された検査名から指定の照明をONまたはOFFする。
+        引数から検査の種類とONまたはOFFを受け取り、返り値としてOKもしくは
+        エラーを示すERを返す。
 
         Args:
-            camera (Camera_type): カメラの種類。
-            output (light_output): 照明をON/OFFどちらに制御するか
+            camera (InspectionType): _description_
+            ONorOFF (str, optional): "ON"or"OFF". Defaults to "NONE".
+
+        Returns:
+            str:"OK" 
+                "ER"
         """
         # COMポートの一覧を取得
         ports = list(serial.tools.list_ports.comports())
@@ -36,7 +35,7 @@ class Light:
 
         if com_num is None:
             print("COMポートが見つかりませんでした。")
-            return
+            return "ER"
 
         else:
             serPort = serial.Serial(com_num, 19200, timeout=1)
@@ -51,5 +50,4 @@ class Light:
 
         cmd = cmd + str(self.IT[camera])
         serPort.write((cmd + "\r").encode('utf-8'))
-if __name__ == "__main__":
-    Light.light_switch(InspectionType.ACCURACY_INSPECTION,"ON")
+        return "OK"
