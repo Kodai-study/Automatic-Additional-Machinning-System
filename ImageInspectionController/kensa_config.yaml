@@ -1,22 +1,23 @@
-camera_information:
-  kougukensa:
+Camera_information:
+  TOOL_INSPECTION:
     serial_number: "1000522"
     kataban: "BU132M"
 
-  kakoukensa:
+  PRE_PROCESSING_INSPECTION:
     serial_number: "1000101"
     kataban: "BU602M"
 
-  seidokensa:
+  ACCURACY_INSPECTION:
     serial_number: "1000143"
     kataban: "BU602M"
-syoumei_information:
-  kougukensa:
-    ringu: 1
-  kakoumaekensa:
-    ba-: 2
-  seidokensa:
-    bakkuraito: 3
+    
+Light_information:
+  TOOL_INSPECTION:
+    ring: 1
+  PRE_PROCESSING_INSPECTION:
+    bar: 2
+  ACCURACY_INSPECTION:
+    back: 3
   ON: 1
   OFF: 0
   gpio:
