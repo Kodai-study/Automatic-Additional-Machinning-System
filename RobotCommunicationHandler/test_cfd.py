@@ -65,6 +65,9 @@ class _test_cfd:
             message (str): 受け取ったメッセージ文字列
         """
         self.text_widget.config(state=tk.NORMAL)  # 編集可能にする
+        if not message.endswith("\n"):
+            message += "\n"
+
         self.text_widget.insert(tk.END, message)  # 末尾にデータを追加
         self.text_widget.see(tk.END)             # スクロールして末尾を表示
         self.text_widget.config(state=tk.DISABLED)
