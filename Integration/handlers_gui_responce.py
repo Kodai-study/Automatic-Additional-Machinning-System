@@ -4,9 +4,9 @@ from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectionResults import CameraControlResult
+from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult
 from ImageInspectionController.OperationType import OperationType
-from common_data_type import CameraType, TransmissionTarget
+from common_data_type import CameraType, LightingType, TransmissionTarget
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
@@ -48,7 +48,8 @@ class GuiResponceHandler:
             self._reload_status()
 
         elif send_data[0] == GUIRequestType.LIGHTING_CONTROL_REQUEST:
-            pass
+            self._lighting_feed(
+                self.integration.image_inspection_controller, self.integration.robot_status, send_data[1][0], send_data[1][1])
 
         elif send_data[0] == GUIRequestType.REQUEST_PROCESSING_DATA_LIST:
             pass
@@ -66,7 +67,7 @@ class GuiResponceHandler:
             self.gui_request_queue.put(
                 GUIRequestType.LOGIN_REQUEST, {"is_success": False})
         else:
-            self.gui_request_queue.put(GUISignalCategory.LOGIN_REQUEST,
+            self.gui_request_queue.put(GUIRequestType.LOGIN_REQUEST,
                                        {"is_success": True, "authority": result[0]["authority"]})
 
     def _camera_feed(self, image_inspection_controller: ImageInspectionController,  camera_list: List[CameraType]):
@@ -100,3 +101,24 @@ class GuiResponceHandler:
                 else:
                     self.send_request_queue.put(
                         {"target": TransmissionTarget.CFD, "message": cmd})
+
+    def _lighting_feed(self,  image_inspection_controller: ImageInspectionController, robot_status: dict, lighting_type: LightingType, status: bool):
+        light_type_dict = {
+            LightingType.ACCURACY_LIGHTING: "back_light",
+            LightingType.PRE_PROCESSING_LIGHTING: "ring_light",
+            LightingType.TOOL_LIGHTING: "bar_light"
+        }
+        result: LightningControlResult = image_inspection_controller.perform_image_operation(
+            OperationType.CONTROL_LIGHTING, (lighting_type, status))
+        if not result.is_success:
+            return
+
+        light_type_key = light_type_dict[lighting_type]
+        for key in robot_status["lighting"]:
+            if key == light_type_key:
+                robot_status["lighting"][key] = result.lighting_state
+            else:
+                robot_status["lighting"][key] = False
+        self.gui_request_queue.put(
+            (GUISignalCategory.SENSOR_STATUS_UPDATE,))
+
