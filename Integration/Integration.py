@@ -144,8 +144,17 @@ class Integration:
 
     def _start_process(self):
         for stock_number in range(1, 9):
-            self._wait_command(
-                TransmissionTarget.TEST_TARGET_2, "DR_STK_TURNED")
+            if TEST_CFD_CONNECTION_LOCAL:
+                self.send_request_queue.put(
+                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 1,CW"})
+                self._wait_command(
+                    TransmissionTarget.TEST_TARGET_2, "DR_STK_TURNED")
+            else:
+                self.send_request_queue.put(
+                    {"target": TransmissionTarget.CFD, "message": "STM 1,CW"})
+                self._wait_command(
+                    TransmissionTarget.CFD, "DR_STK_TURNED")
+            
             result = self.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
             print(f"工具{stock_number}個めの検査 : 結果 {result}")

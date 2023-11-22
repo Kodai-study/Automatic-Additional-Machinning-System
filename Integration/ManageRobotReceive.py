@@ -24,7 +24,6 @@ class ManageRobotReceive:
         """
         self._integration_instance = integration_instance
         self._special_command_handlers = {
-            "DR_STK_TURNED": lambda: _start_tool_inspeciton(self._integration_instance.image_inspection_controller),
             "ISRESERVED": reservation_process,
             "FIN_FST_POSITION": change_robot_first_position,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
