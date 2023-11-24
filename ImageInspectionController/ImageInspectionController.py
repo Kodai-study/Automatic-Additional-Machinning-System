@@ -34,6 +34,7 @@ class ImageInspectionController:
         img_pass=Taking.take_picuture(kensamei)
         
         return img_pass       
+    
      
 
 
