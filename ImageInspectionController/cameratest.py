@@ -11,6 +11,7 @@ import sys
 import numpy as np
 import pytelicam
 import yaml
+import cv2
 
 
 # It is recommended that the settings of unused interfaces be removed.
@@ -83,6 +84,9 @@ try:
             print('shape      : {0}'.format(np_arr.shape))
             print('image data :\n {0}'.format(np_arr[0,]))
             print('average    : {0}\n'.format(np.average(np_arr)))
+            # グレースケール画像の保存
+            cv2.imwrite('grayscale_image.png', np_arr)
+
         elif key == '9':
             break
 
