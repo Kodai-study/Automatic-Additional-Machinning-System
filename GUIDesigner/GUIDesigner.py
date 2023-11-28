@@ -4,6 +4,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from queue import Queue
 
@@ -13,8 +14,10 @@ from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
 from .screens.ProcessingProgress import ProcessingProgress
 from .screens.WorkResultOverview import WorkResultOverview
+from .Frames import Frames
 
-class GUIDesigner:
+
+class GUIDesigner(tk.Tk):
     """
     GUIのデザインを行うクラス
     GUIの画面を作成し、ユーザからの入力を受け付けて、それをキューに入れて統合ソフトに送ったり、
@@ -31,8 +34,6 @@ class GUIDesigner:
         self.check_frame = None
         self.selection_frame = None
         self.data_list = []
-        
-        self.is_pochi_pressed = False
 
         # どの画面から来たかをトラッキングする変数
         self.previous_screen = None
@@ -49,6 +50,9 @@ class GUIDesigner:
             file="./resource/images/green_lamp.png")
         self.current_img = self.red_lamp_img
 
+    def change_frame(self, frame: Frames):
+        print("画面遷移", frame)
+
     def start_gui(self, send_queue: Queue, receive_queue: Queue):
         """
         GUIを起動し、ループを開始する。
@@ -60,7 +64,7 @@ class GUIDesigner:
 
         self.gui_request_queue = send_queue
         self.integration_msg_queue = receive_queue
-
+        WaitConnecting(self).create_frame()
         wait_connect_cfd_thread = Thread(
             target=self.create_connection_waiting_frame)
         wait_connect_cfd_thread.start()
@@ -160,13 +164,13 @@ class GUIDesigner:
         self.table.configure(yscroll=scrollbar.set)
 
         go_monitor_button = tk.Button(self.selection_frame, text="モニタ画面",
-                                    command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
+                                      command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
         go_check_button = tk.Button(self.selection_frame, text="確認画面", command=lambda: self.create_check_frame(
                                     self.data_list), font=("AR丸ゴシック体M", 18), width=22)
         add_data_button = tk.Button(self.selection_frame, text="ファイル参照",
                                     command=self.add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
         remove_button = tk.Button(self.selection_frame, text="削除", command=self.remove_selected_items,
-                                    font=("AR丸ゴシック体M", 18), width=22)
+                                  font=("AR丸ゴシック体M", 18), width=22)
 
         if selected_items:
             for data, quantity in selected_items:
@@ -179,7 +183,7 @@ class GUIDesigner:
         remove_button.place(rely=0.2, x=1530, y=400)
         go_monitor_button.place(rely=0.85, relx=0.1)
         go_check_button.place(rely=0.85, relx=0.75)
-        
+
     def add_data_from_file(self):
         file_path = filedialog.askopenfilename(
             title="ファイルを選択してください", filetypes=(("テキストファイル", "*.txt"), ("すべてのファイル", "*.*")))
@@ -192,7 +196,6 @@ class GUIDesigner:
 
             self.data_list.append((file_name, quantity))
 
-            
             print("Current content of self.data_list:", self.data_list)
 
             self.update_selection_table()
@@ -206,7 +209,8 @@ class GUIDesigner:
         for item in selected_items:
             item_values = self.table.item(item, 'values')
             if item_values:
-                data, quantity = item_values[0], int(item_values[1])  # 数量を整数に変換
+                data, quantity = item_values[0], int(
+                    item_values[1])  # 数量を整数に変換
 
                 print(f"Trying to remove: {data}, {quantity}")
 
@@ -230,7 +234,6 @@ class GUIDesigner:
 
         for data, quantity in self.data_list:
             table.insert("", "end", values=(data, quantity))
-
 
     def create_check_frame(self, selected_items):
         if self.selection_frame:
@@ -258,22 +261,27 @@ class GUIDesigner:
         scrollbar = tk.Scrollbar(
             self.check_frame, orient=tk.VERTICAL, command=listbox.yview)
         listbox.config(yscrollcommand=scrollbar.set)
-    
+
         def toggle_ready_state():
             if ready_button["text"] == "準備完了":
                 ready_button["text"] = "準備取り消し"
-                label_lamp.config(image=self.green_lamp_img)  # ここでlabel_lampの画像を更新
+                # ここでlabel_lampの画像を更新
+                label_lamp.config(image=self.green_lamp_img)
             else:
                 ready_button["text"] = "準備完了"
-                label_lamp.config(image=self.red_lamp_img)  # ここでlabel_lampの画像を更新
-
+                # ここでlabel_lampの画像を更新
+                label_lamp.config(image=self.red_lamp_img)
 
         label_lamp = tk.Label(self.check_frame, image=self.current_img)
 
-        back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=("AR丸ゴシック体M", 18), width=22)
-        go_monitor_button = tk.Button(self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
-        ready_button = tk.Button(self.check_frame, text="準備完了",command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
-        go_check_button = tk.Button(self.check_frame, text="進捗画面", command=lambda: self.create_progress_frame(self.data_list), font=("AR丸ゴシック体M", 18), width=22)
+        back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=(
+            "AR丸ゴシック体M", 18), width=22)
+        go_monitor_button = tk.Button(
+            self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
+        ready_button = tk.Button(self.check_frame, text="準備完了",
+                                 command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
+        go_check_button = tk.Button(self.check_frame, text="進捗画面", command=lambda: self.create_progress_frame(
+            self.data_list), font=("AR丸ゴシック体M", 18), width=22)
 
         self.check_frame.pack(fill="both", expand=True)
         decoy_label.grid(row=0, column=0)
@@ -289,10 +297,10 @@ class GUIDesigner:
     def back_to_selection_frame(self):
         if hasattr(self, 'check_frame') and self.check_frame:
             self.check_frame.destroy()
-            self.create_check_frame(self.data_list) 
+            self.create_check_frame(self.data_list)
         if hasattr(self, 'monitor_frame') and self.monitor_frame:
             self.monitor_frame.destroy()
-            self.create_selection_frame(self.data_list) 
+            self.create_selection_frame(self.data_list)
 
     def update_button_state_with_queue(self):
         state = "READY_START"
@@ -330,29 +338,46 @@ class GUIDesigner:
 
         self.monitor_frame = tk.Frame(self.root)
 
-        backlight_label = tk.Label(self.monitor_frame, text="バックライト照明", font=("AR丸ゴシック体M", 18))
-        barlight_label = tk.Label(self.monitor_frame, text="バー照明", font=("AR丸ゴシック体M", 18))
-        ringlight_label = tk.Label(self.monitor_frame, text="リング照明", font=("AR丸ゴシック体M", 18))
-        UR_label = tk.Label(self.monitor_frame, text="UR吸着", font=("AR丸ゴシック体M", 18))
-        doorlock1_label = tk.Label(self.monitor_frame, text="ドアロック1", font=("AR丸ゴシック体M", 18))
-        doorlock2_label = tk.Label(self.monitor_frame, text="ドアロック2", font=("AR丸ゴシック体M", 18))
-        doorlock3_label = tk.Label(self.monitor_frame, text="ドアロック3", font=("AR丸ゴシック体M", 18))
-        doorlock4_label = tk.Label(self.monitor_frame, text="ドアロック4", font=("AR丸ゴシック体M", 18))
+        backlight_label = tk.Label(
+            self.monitor_frame, text="バックライト照明", font=("AR丸ゴシック体M", 18))
+        barlight_label = tk.Label(
+            self.monitor_frame, text="バー照明", font=("AR丸ゴシック体M", 18))
+        ringlight_label = tk.Label(
+            self.monitor_frame, text="リング照明", font=("AR丸ゴシック体M", 18))
+        UR_label = tk.Label(self.monitor_frame, text="UR吸着",
+                            font=("AR丸ゴシック体M", 18))
+        doorlock1_label = tk.Label(
+            self.monitor_frame, text="ドアロック1", font=("AR丸ゴシック体M", 18))
+        doorlock2_label = tk.Label(
+            self.monitor_frame, text="ドアロック2", font=("AR丸ゴシック体M", 18))
+        doorlock3_label = tk.Label(
+            self.monitor_frame, text="ドアロック3", font=("AR丸ゴシック体M", 18))
+        doorlock4_label = tk.Label(
+            self.monitor_frame, text="ドアロック4", font=("AR丸ゴシック体M", 18))
 
-        servomotor_label = tk.Label(self.monitor_frame, text="サーボモータ", font=("AR丸ゴシック体M", 18))
-        beltconveyor_label = tk.Label(self.monitor_frame, text="ベルトコンベア", font=("AR丸ゴシック体M", 18))
-        processing_cylinder_label = tk.Label(self.monitor_frame, text="加工部位置決めシリンダ", font=("AR丸ゴシック体M", 18))
-        inspection_cylinder_label = tk.Label(self.monitor_frame, text="検査部位置決めシリンダ", font=("AR丸ゴシック体M", 18))
-        toolchanger_cylinder_label = tk.Label(self.monitor_frame, text="ツールチェンジャーシリンダ", font=("AR丸ゴシック体M", 18))
-        inspectionwall_cylinder_label = tk.Label(self.monitor_frame, text="検査部壁シリンダ", font=("AR丸ゴシック体M", 18))
-        processing_table_cylinder_label = tk.Label(self.monitor_frame, text="加工部テーブルシリンダ", font=("AR丸ゴシック体M", 18))
-        
-        kara_label1 = tk.Label(self.monitor_frame, text="", font=("AR丸ゴシック体M", 18))
-        kara_label2= tk.Label(self.monitor_frame, text="", font=("AR丸ゴシック体M", 18))
+        servomotor_label = tk.Label(
+            self.monitor_frame, text="サーボモータ", font=("AR丸ゴシック体M", 18))
+        beltconveyor_label = tk.Label(
+            self.monitor_frame, text="ベルトコンベア", font=("AR丸ゴシック体M", 18))
+        processing_cylinder_label = tk.Label(
+            self.monitor_frame, text="加工部位置決めシリンダ", font=("AR丸ゴシック体M", 18))
+        inspection_cylinder_label = tk.Label(
+            self.monitor_frame, text="検査部位置決めシリンダ", font=("AR丸ゴシック体M", 18))
+        toolchanger_cylinder_label = tk.Label(
+            self.monitor_frame, text="ツールチェンジャーシリンダ", font=("AR丸ゴシック体M", 18))
+        inspectionwall_cylinder_label = tk.Label(
+            self.monitor_frame, text="検査部壁シリンダ", font=("AR丸ゴシック体M", 18))
+        processing_table_cylinder_label = tk.Label(
+            self.monitor_frame, text="加工部テーブルシリンダ", font=("AR丸ゴシック体M", 18))
+
+        kara_label1 = tk.Label(
+            self.monitor_frame, text="", font=("AR丸ゴシック体M", 18))
+        kara_label2 = tk.Label(
+            self.monitor_frame, text="", font=("AR丸ゴシック体M", 18))
 
         back_button = tk.Button(self.monitor_frame, text="戻る", command=self.back_to_selection_frame, font=(
             "AR丸ゴシック体M", 18), width=22)
-        
+
         on_buttons = []  # ONボタン用のリスト
         off_buttons = []  # OFFボタン用のリスト
         forward_buttons = []  # 正転ボタン用のリスト
@@ -360,22 +385,30 @@ class GUIDesigner:
 
         for i in range(8):
             # ONボタンとOFFボタンを作成
-            on_button = tk.Button(self.monitor_frame, text="ON", state="normal", width=10, bg="orange")
-            off_button = tk.Button(self.monitor_frame, text="OFF", state="disabled", width=10, bg="cyan")
+            on_button = tk.Button(
+                self.monitor_frame, text="ON", state="normal", width=10, bg="orange")
+            off_button = tk.Button(
+                self.monitor_frame, text="OFF", state="disabled", width=10, bg="cyan")
             on_buttons.append(on_button)
             off_buttons.append(off_button)
 
         for i in range(8):
-            forward_button = tk.Button(self.monitor_frame, text="正転", state="normal", width=10, bg="orange")
-            reverse_button = tk.Button(self.monitor_frame, text="後転", state="disabled", width=10, bg="cyan")
+            forward_button = tk.Button(
+                self.monitor_frame, text="正転", state="normal", width=10, bg="orange")
+            reverse_button = tk.Button(
+                self.monitor_frame, text="後転", state="disabled", width=10, bg="cyan")
             forward_buttons.append(forward_button)
             reverse_buttons.append(reverse_button)
 
         for i in range(8):
-            on_buttons[i].config(command=lambda i=i: toggle_button(on_buttons[i], off_buttons[i]))
-            off_buttons[i].config(command=lambda i=i: toggle_button(on_buttons[i], off_buttons[i]))
-            forward_buttons[i].config(command=lambda i=i: toggle_forward_button(forward_buttons[i], reverse_buttons[i]))
-            reverse_buttons[i].config(command=lambda i=i: toggle_reverse_button(forward_buttons[i], reverse_buttons[i]))
+            on_buttons[i].config(command=lambda i=i: toggle_button(
+                on_buttons[i], off_buttons[i]))
+            off_buttons[i].config(command=lambda i=i: toggle_button(
+                on_buttons[i], off_buttons[i]))
+            forward_buttons[i].config(command=lambda i=i: toggle_forward_button(
+                forward_buttons[i], reverse_buttons[i]))
+            reverse_buttons[i].config(command=lambda i=i: toggle_reverse_button(
+                forward_buttons[i], reverse_buttons[i]))
 
         for i in range(8):
             on_buttons[i].grid(row=i + 1, column=2)
@@ -413,12 +446,13 @@ class GUIDesigner:
 
         back_button.place(rely=0.85, relx=0.75)
 
-    def create_progress_frame(self,selected_items):
+    def create_progress_frame(self, selected_items):
 
         if self.check_frame:
             self.check_frame.destroy()
-        
-        self.processing = ProcessingProgress(self.root,self.create_result_frame)
+
+        self.processing = ProcessingProgress(
+            self.root, self.create_result_frame)
         self.processing.create_frame(selected_items=self.data_list)
 
         print("hi")
@@ -430,7 +464,7 @@ class GUIDesigner:
         ()
 
     def create_result_frame(self):
-        
+
         self.processing.progress_frame.destroy()
 
         # if  processing.progress_frame:
