@@ -1,11 +1,9 @@
-from threading import Thread
-import time
 import tkinter as tk
 from tkinter import ttk
-from GUIDesigner import GUIDesigner
+
 
 class ProcessingProgress:
-    def __init__(self, root,create_result_frame):
+    def __init__(self, root, create_result_frame):
 
         self.root = root
         self.create_result_frame = create_result_frame
@@ -91,9 +89,10 @@ class ProcessingProgress:
             self.progress_frame, text="2:30", font=("AR丸ゴシック体M", 20))
         remaining_work_label = tk.Label(
             self.progress_frame, text="0", font=("AR丸ゴシック体M", 20))
-        
+
         # ボタン作成
-        result_button = tk.Button(self.progress_frame, text="結果表示", font=("AR丸ゴシック体M", 18), width=22, command=self.show_result)
+        result_button = tk.Button(self.progress_frame, text="結果表示", font=(
+            "AR丸ゴシック体M", 18), width=22, command=self.show_result)
 
         # プログレスバー、ラベル、ボタンを配置
         progress_bar.grid(row=1, column=1, padx=10, pady=10)
@@ -244,7 +243,7 @@ class ProcessingProgress:
             row_index += 1
 
         return door_lock_status_labels
-    
+
     def show_result(self):
         self.create_result_frame()
 
