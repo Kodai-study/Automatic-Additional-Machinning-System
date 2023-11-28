@@ -4,15 +4,14 @@ import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from GUIDesigner.GUIRequestType import GUIRequestType
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from queue import Queue
+
 
 # 　カスタムモジュールから必要なクラスをインポート
 from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
-
-
+from .ProcessingProgress import ProcessingProgress
 class GUIDesigner:
     """
     GUIのデザインを行うクラス
@@ -30,6 +29,7 @@ class GUIDesigner:
         self.check_frame = None
         self.selection_frame = None
         self.data_list = []
+        
         self.is_pochi_pressed = False
 
         # どの画面から来たかをトラッキングする変数
@@ -189,6 +189,7 @@ class GUIDesigner:
             quantity = int(number_pad.result.get())
 
             self.data_list.append((file_name, quantity))
+
             
             print("Current content of self.data_list:", self.data_list)
 
@@ -267,12 +268,10 @@ class GUIDesigner:
 
         label_lamp = tk.Label(self.check_frame, image=self.current_img)
 
-        back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=(
-            "AR丸ゴシック体M", 18), width=22)
-        go_monitor_button = tk.Button(
-            self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
-        ready_button = tk.Button(self.check_frame, text="準備完了",
-                                 command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
+        back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=("AR丸ゴシック体M", 18), width=22)
+        go_monitor_button = tk.Button(self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
+        ready_button = tk.Button(self.check_frame, text="準備完了",command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
+        go_check_button = tk.Button(self.check_frame, text="進捗画面", command=lambda: self.create_progress_frame(self.data_list), font=("AR丸ゴシック体M", 18), width=22)
 
         self.check_frame.pack(fill="both", expand=True)
         decoy_label.grid(row=0, column=0)
@@ -283,6 +282,7 @@ class GUIDesigner:
         label_lamp.place(rely=0.80, relx=0.6)
         go_monitor_button.place(rely=0.85, relx=0.1)
         ready_button.place(rely=0.80, relx=0.37)
+        go_check_button.place(rely=0.65, relx=0.1)
 
     def back_to_selection_frame(self):
         if hasattr(self, 'check_frame') and self.check_frame:
@@ -303,57 +303,6 @@ class GUIDesigner:
                 continue
             if data[1] == "READY":
                 self.create_progress_frame()
-                
-    # def create_monitor_frame(self): 
-    #     if self.selection_frame:
-    #         self.selection_frame.destroy()
-    #     if self.check_frame:
-    #         self.check_frame.destroy()
-
-    #     def toggle_pochi_state(pochi_button, label_lamp):
-    #         self.current_img = self.green_lamp_img
-    #         label_lamp.config(image=self.current_img)
-    #         pochi_button["state"] = "disabled"
-    #         self.integration_msg_queue.put((
-    #             GUIRequestType.ROBOT_OPERATION_REQUEST, "WRK 0,TAP_FIN\n"))
-
-    #     def push_attach_button():
-    #         self.integration_msg_queue.put((
-    #             GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,ATTACH\n"))
-    #         self.attach_button["state"] = "disabled"
-
-    #     def push_detach_button():
-    #         self.integration_msg_queue.put((
-    #             GUIRequestType.ROBOT_OPERATION_REQUEST, "EJCT 0,DETACH\n"))
-    #         self.detach_button["state"] = "disabled"
-    #     self.monitor_frame = tk.Frame(self.root)
-
-    #     self.label_lamp = tk.Label(self.monitor_frame, image=self.current_img)
-    #     self.pochi_button = tk.Button(self.monitor_frame, command=lambda: toggle_pochi_state(
-    #         self.pochi_button, self.label_lamp), text="START", font=("AR丸ゴシック体M", 18), width=22)
-
-    #     # デタッチボタンを作成
-    #     self.detach_button = tk.Button(
-    #         self.monitor_frame, text="デタッチ", width=22, font=("AR丸ゴシック体M", 22),  height=4, fg="black", bg="orange", state="disabled",
-    #         command=push_detach_button)
-
-    #     # アタッチボタンを作成
-    #     self.attach_button = tk.Button(
-    #         self.monitor_frame, text="アタッチ", width=22,  font=("AR丸ゴシック体M", 22), height=4, fg="black", bg="cyan", state="disabled",
-    #         command=push_attach_button)
-
-    #     if self.is_pochi_pressed:
-    #         self.current_img = self.green_lamp_img
-    #         self.label_lamp.config(image=self.current_img)
-
-    #     self.monitor_frame.pack(fill="both", expand=True)
-    #     self.pochi_button.place(rely=0.4, relx=0.38)
-    #     self.label_lamp.place(rely=0.38, relx=0.6)
-    #     self.attach_button.place(rely=0.6, relx=0.25)
-    #     self.detach_button.place(rely=0.6, relx=0.6)
-    #     watching_queue_thread = Thread(
-    #         target=self.update_button_state_with_queue)
-    #     watching_queue_thread.start()
 
     def create_monitor_frame(self):
         if self.monitor_frame:
@@ -462,5 +411,19 @@ class GUIDesigner:
 
         back_button.place(rely=0.85, relx=0.75)
 
-    def create_progress_frame(self):
-        self.monitor_frame = tk.Frame(self.root,bg="blue")
+    def create_progress_frame(self, selected_items):
+
+        if self.check_frame:
+            self.check_frame.destroy()
+        
+        processing = ProcessingProgress(self.root)
+        processing.create_progress_frame(selected_items=self.data_list)
+
+    def create_emergency_frame(self):
+        ()
+
+    def create_requirements_frame(self):
+        ()
+
+    def create_result_frame(self):
+        ()

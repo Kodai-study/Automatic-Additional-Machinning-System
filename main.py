@@ -1,5 +1,7 @@
 from queue import Queue
 from GUIDesigner.GUIDesigner import GUIDesigner
+from GUIDesigner.WorkRequest import WorkRequest
+from GUIDesigner.WorkResultOverview import WorkResultOverview
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 
@@ -25,3 +27,4 @@ def test_integration():
 
 if __name__ == "__main__":
     test_integration()
+    #app = WorkResultOverview()
