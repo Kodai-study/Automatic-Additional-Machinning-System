@@ -4,6 +4,8 @@ import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from typing import Dict, List
+from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from queue import Queue
@@ -36,6 +38,7 @@ class GUIDesigner(tk.Tk):
 
         # どの画面から来たかをトラッキングする変数
         self.previous_screen = None
+        self.screens: Dict[Frames, ScreenBase] = {}
 
         # ttkスタイルの設定
         style = ttk.Style()
@@ -48,6 +51,10 @@ class GUIDesigner(tk.Tk):
         self.green_lamp_img = tk.PhotoImage(
             file="./resource/images/green_lamp.png")
         self.current_img = self.red_lamp_img
+
+    def _initial_screens(self):
+        self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
+            self, self.gui_request_queue)
 
     def change_frame(self, frame: Frames):
         print("画面遷移", frame)
@@ -64,9 +71,9 @@ class GUIDesigner(tk.Tk):
         self.gui_request_queue = send_queue
         self.integration_msg_queue = receive_queue
 
+        self._initial_screens()
         # 画面作成のクラスのインスタンス化のテスト
-        WaitConnecting(self, self.gui_request_queue).create_frame()
-
+        self.screens[Frames.WAIT_CONNECTION].create_frame()
         self.mainloop()
 
     def create_login_frame(self):
