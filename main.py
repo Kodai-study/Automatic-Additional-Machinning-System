@@ -1,7 +1,7 @@
 from queue import Queue
 from GUIDesigner.GUIDesigner import GUIDesigner
-from GUIDesigner.WorkRequest import WorkRequest
-from GUIDesigner.WorkResultOverview import WorkResultOverview
+from GUIDesigner.screens.WorkRequest import WorkRequest
+from GUIDesigner.screens.WorkResultOverview import WorkResultOverview
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 

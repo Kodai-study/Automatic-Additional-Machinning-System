@@ -11,8 +11,8 @@ from queue import Queue
 # 　カスタムモジュールから必要なクラスをインポート
 from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
-from .ProcessingProgress import ProcessingProgress
-from .WorkResultOverview import WorkResultOverview
+from .screens.ProcessingProgress import ProcessingProgress
+from .screens.WorkResultOverview import WorkResultOverview
 
 class GUIDesigner:
     """
