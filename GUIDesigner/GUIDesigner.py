@@ -26,9 +26,9 @@ class GUIDesigner(tk.Tk):
 
     def __init__(self):
         # ルートウィンドウを作成
-        self.root = tk.Tk()
-        self.root.title("T5GUI")
-        self.root.geometry("1920x1080+0+0")
+        # self.root = tk.Tk()
+        # self.root.title("T5GUI")
+        # self.root.geometry("1920x1080+0+0")
 
         self.monitor_frame = None
         self.check_frame = None
@@ -64,7 +64,10 @@ class GUIDesigner(tk.Tk):
 
         self.gui_request_queue = send_queue
         self.integration_msg_queue = receive_queue
-        WaitConnecting(self).create_frame()
+
+        # 画面作成のクラスのインスタンス化のテスト
+        WaitConnecting(self, self.integration_msg_queue).create_frame()
+        
         wait_connect_cfd_thread = Thread(
             target=self.create_connection_waiting_frame)
         wait_connect_cfd_thread.start()
@@ -72,12 +75,6 @@ class GUIDesigner(tk.Tk):
         self.root.mainloop()
 
     # CFDとの接続を待つ関数。接続が完了するまで待ち続ける
-    def connection_is_successful(self):
-        while True:
-            if not self.gui_request_queue.empty():
-                received_data = self.gui_request_queue.get()
-                if received_data[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
-                    return True
 
     def create_connection_waiting_frame(self):
         self.connection_waiting_frame = tk.Frame(self.root)
