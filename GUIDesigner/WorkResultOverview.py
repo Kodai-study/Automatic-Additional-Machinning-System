@@ -15,7 +15,6 @@ class WorkResultOverview:
             # Add more instances as needed
         ]
         self.create_frame(self.processing_data_list)
-        self.root.mainloop()
 
     def create_frame(self, selected_items):
         self.frame = tk.Frame(self.root)

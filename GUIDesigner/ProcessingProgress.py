@@ -2,12 +2,13 @@ from threading import Thread
 import time
 import tkinter as tk
 from tkinter import ttk
+from GUIDesigner import GUIDesigner
 
 class ProcessingProgress:
-    def __init__(self, root):
+    def __init__(self, root,create_result_frame):
 
         self.root = root
-
+        self.create_result_frame = create_result_frame
         self.robot_status = {
             "is_connection": True,
             "limit_switch": False,
@@ -31,20 +32,20 @@ class ProcessingProgress:
                 "attach": True, "detach": False
             }
         }
+
         self.on_image = tk.PhotoImage(
             file="./resource/images/red_lamp.png").subsample(2, 2)  # 2倍縮小
         self.off_image = tk.PhotoImage(
             file="./resource/images/green_lamp.png").subsample(2, 2)  # 2倍縮小
         self.connection_status_label = None  # coneection のステータスラベル
-        self.create_progress_frame([])  # Pass your selected_items list here
+        self.create_frame([])  # Pass your selected_items list here
         self.sensor_status_labels = self.create_sensor_status_labels()
 
         self.update_connection_status_label()
         # 1000ミリ秒ごとにupdate_ui_threadを呼び出す
         self.root.after(1000, self.update_ui_thread)
-        self.root.mainloop()
 
-    def create_progress_frame(self, selected_items):
+    def create_frame(self, selected_items):
         # 進捗フレームを作成
         self.progress_frame = tk.Frame(self.root)
 
@@ -90,8 +91,11 @@ class ProcessingProgress:
             self.progress_frame, text="2:30", font=("AR丸ゴシック体M", 20))
         remaining_work_label = tk.Label(
             self.progress_frame, text="0", font=("AR丸ゴシック体M", 20))
+        
+        # ボタン作成
+        result_button = tk.Button(self.progress_frame, text="結果表示", font=("AR丸ゴシック体M", 18), width=22, command=self.show_result)
 
-        # プログレスバーとラベルを配置
+        # プログレスバー、ラベル、ボタンを配置
         progress_bar.grid(row=1, column=1, padx=10, pady=10)
         self.progress_label.grid(row=1, column=2, padx=10, pady=10)
 
@@ -103,6 +107,8 @@ class ProcessingProgress:
 
         remaining_work_bar.grid(row=4, column=1, padx=10, pady=10)
         remaining_work_label.grid(row=4, column=2, padx=10, pady=10)
+
+        result_button.place(rely=0.87, relx=0.75)
 
         # データ名を表示するラベル
         current_data_label = tk.Label(
@@ -238,6 +244,9 @@ class ProcessingProgress:
             row_index += 1
 
         return door_lock_status_labels
+    
+    def show_result(self):
+        self.create_result_frame()
 
     def update_door_lock_status_labels(self, door_lock_labels):
         for door_lock_label in door_lock_labels:

@@ -12,6 +12,8 @@ from queue import Queue
 from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
 from .ProcessingProgress import ProcessingProgress
+from .WorkResultOverview import WorkResultOverview
+
 class GUIDesigner:
     """
     GUIのデザインを行うクラス
@@ -411,13 +413,15 @@ class GUIDesigner:
 
         back_button.place(rely=0.85, relx=0.75)
 
-    def create_progress_frame(self, selected_items):
+    def create_progress_frame(self,selected_items):
 
         if self.check_frame:
             self.check_frame.destroy()
         
-        processing = ProcessingProgress(self.root)
-        processing.create_progress_frame(selected_items=self.data_list)
+        self.processing = ProcessingProgress(self.root,self.create_result_frame)
+        self.processing.create_frame(selected_items=self.data_list)
+
+        print("hi")
 
     def create_emergency_frame(self):
         ()
@@ -426,4 +430,11 @@ class GUIDesigner:
         ()
 
     def create_result_frame(self):
-        ()
+        
+        self.processing.progress_frame.destroy()
+
+        # if  processing.progress_frame:
+        #         processing.progress_frame.destroy()
+
+        resulting = WorkResultOverview()
+        resulting.create_frame(selected_items=self.data_list)
