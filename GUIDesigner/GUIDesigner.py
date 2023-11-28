@@ -25,10 +25,9 @@ class GUIDesigner(tk.Tk):
     """
 
     def __init__(self):
-        # ルートウィンドウを作成
-        # self.root = tk.Tk()
-        # self.root.title("T5GUI")
-        # self.root.geometry("1920x1080+0+0")
+        super().__init__()
+        self.title("T5GUI")
+        self.geometry("1920x1080+0+0")
 
         self.monitor_frame = None
         self.check_frame = None
@@ -66,36 +65,9 @@ class GUIDesigner(tk.Tk):
         self.integration_msg_queue = receive_queue
 
         # 画面作成のクラスのインスタンス化のテスト
-        WaitConnecting(self, self.integration_msg_queue).create_frame()
-        
-        wait_connect_cfd_thread = Thread(
-            target=self.create_connection_waiting_frame)
-        wait_connect_cfd_thread.start()
+        WaitConnecting(self, self.gui_request_queue).create_frame()
 
-        self.root.mainloop()
-
-    # CFDとの接続を待つ関数。接続が完了するまで待ち続ける
-
-    def create_connection_waiting_frame(self):
-        self.connection_waiting_frame = tk.Frame(self.root)
-        self.connection_waiting_frame.pack(fill="both", expand=True)
-
-        message_label = tk.Label(
-            self.connection_waiting_frame, text="通信接続を待っています...", font=("AR丸ゴシック体M", 24))
-        message_label.pack(pady=200)
-
-        # 通信接続完了の確認を行う処理を追加
-        def check_connection():
-            if self.connection_is_successful():  # 通信接続が成功した場合
-                self.connection_waiting_frame.destroy()  # 通信待ちフレームを破棄
-                self.create_login_frame()  # ログイン画面を表示
-
-            else:
-                # 通信がまだ確立されていない場合、定期的に確認する
-                self.root.after(1000, check_connection)
-
-        # 通信確認をスタート
-        check_connection()
+        self.mainloop()
 
     def create_login_frame(self):
         self.login_frame = tk.Frame(self.root)

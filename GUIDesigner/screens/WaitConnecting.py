@@ -34,7 +34,8 @@ class WaitConnecting(ScreenBase):
     def check_connection(self):
         if self.connection_is_successful():  # 通信接続が成功した場合
             print("通信接続が確立されました")
+            self.change_frame(Frames.WAIT_CONNECTION)
 
         else:
             # 通信がまだ確立されていない場合、定期的に確認する
-            self.root.after(1000, self.check_connection)
+            self.after(1000, self.check_connection)
