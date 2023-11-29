@@ -5,6 +5,7 @@ from typing import Dict
 from GUIDesigner.screens.CheckSelection import CheckSelection
 from GUIDesigner.screens.CreateSelection import CreateSelection
 from GUIDesigner.screens.Login import Login
+from GUIDesigner.screens.Monitoring import Monitoring
 from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from queue import Queue
@@ -36,7 +37,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.WORK_RESULT_OVERVIEW
+        self.current_screen = Frames.MONITORING
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
@@ -84,6 +85,8 @@ class GUIDesigner(tk.Tk):
             self, self.image_resources, self.data_list, self.robot_status)
         self.screens[Frames.WORK_RESULT_OVERVIEW] = WorkResultOverview(
             self, self.data_list)
+        self.screens[Frames.MONITORING] = Monitoring(
+            self, self.robot_status)
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")

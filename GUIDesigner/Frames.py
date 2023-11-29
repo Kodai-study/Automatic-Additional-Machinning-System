@@ -11,3 +11,4 @@ class Frames(Enum):
     CHECK_SELECTION = auto()
     PROCESSING_PROGRESS = auto()
     WORK_RESULT_OVERVIEW = auto()
+    MONITORING = auto()

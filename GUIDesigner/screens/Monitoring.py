@@ -10,6 +10,7 @@ class Monitoring(ScreenBase):
     def __init__(self, parent, robot_status: dict):
         super().__init__(parent)
         self.robot_status = robot_status
+        self._create_widgets()
 
     def create_frame(self):
         self.tkraise()
@@ -69,7 +70,7 @@ class Monitoring(ScreenBase):
         kara_label2 = tk.Label(
             self, text="", font=("AR丸ゴシック体M", 18))
 
-        back_button = tk.Button(self, text="戻る", command=self.back_to_selection_frame, font=(
+        back_button = tk.Button(self, text="戻る", command=lambda: self.change_frame(Frames.CREATE_SELECTION), font=(
             "AR丸ゴシック体M", 18), width=22)
 
         on_buttons = []  # ONボタン用のリスト
