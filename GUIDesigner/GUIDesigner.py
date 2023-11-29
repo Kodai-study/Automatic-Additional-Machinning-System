@@ -1,10 +1,10 @@
 # coding: utf-8
-from threading import Thread
 import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from typing import Dict, List
+from typing import Dict
+from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
@@ -12,7 +12,6 @@ from queue import Queue
 
 
 # 　カスタムモジュールから必要なクラスをインポート
-from .GUISignalCategory import GUISignalCategory
 from .NumberPad import NumberPad
 from .screens.ProcessingProgress import ProcessingProgress
 from .screens.WorkResultOverview import WorkResultOverview
@@ -55,9 +54,14 @@ class GUIDesigner(tk.Tk):
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
             self, self.gui_request_queue)
+        self.screens[Frames.LOGIN] = Login(self)
+
+        #screensのvalue全てで.grid(0,0)を実行
+        for screen in self.screens.values():
+            screen.grid(row=0, column=0, sticky="nsew")
 
     def change_frame(self, frame: Frames):
-        print("画面遷移", frame)
+        self.screens[frame].create_frame()
 
     def start_gui(self, send_queue: Queue, receive_queue: Queue):
         """
@@ -75,48 +79,6 @@ class GUIDesigner(tk.Tk):
         # 画面作成のクラスのインスタンス化のテスト
         self.screens[Frames.WAIT_CONNECTION].create_frame()
         self.mainloop()
-
-    def create_login_frame(self):
-        self.login_frame = tk.Frame(self.root)
-        self.login_frame.pack(fill="both", expand=True)
-
-        username_label = tk.Label(
-            self.login_frame, text="ID:", font=("AR丸ゴシック体M", 24))
-        username_label.pack()
-        username_label.place(x=830, y=400)
-
-        username_entry = tk.Entry(self.login_frame, font=("AR丸ゴシック体M", 24))
-        username_entry.pack()
-        username_entry.place(x=880, y=400)
-
-        password_label = tk.Label(
-            self.login_frame, text="pass:", font=("AR丸ゴシック体M", 24))
-        password_label.pack()
-        password_label.place(x=797, y=450)
-
-        password_entry = tk.Entry(
-            self.login_frame, show="*", font=("AR丸ゴシック体M", 24))
-        password_entry.pack()
-        password_entry.place(x=880, y=450)
-
-        def perform_login():
-            username = username_entry.get()
-            password = password_entry.get()
-            if username == "" and password == "":
-                print("ログイン成功")
-                self.login_frame.destroy()
-                self.create_selection_frame()
-            else:
-                print("ログイン失敗")
-                error_label.place(x=800, y=700)
-
-        error_label = tk.Label(self.login_frame, text="IDかパスワードが間違っています",
-                               font=("AR丸ゴシック体M", 24), fg="red")
-
-        login_button = tk.Button(
-            self.login_frame, text="Login", command=perform_login, font=("AR丸ゴシック体M", 21))
-        login_button.pack()
-        login_button.place(x=1270, y=550)
 
     def create_selection_frame(self, selected_items=None):
         if hasattr(self, 'check_frame') and self.check_frame:

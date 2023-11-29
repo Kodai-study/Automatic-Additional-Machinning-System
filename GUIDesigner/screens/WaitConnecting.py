@@ -9,7 +9,6 @@ from GUIDesigner.screens.ScreenBase import ScreenBase
 class WaitConnecting(ScreenBase):
     def __init__(self, parent, request_queue: Queue):
         super().__init__(parent)
-        self.pack(fill="both", expand=True)
         self.gui_request_queue = request_queue
 
         message_label = tk.Label(
@@ -17,6 +16,8 @@ class WaitConnecting(ScreenBase):
         message_label.pack(pady=200)
 
     def create_frame(self):
+
+        # self.grid(row=0, column=0, sticky="nsew")
         self.tkraise()
     # 通信確認をスタート
         self.check_connection()
@@ -34,7 +35,7 @@ class WaitConnecting(ScreenBase):
     def check_connection(self):
         if self.connection_is_successful():  # 通信接続が成功した場合
             print("通信接続が確立されました")
-            self.change_frame(Frames.WAIT_CONNECTION)
+            self.change_frame(Frames.LOGIN)
 
         else:
             # 通信がまだ確立されていない場合、定期的に確認する
