@@ -53,34 +53,36 @@ class GUIDesigner(tk.Tk):
 
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
-            self, self.gui_request_queue)
-        self.screens[Frames.LOGIN] = Login(self)
+            self, self.get_request_queue)
+        self.screens[Frames.LOGIN] = Login(self, self.send_message_queue)
 
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")
 
     def _check_queue(self):
-        if not self.gui_request_queue.empty():
+        if not self.get_request_queue.empty():
+            request_type, request_data = self.get_request_queue.get()
             self.screens[self.current_screen].handle_queued_request(
-                self.gui_request_queue.get())
+                request_type, request_data)
 
         self.after(10, self._check_queue)
 
     def change_frame(self, frame: Frames):
+        self.current_screen = frame
         self.screens[frame].create_frame()
 
-    def start_gui(self, send_queue: Queue, receive_queue: Queue):
+    def start_gui(self, get_request_queue: Queue, send_message_queue: Queue):
         """
         GUIを起動し、ループを開始する。
 
         Args:
-            send_queue (Queue): 統合ソフトに送るデータを入れるキュー\n
-            receive_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー
+            get_request_queue (Queue): 統合ソフトから受け取ったデータを入れるキュー\n
+            send_message_queue (Queue): 統合ソフトに送るデータを入れるキュー
         """
 
-        self.gui_request_queue = send_queue
-        self.integration_msg_queue = receive_queue
+        self.get_request_queue = get_request_queue
+        self.send_message_queue = send_message_queue
 
         self._initial_screens()
         # 画面作成のクラスのインスタンス化のテスト
@@ -251,10 +253,10 @@ class GUIDesigner(tk.Tk):
     def update_button_state_with_queue(self):
         state = "READY_START"
         while True:
-            if self.gui_request_queue.empty():
+            if self.get_request_queue.empty():
                 time.sleep(0.1)
                 continue
-            data = self.gui_request_queue.get()
+            data = self.get_request_queue.get()
             if data[0] != RobotInteractionType.MESSAGE_RECEIVED:
                 continue
             if data[1] == "READY":
