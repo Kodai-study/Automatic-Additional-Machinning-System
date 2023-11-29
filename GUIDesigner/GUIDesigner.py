@@ -38,7 +38,7 @@ class GUIDesigner(tk.Tk):
         # どの画面から来たかをトラッキングする変数
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.CHECK_SELECTION
+        self.current_screen = Frames.WAIT_CONNECTION
         # ttkスタイルの設定
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))

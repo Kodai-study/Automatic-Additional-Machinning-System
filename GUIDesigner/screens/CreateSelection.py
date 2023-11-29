@@ -43,7 +43,7 @@ class CreateSelection(ScreenBase):
                                   font=("AR丸ゴシック体M", 18), width=22)
 
         go_check_button = tk.Button(self, text="確認画面", command=lambda: self.change_frame(
-            Frames.WAIT_CONNECTION), font=("AR丸ゴシック体M", 18), width=22)
+            Frames.CHECK_SELECTION), font=("AR丸ゴシック体M", 18), width=22)
         go_check_button.place(rely=0.85, relx=0.75)
         if selected_items:
             for data, quantity in selected_items:

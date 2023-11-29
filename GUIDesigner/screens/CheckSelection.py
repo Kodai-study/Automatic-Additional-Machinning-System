@@ -12,13 +12,16 @@ class CheckSelection(ScreenBase):
         super().__init__(parent)
         self.selected_items = selected_items
         self.image_resource = image_resource
-        self.current_img = self.image_resource["red_lamp"]
+        self.ready_lamp_img = self.image_resource["green_lamp"]
+        self.preparation_lamp_img = self.image_resource["red_lamp"]
         self._create_widgets()
 
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
 
     def create_frame(self):
+        for item in self.selected_items:
+            self.listbox.insert(tk.END, f"{item[0]} - 個数: {item[1]}")
         self.tkraise()
 
     def _create_widgets(self):
@@ -26,14 +29,11 @@ class CheckSelection(ScreenBase):
         self.label = tk.Label(self, text="選択した加工データ",
                               font=("AR丸ゴシック体M", 24))
         self.decoy_label = tk.Label(
-            self, text="                                                 ", font=("AR丸ゴシック体M", 24))
-        self.label_lamp = tk.Label(self, image=self.current_img)
+            self, text=" "*50, font=("AR丸ゴシック体M", 24))
+        self.label_lamp = tk.Label(self, image=self.preparation_lamp_img)
 
         self.listbox = tk.Listbox(self, font=(
             "AR丸ゴシック体M", 18), selectmode=tk.MULTIPLE, width=80, height=25, justify="center")
-
-        for item in self.selected_items:
-            self.listbox.insert(tk.END, f"{item[0]} - 個数: {item[1]}")
 
         self.scrollbar = tk.Scrollbar(
             self, orient=tk.VERTICAL, command=self.listbox.yview)
@@ -43,13 +43,11 @@ class CheckSelection(ScreenBase):
             if self.ready_button["text"] == "準備完了":
                 self.ready_button["text"] = "準備取り消し"
                 # ここでlabel_lampの画像を更新
-                self.label_lamp.config(image=self.green_lamp_img)
+                self.label_lamp.config(image=self.ready_lamp_img)
             else:
                 self.ready_button["text"] = "準備完了"
                 # ここでlabel_lampの画像を更新
-                self.label_lamp.config(image=self.red_lamp_img)
-
-        self.label_lamp = tk.Label(self, image=self.current_img)
+                self.label_lamp.config(image=self.preparation_lamp_img)
 
         self.ready_button = tk.Button(self, text="準備完了",
                                       command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
