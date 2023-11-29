@@ -1,27 +1,30 @@
 import tkinter as tk
+from typing import Union
+from GUIDesigner.Frames import Frames
+from GUIDesigner.GUIRequestType import GUIRequestType
+from GUIDesigner.GUISignalCategory import GUISignalCategory
+from GUIDesigner.screens.ScreenBase import ScreenBase
 
 
-class EmergencyStop:
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.geometry("1920x1080+0+0")
-        self.create_emergency_frame()
-        self.root.mainloop()
+class EmergencyStop(ScreenBase):
+    def __init__(self, parent: tk.Tk):
+        super().__init__(parent)
+        self._create_widgets()
+        self.configure(bg="yellow")
 
-    def create_emergency_frame(self):
-        self.emergency_frame = tk.Frame(self.root, bg="yellow")
-        self.emergency_label = tk.Label(self.emergency_frame, text="非常停止", font=(
+    def create_frame(self):
+        self.tkraise()
+
+    def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
+        self.handle_pause_and_emergency(request_type, request_data)
+
+    def _create_widgets(self):
+        self.emergency_label = tk.Label(self, text="非常停止", font=(
             "AR丸ゴシック体M", 150), fg="red", bg="yellow")
 
-        back_button = tk.Button(self.emergency_frame, text="戻る", font=(
+        self.back_button = tk.Button(self, text="戻る", font=(
             "AR丸ゴシック体M", 18), width=22, bg="yellow")
-        self.emergency_frame.pack(fill="both", expand=True)
 
         # ガジェット配置
-        self.emergency_frame.pack(fill="both", expand=True)
         self.emergency_label.pack(pady=300)
-        back_button.place(rely=0.85, relx=0.75)
-
-
-if __name__ == "__main__":
-    app = EmergencyStop()
+        self.back_button.place(rely=0.85, relx=0.75)

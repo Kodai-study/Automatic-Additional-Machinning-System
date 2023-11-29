@@ -4,6 +4,7 @@ from tkinter import ttk
 from typing import Dict
 from GUIDesigner.screens.CheckSelection import CheckSelection
 from GUIDesigner.screens.CreateSelection import CreateSelection
+from GUIDesigner.screens.EmergencyStop import EmergencyStop
 from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.Monitoring import Monitoring
 from GUIDesigner.screens.ScreenBase import ScreenBase
@@ -11,7 +12,7 @@ from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from queue import Queue
 
 
-# 　カスタムモジュールから必要なクラスをインポート
+#  カスタムモジュールから必要なクラスをインポート
 from .screens.ProcessingProgress import ProcessingProgress
 from .screens.WorkResultOverview import WorkResultOverview
 from .Frames import Frames
@@ -37,7 +38,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.MONITORING
+        self.current_screen = Frames.EMERGENCY_STOP
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
@@ -87,6 +88,7 @@ class GUIDesigner(tk.Tk):
             self, self.data_list)
         self.screens[Frames.MONITORING] = Monitoring(
             self, self.robot_status)
+        self.screens[Frames.EMERGENCY_STOP] = EmergencyStop(self)
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")
