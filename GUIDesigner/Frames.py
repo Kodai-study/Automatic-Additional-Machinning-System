@@ -8,3 +8,4 @@ class Frames(Enum):
     WORK_REQUEST_OVERVIEW = auto()
     TOOL_REQUEST_OVERVIEW = auto()
     CREATE_SELECTION = auto()
+    CHECK_SELECTION = auto()

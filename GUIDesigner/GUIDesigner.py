@@ -3,6 +3,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict
+from GUIDesigner.screens.CheckSelection import CheckSelection
 from GUIDesigner.screens.CreateSelection import CreateSelection
 from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.ScreenBase import ScreenBase
@@ -56,6 +57,7 @@ class GUIDesigner(tk.Tk):
         self.screens[Frames.LOGIN] = Login(self, self.send_message_queue)
         self.screens[Frames.CREATE_SELECTION] = CreateSelection(
             self, self.data_list)
+        self.screens[Frames.CHECK_SELECTION] = CheckSelection(self)
 
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
