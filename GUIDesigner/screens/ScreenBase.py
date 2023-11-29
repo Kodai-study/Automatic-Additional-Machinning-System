@@ -26,7 +26,7 @@ class ScreenBase(tk.Frame, ABC):
         pass
 
     @abstractmethod
-    def handle_queued_request(request_type: GUISignalCategory, request_data=None):
+    def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         """統合ソフトからキューで要求を受け取った場合に呼び出すメソッド。"""
         pass
 
