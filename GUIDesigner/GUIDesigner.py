@@ -35,7 +35,7 @@ class GUIDesigner(tk.Tk):
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
         style.configure("Treeview", font=("AR丸ゴシック体M", 18), rowheight=40)
 
-        self.image_resources = {}
+        self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
         self.current_screen = Frames.WAIT_CONNECTION
