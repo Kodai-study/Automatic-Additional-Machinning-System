@@ -1,15 +1,15 @@
 from datetime import datetime, timedelta
 import tkinter as tk
-
 from GUIDesigner.ProcessingData import ProcessingData
 from common_data_type import WorkPieceShape
+from GUIDesigner.GUISignalCategory import GUISignalCategory
+from GUIDesigner.screens.ScreenBase import ScreenBase
 
 
-class WorkRequest:
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.geometry("1920x1080+0+0")
-        self.work_img = tk.PhotoImage(file="./resource/images/work.png")
+class WorkRequest(ScreenBase):
+    def __init__(self, parent: tk.Tk, image_resources: dict):
+        super().__init__(parent)
+        self.work_img = image_resources["work"]
         self.processing_data_list = [
             ProcessingData(1, "ModelA", timedelta(
                 minutes=30), WorkPieceShape.CIRCLE, 20.0, "John Doe", datetime.now()),
@@ -19,30 +19,33 @@ class WorkRequest:
                 minutes=45), WorkPieceShape.CIRCLE, 25.0, "Bob Johnson", datetime.now()),
             # Add more instances as needed
         ]
-        self.create_frame()
-        self.root.mainloop()
+        self._create_widgets()
 
     def create_frame(self):
+        self.tkraise()
+
+    def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
+        self.handle_pause_and_emergency(request_type, request_data)
+
+    def _create_widgets(self):
         # 背景色を白に設定
-        self.frame = tk.Frame(self.root, bg="white")
 
         # 文を表示
         message_label1 = tk.Label(
-            self.frame, text="ワークが不足しています", font=("AR丸ゴシック体M", 18), bg="white")
-        message_label2 = tk.Label(self.frame, text=f"次に加工するデータは{self.processing_data_list[1].model_number}です", font=(
+            self, text="ワークが不足しています", font=("AR丸ゴシック体M", 18), bg="white")
+        message_label2 = tk.Label(self, text=f"次に加工するデータは{self.processing_data_list[1].model_number}です", font=(
             "AR丸ゴシック体M", 18), bg="white")
-        message_label3 = tk.Label(self.frame, text=f"{self.processing_data_list[1].workpiece_dimension}の大きさのワークをストッカーに入れてください", font=(
+        message_label3 = tk.Label(self, text=f"{self.processing_data_list[1].workpiece_dimension}の大きさのワークをストッカーに入れてください", font=(
             "AR丸ゴシック体M", 18), bg="white")
 
         # 画像の表示
-        work_label = tk.Label(self.frame, image=self.work_img, bg="white")
+        work_label = tk.Label(self, image=self.work_img, bg="white")
 
         # ボタンの配置
-        kakunin_button = tk.Button(self.frame, text="確認", font=(
+        kakunin_button = tk.Button(self, text="確認", font=(
             "AR丸ゴシック体M", 18), width=22, bg="white")
 
         # ガジェット配置
-        self.frame.pack(fill="both", expand=True)
 
         # 文を上に配置
         message_label1.pack(pady=20)

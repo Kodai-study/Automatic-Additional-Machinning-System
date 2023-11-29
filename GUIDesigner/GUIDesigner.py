@@ -11,6 +11,8 @@ from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from queue import Queue
 
+from GUIDesigner.screens.WorkRequest import WorkRequest
+
 
 #  カスタムモジュールから必要なクラスをインポート
 from .screens.ProcessingProgress import ProcessingProgress
@@ -38,7 +40,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.EMERGENCY_STOP
+        self.current_screen = Frames.WORK_REQUEST_OVERVIEW
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
@@ -49,7 +51,8 @@ class GUIDesigner(tk.Tk):
         # 画像ファイルの読み込み
         self.image_resources["green_lamp"] = tk.PhotoImage(
             file="./resource/images/green_lamp.png")
-
+        self.image_resources["work"] = tk.PhotoImage(
+            file="./resource/images/work.png")
         self.robot_status = {
             "is_connection": True,
             "limit_switch": False,
@@ -89,6 +92,8 @@ class GUIDesigner(tk.Tk):
         self.screens[Frames.MONITORING] = Monitoring(
             self, self.robot_status)
         self.screens[Frames.EMERGENCY_STOP] = EmergencyStop(self)
+        self.screens[Frames.WORK_REQUEST_OVERVIEW] = WorkRequest(
+            self, self.image_resources)
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")
