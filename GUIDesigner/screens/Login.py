@@ -1,8 +1,12 @@
 import tkinter as tk
+from typing import Union
+from GUIDesigner.Frames import Frames
+from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 
 FORM_FONT_SIZE = 50
+
 
 class Login(ScreenBase):
     def __init__(self, parent: tk.Tk):
@@ -12,9 +16,13 @@ class Login(ScreenBase):
         self._create_widgets(parent)
         self.grid(sticky="nsew")
 
-    
-    def handle_queued_request(request_type: GUISignalCategory, request_data=None):
-        pass
+    def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
+        self.handle_pause_and_emergency(request_type, request_data)
+        if not request_type[0] == GUIRequestType.LOGIN_REQUEST:
+            return
+
+    def create_frame(self):
+        self.tkraise()
 
     def _create_widgets(self, parent: tk.Tk):
         parent.grid_columnconfigure(0, weight=1)
@@ -51,20 +59,23 @@ class Login(ScreenBase):
         self.password_entry.grid(row=1, column=1, sticky="ew", ipady=10)
 
         # Login button
-        login_button = tk.Button(
-            self, text="Login", font=("Arial", FORM_FONT_SIZE))
-        login_button.grid(row=2, column=0, columnspan=3, sticky="ew", padx=200)
-
-    def create_frame(self):
-        self.tkraise()
+        self.login_button = tk.Button(
+            self, text="Login", font=("Arial", FORM_FONT_SIZE), command=self._perform_login)
+        self.login_button.grid(
+            row=2, column=0, columnspan=3, sticky="ew", padx=200)
 
     def _perform_login(self):
+        self._simulate_login_with_static_data()
+
+    def _simulate_login_with_static_data(self):
+        OK_ID = ""
+        OK_PASSWORD = ""
         username = self.username_entry.get()
         password = self.password_entry.get()
-        if username == "" and password == "":
+        if username == OK_ID and password == OK_PASSWORD:
             print("ログイン成功")
             self.destroy()
-            self.create_selection_frame()
+            self.change_frame(Frames.WAIT_CONNECTION)
         else:
             print("ログイン失敗")
             self.error_label.place(x=800, y=700)
