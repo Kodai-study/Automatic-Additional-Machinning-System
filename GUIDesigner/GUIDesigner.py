@@ -38,18 +38,19 @@ class GUIDesigner(tk.Tk):
         # どの画面から来たかをトラッキングする変数
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.CREATE_SELECTION
+        self.current_screen = Frames.CHECK_SELECTION
         # ttkスタイルの設定
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
         style.configure("Treeview", font=("AR丸ゴシック体M", 18), rowheight=40)
 
-        # 画像ファイルの読み込み
-        self.red_lamp_img = tk.PhotoImage(
+        self.image_resources = {}
+
+        self.image_resources["red_lamp"] = tk.PhotoImage(
             file="./resource/images/red_lamp.png")
-        self.green_lamp_img = tk.PhotoImage(
+        # 画像ファイルの読み込み
+        self.image_resources["green_lamp"] = tk.PhotoImage(
             file="./resource/images/green_lamp.png")
-        self.current_img = self.red_lamp_img
 
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
@@ -57,7 +58,8 @@ class GUIDesigner(tk.Tk):
         self.screens[Frames.LOGIN] = Login(self, self.send_message_queue)
         self.screens[Frames.CREATE_SELECTION] = CreateSelection(
             self, self.data_list)
-        self.screens[Frames.CHECK_SELECTION] = CheckSelection(self)
+        self.screens[Frames.CHECK_SELECTION] = CheckSelection(
+            self, self.data_list, self.image_resources)
 
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
@@ -92,73 +94,6 @@ class GUIDesigner(tk.Tk):
         self.screens[self.current_screen].create_frame()
         self._check_queue()
         self.mainloop()
-
-    def create_check_frame(self, selected_items):
-        if self.selection_frame:
-            self.selection_frame.destroy()
-        if self.monitor_frame:
-            self.monitor_frame.destroy()
-        if self.check_frame:
-            self.check_frame.destroy()
-
-        self.previous_screen = self.check_frame  # ここで self.previous_screen を設定
-        self.check_frame = tk.Frame(self.root)
-
-        label = tk.Label(self.check_frame, text="選択した加工データ",
-                         font=("AR丸ゴシック体M", 24))
-        decoy_label = tk.Label(
-            self.check_frame, text="                                                 ", font=("AR丸ゴシック体M", 24))
-        label_lamp = tk.Label(self.check_frame, image=self.current_img)
-
-        listbox = tk.Listbox(self.check_frame, font=(
-            "AR丸ゴシック体M", 18), selectmode=tk.MULTIPLE, width=80, height=25, justify="center")
-
-        for item in selected_items:
-            listbox.insert(tk.END, f"{item[0]} - 個数: {item[1]}")
-
-        scrollbar = tk.Scrollbar(
-            self.check_frame, orient=tk.VERTICAL, command=listbox.yview)
-        listbox.config(yscrollcommand=scrollbar.set)
-
-        def toggle_ready_state():
-            if ready_button["text"] == "準備完了":
-                ready_button["text"] = "準備取り消し"
-                # ここでlabel_lampの画像を更新
-                label_lamp.config(image=self.green_lamp_img)
-            else:
-                ready_button["text"] = "準備完了"
-                # ここでlabel_lampの画像を更新
-                label_lamp.config(image=self.red_lamp_img)
-
-        label_lamp = tk.Label(self.check_frame, image=self.current_img)
-
-        back_button = tk.Button(self.check_frame, text="戻る", command=self.back_to_selection_frame, font=(
-            "AR丸ゴシック体M", 18), width=22)
-        go_monitor_button = tk.Button(
-            self.check_frame, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
-        ready_button = tk.Button(self.check_frame, text="準備完了",
-                                 command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
-        go_check_button = tk.Button(self.check_frame, text="進捗画面", command=lambda: self.create_progress_frame(
-            self.data_list), font=("AR丸ゴシック体M", 18), width=22)
-
-        self.check_frame.pack(fill="both", expand=True)
-        decoy_label.grid(row=0, column=0)
-        label.grid(row=0, column=1, pady=40)
-        listbox.grid(row=1, column=1)
-        scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
-        back_button.place(rely=0.85, relx=0.75)
-        label_lamp.place(rely=0.80, relx=0.6)
-        go_monitor_button.place(rely=0.85, relx=0.1)
-        ready_button.place(rely=0.80, relx=0.37)
-        go_check_button.place(rely=0.65, relx=0.1)
-
-    def back_to_selection_frame(self):
-        if hasattr(self, 'check_frame') and self.check_frame:
-            self.check_frame.destroy()
-            self.create_check_frame(self.data_list)
-        if hasattr(self, 'monitor_frame') and self.monitor_frame:
-            self.monitor_frame.destroy()
-            self.create_selection_frame(self.data_list)
 
     def update_button_state_with_queue(self):
         state = "READY_START"
