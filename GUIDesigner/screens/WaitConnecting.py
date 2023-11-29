@@ -22,7 +22,7 @@ class WaitConnecting(ScreenBase):
 
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
-        if not request_type[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
+        if not request_type == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
             return
         self.is_connection_ur = True
         self.is_connection_cfd = True
