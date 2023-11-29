@@ -4,6 +4,7 @@ import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.GUISignalCategory import GUISignalCategory
+from GUIDesigner.ProcessingData import ProcessingData
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
@@ -16,7 +17,7 @@ from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
-from common_data_type import TransmissionTarget
+from common_data_type import TransmissionTarget, WorkPieceShape
 
 
 class Integration:
@@ -90,13 +91,12 @@ class Integration:
 
     def _test_insert_process_datas(self):
         self.process_data_list = [
-            {"process_id": 1, "model_name": "加工データ(型番)1",
-             "average_time": datetime.timedelta(minutes=1, seconds=23),
+            {"process_data": ProcessingData(1, "加工データ(型番)1", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.CIRCLE, 10.0, "加工者1", datetime.datetime.now()),
              "regist_process_count": 10,
              "process_time": datetime.timedelta(minutes=12, seconds=34),
              "good_count": 7,
              "remaining_count": 2},
-            {"process_id": 2, "model_name": "加工データ(型番)2",
+            {"process_data": ProcessingData(2, "加工データ(型番)2", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.SQUARE, 10.0, "加工者2", datetime.datetime.now()),
              "average_time": datetime.timedelta(minutes=2, seconds=34),
              "regist_process_count": 20,
              "process_time": datetime.timedelta(minutes=23, seconds=45),
@@ -154,7 +154,7 @@ class Integration:
                     {"target": TransmissionTarget.CFD, "message": "STM 1,CW"})
                 self._wait_command(
                     TransmissionTarget.CFD, "DR_STK_TURNED")
-            
+
             result = self.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
             print(f"工具{stock_number}個めの検査 : 結果 {result}")
