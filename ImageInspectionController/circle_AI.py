@@ -6,7 +6,7 @@ from IPython.display import display
 model = torch.hub.load('ultralytics/yolov5:v5.0', 'yolov5s')
 
 # 画像のパス
-image_path = 'path/to/your/image.jpg'
+image_path = 'path/to/your/image.jpg'  
 
 # 画像の読み込み
 img = Image.open(image_path)
