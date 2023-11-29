@@ -1,7 +1,4 @@
 import tkinter as tk
-from typing import Union
-from GUIDesigner.Frames import Frames
-from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 

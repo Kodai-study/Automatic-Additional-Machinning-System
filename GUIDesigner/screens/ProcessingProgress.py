@@ -25,7 +25,7 @@ class ProcessingProgress(ScreenBase):
         # ボタンを、画面右上に表示
         self.back_button = tk.Button(self, text="戻る", command=lambda: self.handle_queued_request(GUISignalCategory.SENSOR_STATUS_UPDATE), font=(
             "AR丸ゴシック体M", 18), width=22)
-        self.back_button.place(rely=0.85, relx=0.75)
+        self.back_button.place(rely=0.25, relx=0.75)
 
         # 1000ミリ秒ごとにupdate_ui_threadを呼び出す
         # self.root.after(1000, self.update_ui_thread)

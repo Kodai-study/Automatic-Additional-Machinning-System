@@ -1,7 +1,5 @@
-from tkinter import filedialog, ttk
 from GUIDesigner.Frames import Frames
 from GUIDesigner.GUISignalCategory import GUISignalCategory
-from GUIDesigner.NumberPad import NumberPad
 from GUIDesigner.screens.ScreenBase import ScreenBase
 import tkinter as tk
 

@@ -1,5 +1,4 @@
 from queue import Queue
-import time
 import tkinter as tk
 from GUIDesigner.Frames import Frames
 from GUIDesigner.GUISignalCategory import GUISignalCategory
