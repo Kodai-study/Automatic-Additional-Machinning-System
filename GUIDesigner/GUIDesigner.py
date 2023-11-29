@@ -1,5 +1,4 @@
 # coding: utf-8
-import time
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict
@@ -8,7 +7,6 @@ from GUIDesigner.screens.CreateSelection import CreateSelection
 from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
-from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from queue import Queue
 
 
@@ -38,7 +36,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.PROCESSING_PROGRESS
+        self.current_screen = Frames.WORK_RESULT_OVERVIEW
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
@@ -84,7 +82,8 @@ class GUIDesigner(tk.Tk):
             self, self.data_list, self.image_resources)
         self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
             self, self.image_resources, self.data_list, self.robot_status)
-
+        self.screens[Frames.WORK_RESULT_OVERVIEW] = WorkResultOverview(
+            self, self.data_list)
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")
@@ -118,18 +117,6 @@ class GUIDesigner(tk.Tk):
         self.screens[self.current_screen].create_frame()
         self._check_queue()
         self.mainloop()
-
-    def update_button_state_with_queue(self):
-        state = "READY_START"
-        while True:
-            if self.get_request_queue.empty():
-                time.sleep(0.1)
-                continue
-            data = self.get_request_queue.get()
-            if data[0] != RobotInteractionType.MESSAGE_RECEIVED:
-                continue
-            if data[1] == "READY":
-                self.create_progress_frame()
 
     def create_monitor_frame(self):
         if self.monitor_frame:
@@ -262,30 +249,3 @@ class GUIDesigner(tk.Tk):
         processing_table_cylinder_label.grid(row=4, column=5, padx=30, pady=20)
 
         back_button.place(rely=0.85, relx=0.75)
-
-    def create_progress_frame(self, selected_items):
-
-        if self.check_frame:
-            self.check_frame.destroy()
-
-        self.processing = ProcessingProgress(
-            self.root, self.create_result_frame)
-        self.processing.create_frame(selected_items=self.data_list)
-
-        print("hi")
-
-    def create_emergency_frame(self):
-        ()
-
-    def create_requirements_frame(self):
-        ()
-
-    def create_result_frame(self):
-
-        self.processing.progress_frame.destroy()
-
-        # if  processing.progress_frame:
-        #         processing.progress_frame.destroy()
-
-        resulting = WorkResultOverview()
-        resulting.create_frame(selected_items=self.data_list)

@@ -10,3 +10,4 @@ class Frames(Enum):
     CREATE_SELECTION = auto()
     CHECK_SELECTION = auto()
     PROCESSING_PROGRESS = auto()
+    WORK_RESULT_OVERVIEW = auto()
