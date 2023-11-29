@@ -30,27 +30,49 @@ class GUIDesigner(tk.Tk):
         self.title("T5GUI")
         self.geometry("1920x1080+0+0")
 
-        self.monitor_frame = None
-        self.check_frame = None
-        self.selection_frame = None
-        self.data_list = []
-
-        # どの画面から来たかをトラッキングする変数
-        self.previous_screen = None
-        self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.WAIT_CONNECTION
         # ttkスタイルの設定
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
         style.configure("Treeview", font=("AR丸ゴシック体M", 18), rowheight=40)
 
         self.image_resources = {}
+        self.previous_screen = None
+        self.screens: Dict[Frames, ScreenBase] = {}
+        self.current_screen = Frames.WAIT_CONNECTION
+        self.data_list = []
+        self.robot_status = {}
+        self._initial_variables()
 
+    def _initial_variables(self):
         self.image_resources["red_lamp"] = tk.PhotoImage(
             file="./resource/images/red_lamp.png")
         # 画像ファイルの読み込み
         self.image_resources["green_lamp"] = tk.PhotoImage(
             file="./resource/images/green_lamp.png")
+
+        self.robot_status = {
+            "is_connection": True,
+            "limit_switch": False,
+            "lighting": {
+                "back_light": False, "bar_light": False, "ring_light": False
+            },
+            "sensor": {
+                1: False, 2: True, 3: True, 4: False, 5: False, 6: False
+            },
+            "reed_switch": {
+                1: {"forward": True, "backward": False}, 2: {"forward": False, "backward": False},
+                3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
+            },
+            # "door_status": {
+            #     1: False, 2: False, 3: False, 4: False
+            # },
+            "door_lock": {
+                1: True, 2: True, 3: True, 4: True
+            },
+            "ejector": {
+                "attach": True, "detach": False
+            }
+        }
 
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
