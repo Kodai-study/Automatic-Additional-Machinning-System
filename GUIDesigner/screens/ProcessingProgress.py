@@ -1,63 +1,47 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import Dict, Union
+from GUIDesigner.GUIRequestType import GUIRequestType
+from GUIDesigner.GUISignalCategory import GUISignalCategory
+from GUIDesigner.screens.ScreenBase import ScreenBase
 
 
-class ProcessingProgress:
-    def __init__(self, root, create_result_frame):
-
-        self.root = root
-        self.create_result_frame = create_result_frame
-        self.robot_status = {
-            "is_connection": True,
-            "limit_switch": False,
-            "lighting": {
-                "back_light": False, "bar_light": False, "ring_light": False
-            },
-            "sensor": {
-                1: False, 2: True, 3: True, 4: False, 5: False, 6: False
-            },
-            "reed_switch": {
-                1: {"forward": True, "backward": False}, 2: {"forward": False, "backward": False},
-                3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
-            },
-            # "door_status": {
-            #     1: False, 2: False, 3: False, 4: False
-            # },
-            "door_lock": {
-                1: True, 2: True, 3: True, 4: True
-            },
-            "ejector": {
-                "attach": True, "detach": False
-            }
-        }
-
-        self.on_image = tk.PhotoImage(
-            file="./resource/images/red_lamp.png").subsample(2, 2)  # 2倍縮小
-        self.off_image = tk.PhotoImage(
-            file="./resource/images/green_lamp.png").subsample(2, 2)  # 2倍縮小
+class ProcessingProgress(ScreenBase):
+    def __init__(self, parent: tk.Tk, image_resource: Dict[str, tk.PhotoImage],  selected_items, robot_status):
+        super().__init__(parent)
+        self.image_resource = image_resource
+        self.on_image = self.image_resource["red_lamp"].subsample(
+            2, 2)  # 2倍縮小
+        self.off_image = self.image_resource["green_lamp"].subsample(
+            2, 2)
         self.connection_status_label = None  # coneection のステータスラベル
-        self.create_frame([])  # Pass your selected_items list here
+        self.robot_status = robot_status
         self.sensor_status_labels = self.create_sensor_status_labels()
 
         self.update_connection_status_label()
         # 1000ミリ秒ごとにupdate_ui_threadを呼び出す
-        self.root.after(1000, self.update_ui_thread)
+        # self.root.after(1000, self.update_ui_thread)
+        self.selected_items = selected_items
+        self._create_widgets()
 
-    def create_frame(self, selected_items):
+    def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
+        self.handle_pause_and_emergency(request_type, request_data)
+
+    def create_frame(self):
+        self.tkraise()
+
+    def _create_widgets(self):
         # 進捗フレームを作成
-        self.progress_frame = tk.Frame(self.root)
-
-        # 要素のラベル
         labels = ["", "加工進捗", "良品率", "残り時間", "残り枚数"]
 
         # 要素のラベルを作成して配置
         for i, label_text in enumerate(labels):
-            label = tk.Label(self.progress_frame,
+            label = tk.Label(self,
                              text=label_text, font=("AR丸ゴシック体M", 20))
             label.grid(row=i, column=0, padx=50, pady=10, sticky=tk.W)
 
         # 選択されたデータの名前を取得
-        current_data_name = selected_items[0][0] if selected_items else "未選択"
+        current_data_name = self.selected_items[0][0] if self.selected_items else "未選択"
 
         # バックライト、バーライト、リングライトのラベルを作成
         lighting_labels = self.create_lighting_status_labels()
@@ -72,26 +56,26 @@ class ProcessingProgress:
 
         # プログレスバー
         progress_bar = ttk.Progressbar(
-            self.progress_frame, variable=self.progress_var, length=500, mode="determinate")
+            self, variable=self.progress_var, length=500, mode="determinate")
         quality_bar = ttk.Progressbar(
-            self.progress_frame, variable=quality_var, length=500, mode="determinate")
+            self, variable=quality_var, length=500, mode="determinate")
         remaining_time_bar = ttk.Progressbar(
-            self.progress_frame, variable=remaining_time_var, length=500, mode="determinate")
+            self, variable=remaining_time_var, length=500, mode="determinate")
         remaining_work_bar = ttk.Progressbar(
-            self.progress_frame, variable=remaining_work_var, length=500, mode="determinate")
+            self, variable=remaining_work_var, length=500, mode="determinate")
 
         # 数値表示用のラベル
         self.progress_label = tk.Label(
-            self.progress_frame, text="0%", font=("AR丸ゴシック体M", 20))
+            self, text="0%", font=("AR丸ゴシック体M", 20))
         quality_label = tk.Label(
-            self.progress_frame, text="0%", font=("AR丸ゴシック体M", 20))
+            self, text="0%", font=("AR丸ゴシック体M", 20))
         remaining_time_label = tk.Label(
-            self.progress_frame, text="2:30", font=("AR丸ゴシック体M", 20))
+            self, text="2:30", font=("AR丸ゴシック体M", 20))
         remaining_work_label = tk.Label(
-            self.progress_frame, text="0", font=("AR丸ゴシック体M", 20))
+            self, text="0", font=("AR丸ゴシック体M", 20))
 
         # ボタン作成
-        result_button = tk.Button(self.progress_frame, text="結果表示", font=(
+        result_button = tk.Button(self, text="結果表示", font=(
             "AR丸ゴシック体M", 18), width=22, command=self.show_result)
 
         # プログレスバー、ラベル、ボタンを配置
@@ -111,12 +95,12 @@ class ProcessingProgress:
 
         # データ名を表示するラベル
         current_data_label = tk.Label(
-            self.progress_frame, text=f"現在加工中のデータ: {current_data_name}", font=("AR丸ゴシック体M", 18))
+            self, text=f"現在加工中のデータ: {current_data_name}", font=("AR丸ゴシック体M", 18))
         current_data_label.grid(row=0, column=0, columnspan=2, pady=40)
 
         # ネットワーク状況を表示するラベル
         self.connection_status_label = tk.Label(
-            self.progress_frame, text="Connection", image=self.on_image, compound=tk.BOTTOM)
+            self, text="Connection", image=self.on_image, compound=tk.BOTTOM)
         self.connection_status_label.place(x=1500, y=400)
 
         # ステータスを確認し、適切な画像を設定
@@ -125,15 +109,13 @@ class ProcessingProgress:
 
         # "green_lamp"または"red_lamp"の画像を表示し、画像の下にテキストを表示するためのラベル
         ejector_image_label = tk.Label(
-            self.progress_frame, image=ejector_image, compound=tk.BOTTOM, text=ejector_status)
+            self, image=ejector_image, compound=tk.BOTTOM, text=ejector_status)
         ejector_image_label.place(x=1400, y=400)
 
         # センサーステータスラベルを更新
         self.update_lighting_status_labels(lighting_labels)
         # ドアロックステータスラベルを更新
         self.update_door_lock_status_labels(door_lock_labels)
-
-        self.progress_frame.pack(fill="both", expand=True)
 
     def create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
@@ -156,13 +138,13 @@ class ProcessingProgress:
         for sensor_num, sensor_value in self.robot_status["sensor"].items():
             if sensor_num in cylinder_mapping:
                 sensor_label = tk.Label(
-                    self.progress_frame, text=sensor_name_mapping[sensor_num], font=("AR丸ゴシック体M", 14))
+                    self, text=sensor_name_mapping[sensor_num], font=("AR丸ゴシック体M", 14))
                 # 任意のy座標に適した値を指定してください
                 sensor_label.place(x=100, y=row_index*85)
 
                 sensor_image = self.on_image if sensor_value else self.off_image
                 sensor_status_label = tk.Label(
-                    self.progress_frame, text="On" if sensor_value else "Off", image=sensor_image)
+                    self, text="On" if sensor_value else "Off", image=sensor_image)
                 sensor_status_label.place(
                     x=260, y=row_index*84)  # 任意のy座標に適した値を指定してください
 
@@ -171,7 +153,7 @@ class ProcessingProgress:
                     reed_switch_value = self.robot_status["reed_switch"][sensor_num][direction]
                     reed_switch_image = self.on_image if reed_switch_value else self.off_image
                     reed_switch_label = tk.Label(
-                        self.progress_frame, text=cylinder_mapping[sensor_num][direction], font=("AR丸ゴシック体M", 12))
+                        self, text=cylinder_mapping[sensor_num][direction], font=("AR丸ゴシック体M", 12))
 
                     # 新しい配置の設定
                     column_index = 2 if direction == "forward" else 3
@@ -181,7 +163,7 @@ class ProcessingProgress:
                         x=column_index*240 + padx_value, y=row_index*85)
 
                     reed_switch_image_label = tk.Label(
-                        self.progress_frame, image=reed_switch_image)
+                        self, image=reed_switch_image)
                     # 新しい配置の設定
                     column_index = 3 if direction == "forward" else 4
                     padx_value = 10 if direction == "forward" else 50
@@ -208,12 +190,12 @@ class ProcessingProgress:
 
         for light_name, light_value in self.robot_status["lighting"].items():
             light_label = tk.Label(
-                self.progress_frame, text=lighting_name_mapping[light_name], font=("AR丸ゴシック体M", 14))
+                self, text=lighting_name_mapping[light_name], font=("AR丸ゴシック体M", 14))
             light_label.place(x=1150, y=row_index*85)  # 任意のy座標に適した値を指定してください
 
             light_image = self.on_image if light_value else self.off_image
             light_status_label = tk.Label(
-                self.progress_frame, text="On" if light_value else "Off", image=light_image)
+                self, text="On" if light_value else "Off", image=light_image)
             # 任意のy座標に適した値を指定してください
             light_status_label.place(x=1250, y=row_index*84)
 
@@ -229,13 +211,13 @@ class ProcessingProgress:
 
         for door_num, door_lock_value in self.robot_status["door_lock"].items():
             door_lock_label = tk.Label(
-                self.progress_frame, text=f"ドアロック{door_num}", font=("AR丸ゴシック体M", 14))
+                self, text=f"ドアロック{door_num}", font=("AR丸ゴシック体M", 14))
             # 任意のy座標に適した値を指定してください
             door_lock_label.place(x=1450, y=row_index*67)
 
             door_lock_image = self.on_image if door_lock_value else self.off_image
             door_lock_status_label = tk.Label(
-                self.progress_frame, text="Locked" if door_lock_value else "Unlocked", image=door_lock_image)
+                self, text="Locked" if door_lock_value else "Unlocked", image=door_lock_image)
             door_lock_status_label.place(
                 x=1570, y=row_index*66)  # 任意のy座標に適した値を指定してください
 
@@ -245,7 +227,8 @@ class ProcessingProgress:
         return door_lock_status_labels
 
     def show_result(self):
-        self.create_result_frame()
+        # self.create_result_frame()
+        pass
 
     def update_door_lock_status_labels(self, door_lock_labels):
         for door_lock_label in door_lock_labels:

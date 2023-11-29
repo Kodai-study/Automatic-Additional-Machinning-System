@@ -38,7 +38,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.WAIT_CONNECTION
+        self.current_screen = Frames.PROCESSING_PROGRESS
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
@@ -82,6 +82,8 @@ class GUIDesigner(tk.Tk):
             self, self.data_list)
         self.screens[Frames.CHECK_SELECTION] = CheckSelection(
             self, self.data_list, self.image_resources)
+        self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
+            self, self.image_resources, self.data_list, self.robot_status)
 
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
