@@ -40,7 +40,7 @@ class Login(ScreenBase):
 
     def _success_login(self, request_data):
         print(f"ログイン成功 : ユーザの権限は{request_data['permission_type']}です。")
-        self.change_frame(Frames.WAIT_CONNECTION)
+        self.change_frame(Frames.CREATE_SELECTION)
 
     def create_frame(self):
         self.tkraise()
