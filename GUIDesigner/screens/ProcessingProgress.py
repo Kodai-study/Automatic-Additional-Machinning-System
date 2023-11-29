@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict, Union
+from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
@@ -87,7 +88,7 @@ class ProcessingProgress(ScreenBase):
 
         # ボタン作成
         self.result_button = tk.Button(self, text="結果表示", font=(
-            "AR丸ゴシック体M", 18), width=22, command=self.show_result)
+            "AR丸ゴシック体M", 18), width=22, command=lambda: self.change_frame(Frames.WORK_RESULT_OVERVIEW))
 
         # プログレスバー、ラベル、ボタンを配置
         self.progress_bar.grid(row=1, column=1, padx=10, pady=10)
@@ -236,10 +237,6 @@ class ProcessingProgress(ScreenBase):
             row_index += 1
 
         return self.door_lock_status_labels
-
-    def show_result(self):
-        # self.create_result_frame()
-        pass
 
     def _update_door_lock_status_labels(self, door_lock_labels):
         for door_lock_label in door_lock_labels:
