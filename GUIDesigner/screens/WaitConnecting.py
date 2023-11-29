@@ -10,33 +10,22 @@ class WaitConnecting(ScreenBase):
     def __init__(self, parent, request_queue: Queue):
         super().__init__(parent)
         self.gui_request_queue = request_queue
+        self.is_connection_ur = False
+        self.is_connection_cfd = False
 
         message_label = tk.Label(
             self, text="通信接続を待っています...", font=("AR丸ゴシック体M", 24))
         message_label.pack(pady=200)
 
     def create_frame(self):
-
-        # self.grid(row=0, column=0, sticky="nsew")
         self.tkraise()
-    # 通信確認をスタート
-        self.check_connection()
 
-    def connection_is_successful(self):
-        while True:
-            if not self.gui_request_queue.empty():
-                received_data = self.gui_request_queue.get()
-                if received_data[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
-                    return True
-            else:
-                time.sleep(0.1)
+    def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
+        self.handle_pause_and_emergency(request_type, request_data)
+        if not request_type[0] == GUISignalCategory.ROBOT_CONNECTION_SUCCESS:
+            return
+        self.is_connection_ur = True
+        self.is_connection_cfd = True
 
-        # 通信接続完了の確認を行う処理を追加
-    def check_connection(self):
-        if self.connection_is_successful():  # 通信接続が成功した場合
-            print("通信接続が確立されました")
+        if self.is_connection_ur and self.is_connection_cfd:
             self.change_frame(Frames.LOGIN)
-
-        else:
-            # 通信がまだ確立されていない場合、定期的に確認する
-            self.after(1000, self.check_connection)

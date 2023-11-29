@@ -1,4 +1,5 @@
 import tkinter as tk
+from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 
 FORM_FONT_SIZE = 50
@@ -10,6 +11,10 @@ class Login(ScreenBase):
         # 位置を中央上部に割合で指定
         self._create_widgets(parent)
         self.grid(sticky="nsew")
+
+    
+    def handle_queued_request(request_type: GUISignalCategory, request_data=None):
+        pass
 
     def _create_widgets(self, parent: tk.Tk):
         parent.grid_columnconfigure(0, weight=1)
