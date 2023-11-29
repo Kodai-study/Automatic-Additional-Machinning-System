@@ -9,9 +9,9 @@ import tkinter as tk
 class CreateSelection(ScreenBase):
     def __init__(self, parent, data_list):
         super().__init__(parent)
-        self.create_selection_frame()
         self.number_pad = None
         self.data_list: list = data_list
+        self._create_widgets()
 
     def create_frame(self):
         self.tkraise()
@@ -19,11 +19,10 @@ class CreateSelection(ScreenBase):
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
 
-    def create_selection_frame(self, selected_items=None):
+    def _create_widgets(self, selected_items=None):
 
         self.table = ttk.Treeview(self, columns=(
             "Data", "Quantity"), show="headings")
-
         self.table.heading("#0", text=" ")
         self.table.heading("Data", text="加工データ", anchor='center')
         self.table.heading("Quantity", text="個数", anchor='center')
@@ -58,7 +57,7 @@ class CreateSelection(ScreenBase):
 
     def _add_data_from_file(self):
         file_path = filedialog.askopenfilename(
-            title="ファイルを選択してください", filetypes=(("テキストファイル", "*.txt"), ("すべてのファイル", "*.*")))
+            title="ファイルを選択してください", filetypes=(("すべてのファイル", "*.*"), ("テキストファイル", "*.txt")))
         if file_path:
             file_name = file_path.split("/")[-1]
             self.number_pad = NumberPad(self)
@@ -101,8 +100,6 @@ class CreateSelection(ScreenBase):
 
     # 削除後に選択テーブルを更新する新しい関数
     def _update_selection_table(self):
-        table = self.children["!treeview"]
-        table.delete(*table.get_children())
-
+        self.table.delete(*self.table.get_children())
         for data, quantity in self.data_list:
-            table.insert("", "end", values=(data, quantity))
+            self.table.insert("", "end", values=(data, quantity))
