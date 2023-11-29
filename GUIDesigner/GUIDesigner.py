@@ -2,8 +2,8 @@
 import time
 import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
 from typing import Dict
+from GUIDesigner.CreateSelection import CreateSelection
 from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
@@ -12,7 +12,6 @@ from queue import Queue
 
 
 # 　カスタムモジュールから必要なクラスをインポート
-from .NumberPad import NumberPad
 from .screens.ProcessingProgress import ProcessingProgress
 from .screens.WorkResultOverview import WorkResultOverview
 from .Frames import Frames
@@ -38,7 +37,7 @@ class GUIDesigner(tk.Tk):
         # どの画面から来たかをトラッキングする変数
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.WAIT_CONNECTION
+        self.current_screen = Frames.CREATE_SELECTION
         # ttkスタイルの設定
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
@@ -55,6 +54,8 @@ class GUIDesigner(tk.Tk):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
             self, self.get_request_queue)
         self.screens[Frames.LOGIN] = Login(self, self.send_message_queue)
+        self.screens[Frames.CREATE_SELECTION] = CreateSelection(
+            self, self.data_list)
 
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
@@ -86,102 +87,9 @@ class GUIDesigner(tk.Tk):
 
         self._initial_screens()
         # 画面作成のクラスのインスタンス化のテスト
-        self.screens[Frames.WAIT_CONNECTION].create_frame()
+        self.screens[self.current_screen].create_frame()
         self._check_queue()
         self.mainloop()
-
-    def create_selection_frame(self, selected_items=None):
-        if hasattr(self, 'check_frame') and self.check_frame:
-            self.check_frame.destroy()
-
-        self.selection_frame = tk.Frame(self.root)
-
-        self.table = ttk.Treeview(self.selection_frame, columns=(
-            "Data", "Quantity"), show="headings")
-
-        self.table.heading("#0", text=" ")
-        self.table.heading("Data", text="加工データ", anchor='center')
-        self.table.heading("Quantity", text="個数", anchor='center')
-        self.table.heading("#0", text=" ", anchor='center')
-
-        self.table.column('Data', anchor='center')
-        self.table.column('Quantity', anchor='center')
-
-        scrollbar = ttk.Scrollbar(
-            self.selection_frame, orient=tk.VERTICAL, command=self.table.yview)
-        self.table.configure(yscroll=scrollbar.set)
-
-        go_monitor_button = tk.Button(self.selection_frame, text="モニタ画面",
-                                      command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
-        go_check_button = tk.Button(self.selection_frame, text="確認画面", command=lambda: self.create_check_frame(
-                                    self.data_list), font=("AR丸ゴシック体M", 18), width=22)
-        add_data_button = tk.Button(self.selection_frame, text="ファイル参照",
-                                    command=self.add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
-        remove_button = tk.Button(self.selection_frame, text="削除", command=self.remove_selected_items,
-                                  font=("AR丸ゴシック体M", 18), width=22)
-
-        if selected_items:
-            for data, quantity in selected_items:
-                self.table.insert("", "end", values=(data, quantity))
-
-        self.selection_frame.pack(fill="both", expand=True)
-        self.table.place(relheight=0.6, relwidth=0.7, x=130, y=70)
-        scrollbar.place(relheight=0.6, x=1464, y=70)
-        add_data_button.place(rely=0.2, x=1530, y=200)
-        remove_button.place(rely=0.2, x=1530, y=400)
-        go_monitor_button.place(rely=0.85, relx=0.1)
-        go_check_button.place(rely=0.85, relx=0.75)
-
-    def add_data_from_file(self):
-        file_path = filedialog.askopenfilename(
-            title="ファイルを選択してください", filetypes=(("テキストファイル", "*.txt"), ("すべてのファイル", "*.*")))
-        if file_path:
-            file_name = file_path.split("/")[-1]
-
-            number_pad = NumberPad(self.root)
-            self.root.wait_window(number_pad)
-            quantity = int(number_pad.result.get())
-
-            self.data_list.append((file_name, quantity))
-
-            print("Current content of self.data_list:", self.data_list)
-
-            self.update_selection_table()
-
-    # 選択されたアイテムを削除する新しい関数
-    def remove_selected_items(self):
-        selected_items = self.table.selection()
-
-        print("Current content of self.data_list before removal:", self.data_list)
-
-        for item in selected_items:
-            item_values = self.table.item(item, 'values')
-            if item_values:
-                data, quantity = item_values[0], int(
-                    item_values[1])  # 数量を整数に変換
-
-                print(f"Trying to remove: {data}, {quantity}")
-
-                # data_list から削除する対象を見つけて削除
-                for i, (existing_data, existing_quantity) in enumerate(self.data_list):
-                    if (data, quantity) == (existing_data, existing_quantity):
-                        print("Found in the list. Removing.")
-                        del self.data_list[i]
-                        break  # 見つかったらループを抜ける
-                else:
-                    print("Not found in the list.")
-
-        print("Current content of self.data_list after removal:", self.data_list)
-
-        self.update_selection_table()
-
-    # 削除後に選択テーブルを更新する新しい関数
-    def update_selection_table(self):
-        table = self.selection_frame.children["!treeview"]
-        table.delete(*table.get_children())
-
-        for data, quantity in self.data_list:
-            table.insert("", "end", values=(data, quantity))
 
     def create_check_frame(self, selected_items):
         if self.selection_frame:
