@@ -1,4 +1,3 @@
-from queue import Queue
 import tkinter as tk
 from typing import Union
 from GUIDesigner.Frames import Frames
@@ -52,13 +51,13 @@ class CheckSelection(ScreenBase):
         self.ready_button = tk.Button(self, text="準備完了",
                                       command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)
 
-        # back_button = tk.Button(self, text="戻る", command=self.back_to_selection_frame, font=(
-        #     "AR丸ゴシック体M", 18), width=22)
+        back_button = tk.Button(self, text="戻る", command=self.back_to_selection_frame, font=(
+            "AR丸ゴシック体M", 18), width=22)
+        back_button.place(rely=0.85, relx=0.75)
         # go_monitor_button = tk.Button(
         #     self, text="モニタ画面", command=self.create_monitor_frame, font=("AR丸ゴシック体M", 18), width=22)
         # go_check_button = tk.Button(self, text="進捗画面", command=lambda: self.create_progress_frame(
         #     self.selected_items), font=("AR丸ゴシック体M", 18), width=22)
-        # back_button.place(rely=0.85, relx=0.75)
         # go_monitor_button.place(rely=0.85, relx=0.1)
         # go_check_button.place(rely=0.65, relx=0.1)
 
@@ -70,10 +69,4 @@ class CheckSelection(ScreenBase):
         self.ready_button.place(rely=0.80, relx=0.37)
 
     def back_to_selection_frame(self):
-        pass
-        # if hasattr(self, 'check_frame') and self:
-        #     self.destroy()
-        # self.create_check_frame(self.data_list)
-        # if hasattr(self, 'monitor_frame') and self.monitor_frame:
-        # self.monitor_frame.destroy()
-        # self.create_selection_frame(self.data_list)
+        self.change_frame(Frames.CREATE_SELECTION)
