@@ -3,7 +3,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict
-from GUIDesigner.CreateSelection import CreateSelection
+from GUIDesigner.screens.CreateSelection import CreateSelection
 from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
