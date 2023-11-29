@@ -38,7 +38,7 @@ class GUIDesigner(tk.Tk):
         # どの画面から来たかをトラッキングする変数
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-
+        self.current_screen = Frames.WAIT_CONNECTION
         # ttkスタイルの設定
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
@@ -56,9 +56,16 @@ class GUIDesigner(tk.Tk):
             self, self.gui_request_queue)
         self.screens[Frames.LOGIN] = Login(self)
 
-        #screensのvalue全てで.grid(0,0)を実行
+        # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")
+
+    def _check_queue(self):
+        if not self.gui_request_queue.empty():
+            self.screens[self.current_screen].handle_queued_request(
+                self.gui_request_queue.get())
+
+        self.after(10, self._check_queue)
 
     def change_frame(self, frame: Frames):
         self.screens[frame].create_frame()
@@ -78,6 +85,7 @@ class GUIDesigner(tk.Tk):
         self._initial_screens()
         # 画面作成のクラスのインスタンス化のテスト
         self.screens[Frames.WAIT_CONNECTION].create_frame()
+        self._check_queue()
         self.mainloop()
 
     def create_selection_frame(self, selected_items=None):
