@@ -40,7 +40,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.WORK_REQUEST_OVERVIEW
+        self.current_screen = Frames.WAIT_CONNECTION
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()

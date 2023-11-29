@@ -36,7 +36,7 @@ class CreateSelection(ScreenBase):
         self.table.configure(yscroll=scrollbar.set)
 
         go_monitor_button = tk.Button(self, text="モニタ画面",
-                                      command=self, font=("AR丸ゴシック体M", 18), width=22)
+                                      command=lambda: self.change_frame(Frames.MONITORING), font=("AR丸ゴシック体M", 18), width=22)
         add_data_button = tk.Button(self, text="ファイル参照",
                                     command=self._add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
         remove_button = tk.Button(self, text="削除", command=self._remove_selected_items,
