@@ -31,6 +31,7 @@ def read_qr_code(image_path):
     cv2.imshow('QR Code Reader', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    
 
 if __name__ == "__main__":
     # 画像ファイルのパスを指定
