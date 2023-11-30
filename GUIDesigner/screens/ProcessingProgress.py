@@ -11,9 +11,9 @@ class ProcessingProgress(ScreenBase):
     def __init__(self, parent: tk.Tk, image_resource: Dict[str, tk.PhotoImage],  selected_items, robot_status):
         super().__init__(parent)
         self.image_resource: dict = image_resource
-        self.on_image = self.image_resource["red_lamp"].subsample(
+        self.on_image = self.image_resource["green_lamp"].subsample(
             2, 2)  # 2倍縮小
-        self.off_image = self.image_resource["green_lamp"].subsample(
+        self.off_image = self.image_resource["red_lamp"].subsample(
             2, 2)
         self.connection_status_label = None  # coneection のステータスラベル
         self.robot_status: dict = robot_status
@@ -110,10 +110,17 @@ class ProcessingProgress(ScreenBase):
             self, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
         self.current_data_label.grid(row=0, column=0, columnspan=2, pady=40)
 
+        # # ネットワーク状況を表示するラベル
+        # self.connection_status_label = tk.Label(
+        #     self, text="Connection", image=self.off_image, compound=tk.BOTTOM)
+        # self.connection_status_label.place(x=1500, y=400)
+
         # ネットワーク状況を表示するラベル
         self.connection_status_label = tk.Label(
-            self, text="Connection", image=self.on_image, compound=tk.BOTTOM)
+            self, text="Connection", image=self.off_image, compound=tk.BOTTOM)
         self.connection_status_label.place(x=1500, y=400)
+        self._update_connection_status_label()  # 初期表示を更新
+
 
         # ステータスを確認し、適切な画像を設定
         self.ejector_status = "UR: attach" if self.robot_status[
@@ -252,18 +259,26 @@ class ProcessingProgress(ScreenBase):
         for sensor_label in sensor_labels:
             sensor_label.grid_forget()
 
+    # def _update_connection_status_label(self):
+    #     if self.connection_status_label:
+    #         if self.robot_status["is_connection"]:
+    #             self.connection_status_label.config(
+    #                 text="Connection: On", image=self.on_image)
+    #         else:
+    #             self.connection_status_label.config(
+    #                 text="Connection: Off", image=self.off_image)
+    
     def _update_connection_status_label(self):
         if self.connection_status_label:
-            if self.robot_status["is_connection"]:
-                self.connection_status_label.config(
-                    text="Connection: On", image=self.on_image)
-            else:
-                self.connection_status_label.config(
-                    text="Connection: Off", image=self.off_image)
+            connection_text = "Connection: On" if self.robot_status["is_connection"] else "Connection: Off"
+            connection_image = self.on_image if self.robot_status["is_connection"] else self.off_image
+
+            self.connection_status_label.config(text=connection_text, image=connection_image)
 
     def update_ui_thread(self):
         # このメソッドはメインスレッドで実行されるようになりました
         self._update_ui()
+        self._update_connection_status_label()  # ネットワーク状況を更新
         self.root.after(1000, self.update_ui_thread)  # 再度このメソッドを1000ミリ秒後に呼び出す
 
     def _update_ui(self):

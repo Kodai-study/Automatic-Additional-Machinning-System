@@ -6,8 +6,7 @@ from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 
-FORM_FONT_SIZE = 50
-
+FORM_FONT_SIZE = 24
 
 class Login(ScreenBase):
     def __init__(self, parent: tk.Tk, send_to_integration_queue: Queue):
@@ -60,30 +59,29 @@ class Login(ScreenBase):
         # ID label
         self.username_label = tk.Label(
             self, text="ID:", font=("Arial", FORM_FONT_SIZE))
-        self.username_label.grid(row=0, column=0, sticky="e")
+        self.username_label.place(x=830, y=400)
 
         # ID entry
         self.username_entry = tk.Entry(
             self, font=("Arial", FORM_FONT_SIZE))
         # Increased vertical padding
-        self.username_entry.grid(row=0, column=1, sticky="ew", ipady=10)
+        self.username_entry.place(x=880, y=400)
 
         # Password label
         self.password_label = tk.Label(
             self, text="Pass:", font=("Arial", FORM_FONT_SIZE))
-        self.password_label.grid(row=1, column=0, sticky="e")
+        self.password_label.place(x=797, y=450)
 
         # Password entry
         self.password_entry = tk.Entry(
             self, show="*", font=("Arial", FORM_FONT_SIZE))
         # Increased vertical padding
-        self.password_entry.grid(row=1, column=1, sticky="ew", ipady=10)
+        self.password_entry.place(x=880, y=450)
 
         # Login button
         self.login_button = tk.Button(
             self, text="Login", font=("Arial", FORM_FONT_SIZE), command=self._perform_login)
-        self.login_button.grid(
-            row=2, column=0, columnspan=3, sticky="ew", padx=200)
+        self.login_button.place(x=1270, y=550)
 
     def _perform_login(self):
         self.send_to_integration_queue.put(
