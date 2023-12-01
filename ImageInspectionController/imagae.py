@@ -15,8 +15,10 @@ def detect_circles(image_path):
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
     # Cannyエッジ検出
-    edges = cv2.Canny(blurred, 50, 150)
-
+    edges = cv2.Canny(blurred, 20, 50)
+    edges = cv2.bitwise_not(edges)
+    cv2.imshow("Edge Detection", edges)
+    cv2.waitKey(0)
     circles = cv2.HoughCircles(
         edges,
         cv2.HOUGH_GRADIENT,
@@ -25,8 +27,34 @@ def detect_circles(image_path):
         param1=50,
         param2=30,
         minRadius=20,
-        maxRadius=50
+        maxRadius=109
     )
+
+    for i, circle in enumerate(circles[0, :]):
+        center = (circle[0], circle[1])
+        radius = circle[2]
+        cv2.circle(image, center, radius, (0, 0, 255), 2)
+        cv2.circle(image, center, 2, (0, 255, 0), 3)
+        print(f"円 {i + 1}: 中心 = {center}, 半径 = {radius}")
+
+    cv2.imshow('検出された形状', image)
+    cv2.waitKey(0)
+    for max_radius in range(30, 201):
+        circles = cv2.HoughCircles(
+            edges,
+            cv2.HOUGH_GRADIENT,
+            dp=1,
+            minDist=50,
+            param1=50,
+            param2=30,
+            minRadius=20,
+            maxRadius=max_radius
+        )
+        if  not circles is None:
+            key=0
+        # if key != -1:
+        #     break
+
 
     detected_circles = []
 
