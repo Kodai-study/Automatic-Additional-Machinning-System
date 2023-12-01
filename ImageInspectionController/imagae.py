@@ -1,3 +1,7 @@
+#引数
+#画像パス
+#返り値
+#画像処理を施した画像、良否判定
 import cv2
 import numpy as np
 

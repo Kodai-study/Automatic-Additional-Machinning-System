@@ -24,8 +24,15 @@ def read_qr_code(image_path):
                 rect = cv2.convexHull(rect_points)
                 cv2.drawContours(image, [rect], -1, (0, 255, 0), 2)
 
-            # QRコードの内容を表示
-            print("QRコードの内容:", qr_code.data.decode('utf-8'))
+                # 四角形の外側に矩形を描画
+                x, y, w, h = cv2.boundingRect(rect)
+                cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+                # QRコードの内容を表示
+                print("QRコードの内容:", qr_code.data.decode('utf-8'))
+    else:
+        # QRコードが見つからない場合のメッセージ
+        print("QRコードが見つかりませんでした。")
 
     # 画像の表示
     cv2.imshow('QR Code Reader', image)
@@ -34,7 +41,7 @@ def read_qr_code(image_path):
 
 if __name__ == "__main__":
     # 画像ファイルのパスを指定
-    image_path = 'ImageInspectionController/QR2.png'
+    image_path = 'ImageInspectionController/QR.png'
 
     # QRコードを読み取り、内容を表示
     read_qr_code(image_path)
