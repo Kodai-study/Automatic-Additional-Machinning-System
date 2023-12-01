@@ -9,14 +9,23 @@ def measure_drill_width(drill_image_path):
         print(f"Error: Failed to load image from {drill_image_path}")
         return
 
+
     # グレースケール変換
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # エッジ検出（適切なパラメータを調整してください）
-    edges = cv2.Canny(gray, 30, 100)
+    edges = cv2.Canny(gray, 150, 160)
+    # for threshold1 in range(50, 301, 10):
+    #     edges = cv2.Canny(gray, threshold1, threshold1 + 10)
+    #     cv2.imshow("Edge Detection", edges)
+    #     cv2.waitKey(0)
 
     # 輪郭検出
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+   
+    # 輪郭を画像に合わせて表示
+    cv2.drawContours(image, contours, -1, (0, 255, 0), 2)
+    
 
     if not contours:
         print("Error: No contours found.")
@@ -47,5 +56,5 @@ def measure_drill_width(drill_image_path):
     cv2.destroyAllWindows()
 
 # ドリルの画像ファイルのパスを指定して呼び出し
-drill_image_path = "ImageInspectionController/drill.png"
+drill_image_path = "ImageInspectionController/img.png"
 measure_drill_width(drill_image_path)
