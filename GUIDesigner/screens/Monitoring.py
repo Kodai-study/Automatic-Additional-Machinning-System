@@ -1,13 +1,17 @@
+from queue import Queue
+from typing import List
 from GUIDesigner.Frames import Frames
+from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 import tkinter as tk
 
 
 class Monitoring(ScreenBase):
-    def __init__(self, parent, robot_status: dict):
+    def __init__(self, parent, robot_status: dict,send_to_integration_queue: Queue):
         super().__init__(parent)
         self.robot_status = robot_status
+        self.send_to_integration_queue = send_to_integration_queue
         self._create_widgets()
 
     def create_frame(self):
@@ -15,6 +19,9 @@ class Monitoring(ScreenBase):
 
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
+
+    def push_button(self,command):
+        self.send_to_integration_queue.put((GUIRequestType.ROBOT_OPERATION_REQUEST, command))
 
     def _create_widgets(self):
         def toggle_button(on_button, off_button):
@@ -24,12 +31,6 @@ class Monitoring(ScreenBase):
             else:
                 on_button["state"] = "normal"
                 off_button["state"] = "disabled"
-
-        def toggle_forward_button(forward_button, reverse_button):
-            toggle_button(forward_button, reverse_button)
-
-        def toggle_reverse_button(forward_button, reverse_button):
-            toggle_button(reverse_button, forward_button)
 
         backlight_label = tk.Label(
             self, text="バックライト照明", font=("AR丸ゴシック体M", 18))
@@ -71,10 +72,13 @@ class Monitoring(ScreenBase):
         back_button = tk.Button(self, text="戻る", command=lambda: self.change_frame(Frames.CREATE_SELECTION), font=(
             "AR丸ゴシック体M", 18), width=22)
 
-        on_buttons = []  # ONボタン用のリスト
-        off_buttons = []  # OFFボタン用のリスト
-        forward_buttons = []  # 正転ボタン用のリスト
-        reverse_buttons = []  # 後転ボタン用のリスト
+        on_buttons: List[tk.Button] = []  # ONボタン用のリスト
+        off_buttons: List[tk.Button] = []  # OFFボタン用のリスト
+        forward_buttons: List[tk.Button] = []  # 正転ボタン用のリスト
+        reverse_buttons: List[tk.Button] = []  # 後転ボタン用のリスト
+
+        button = tk.Button(self, text="OFF", width=10, bg="red",command=lambda: self.push_button("test"))
+        button.grid(row=6,column=1)
 
         for i in range(8):
             # ONボタンとOFFボタンを作成
@@ -98,10 +102,12 @@ class Monitoring(ScreenBase):
                 on_buttons[i], off_buttons[i]))
             off_buttons[i].config(command=lambda i=i: toggle_button(
                 on_buttons[i], off_buttons[i]))
-            forward_buttons[i].config(command=lambda i=i: toggle_forward_button(
+            forward_buttons[i].config(command=lambda i=i: self.push_button(
                 forward_buttons[i], reverse_buttons[i]))
-            reverse_buttons[i].config(command=lambda i=i: toggle_reverse_button(
+            reverse_buttons[i].config(command=lambda i=i: self.push_button(
                 forward_buttons[i], reverse_buttons[i]))
+        
+
 
         for i in range(8):
             on_buttons[i].grid(row=i + 1, column=2)
