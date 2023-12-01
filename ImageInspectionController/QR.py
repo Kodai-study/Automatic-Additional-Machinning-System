@@ -9,6 +9,23 @@ def read_qr_code(image_path):
     # グレースケールに変換
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+    # エッジ検出
+    edges = cv2.Canny(gray, 50, 150)
+
+    # 輪郭検出
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    for contour in contours:
+        # 四角形の検出
+        approx = cv2.approxPolyDP(contour, 0.02 * cv2.arcLength(contour, True), True)
+        if len(approx) == 4:
+            # 四角形の大きさを表示
+            x, y, w, h = cv2.boundingRect(approx)
+            print("四角形の大きさ: 幅 =", w, ", 高さ =", h)
+
+            # 四角形の枠線を描画
+            cv2.drawContours(image, [approx], -1, (0, 255, 0), 2)
+
     # QRコードの検出
     qr_codes = decode(gray)
 
