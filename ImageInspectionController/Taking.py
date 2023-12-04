@@ -14,11 +14,13 @@ import pytelicam
 import yaml
 import cv2
 from ImageInspectionController.ProcessDatas import InspectionType
-# from ImageInspectionController.light import Light
-
+from ImageInspectionController.light import Light
 
 class Taking:
+    def __init__(self):
+        self.light = Light()
     def take_picuture(self, kensamei: InspectionType) -> str:
+        self.light.light_onoff(kensamei)
         file_path = 'ImageInspectionController/kensa_config.yaml'
         with open(file_path, 'r') as yaml_file:
             data = yaml.safe_load(yaml_file)
@@ -26,24 +28,15 @@ class Taking:
             kougucamera_info = data['Camera_information']['TOOL_INSPECTION']
         serial_number = kougucamera_info['serial_number']
         model_number = kougucamera_info['model_number']
-        # アクセス例
-        # kougucamera_info = data['Camera_information']['TOOL_INSPECTION']
-        # serial_number = kougucamera_info['serial_number']
-        # kataban = kougucamera_info['kataban']
-        # print("Serial Number:", serial_number)
-        # print("Kataban:", kataban)
+
         cam_system = self.initial_cam_setting(2)
         cam_device, receive_signal = self.setting_cam(
             serial_number, model_number, cam_system)
         np_arr = self.take_picture(cam_device, cam_system, receive_signal)
-        # print('shape      : {0}'.format(np_arr.shape))
-        # print('image data :\n {0}'.format(np_arr[0,]))
-        # print('average    : {0}\n'.format(np.average(np_arr)))
-        # グレースケール画像の保存
-        cv2.imwrite('grayscale_image.png', np_arr)
-        return 'grayscale_image.png'
-    # It is recommended that the settings of unused interfaces be removed.
-    #  (U3v / Gev / GenTL)
+
+        cv2.imwrite('img/grayscale_image.png', np_arr)
+        return 'img/grayscale_image.png'
+
 
     def initial_cam_setting(self, cam_num=3) -> pytelicam.pytelicam.CameraSystem:
         cam_system = pytelicam.get_camera_system(
@@ -89,7 +82,6 @@ class Taking:
             print('Grab error! status = {0}'.format(res))
             return
         else:
-            # If you don't use 'with' statement, image_data.release() must be called after using image_data.
             with cam_device.cam_stream.get_current_buffered_image() as image_data:
                 if image_data.status != pytelicam.CamApiStatus.Success:
                     print('Grab error! status = {0}'.format(image_data.status))
