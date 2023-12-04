@@ -16,27 +16,46 @@ import cv2
 from ImageInspectionController.ProcessDatas import InspectionType
 from ImageInspectionController.light import Light
 
+
 class Taking:
     def __init__(self):
         self.light = Light()
-    def take_picuture(self, kensamei: InspectionType) -> str:
-        self.light.light_onoff(kensamei)
         file_path = 'ImageInspectionController/kensa_config.yaml'
         with open(file_path, 'r') as yaml_file:
-            data = yaml.safe_load(yaml_file)
-        if kensamei == InspectionType.TOOL_INSPECTION:
-            kougucamera_info = data['Camera_information']['TOOL_INSPECTION']
-        serial_number = kougucamera_info['serial_number']
-        model_number = kougucamera_info['model_number']
+            self.data = yaml.safe_load(yaml_file)
+        self.cam_system = self.initial_cam_setting(1)
 
-        cam_system = self.initial_cam_setting(2)
-        cam_device, receive_signal = self.setting_cam(
-            serial_number, model_number, cam_system)
-        np_arr = self.take_picture(cam_device, cam_system, receive_signal)
+        self.cam_device_tool, self.receive_signal_tool = self._get_camera_device(
+            "TOOL_INSPECTION")
+        self.cam_device_kakou, self.receive_signal_kakou = self._get_camera_device(
+            "PRE_PROCESSING_INSPECTION")
+        self.cam_device_seido, self.receive_signal_seido = self._get_camera_device(
+            "ACCURACY_INSPECTION")
+
+    def _get_camera_device(self, camera_type: str):
+        serial_number, model_number = self._get_serial_and_model(camera_type)
+        return self.setting_cam(
+            serial_number, model_number, self.cam_system)
+
+    def _get_serial_and_model(self, camera_type: str):
+        setting_data = self.data['Camera_information'][camera_type]
+        return setting_data['serial_number'], setting_data['model_number']
+
+    def take_picuture(self, kensamei: InspectionType) -> str:
+        self.light.light_onoff(kensamei)
+
+        if kensamei == InspectionType.TOOL_INSPECTION:
+            np_arr = self.take_picture(
+                self.cam_device_tool, self.cam_system, self.receive_signal_tool)
+        if kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
+            np_arr = self.take_picture(
+                self.cam_device_kakou, self.cam_system, self.receive_signal_kakou)
+        if kensamei == InspectionType.ACCURACY_INSPECTION:
+            np_arr = self.take_picture(
+                self.cam_device_seido, self.cam_system, self.receive_signal_seido)
 
         cv2.imwrite('img/grayscale_image.png', np_arr)
         return 'img/grayscale_image.png'
-
 
     def initial_cam_setting(self, cam_num=3) -> pytelicam.pytelicam.CameraSystem:
         cam_system = pytelicam.get_camera_system(
@@ -69,7 +88,7 @@ class Taking:
         cam_device.cam_stream.open(receive_signal)
         return cam_device, receive_signal
 
-    def take_picture(self,cam_device, cam_system, receive_signal) -> np.ndarray:
+    def take_picture(self, cam_device, cam_system, receive_signal) -> np.ndarray:
 
         cam_device.cam_stream.start()
 

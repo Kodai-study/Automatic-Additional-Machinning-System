@@ -27,5 +27,5 @@ def test_integration():
 
 if __name__ == "__main__":
     taking=Taking()
-    a=taking.take_picuture(InspectionType.TOOL_INSPECTION)
+    a=taking.take_picuture(InspectionType.PRE_PROCESSING_INSPECTION)
     print(a)
