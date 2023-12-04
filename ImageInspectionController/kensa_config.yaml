@@ -1,15 +1,15 @@
 Camera_information:
   TOOL_INSPECTION:
     serial_number: "1000522"
-    kataban: "BU132M"
+    model_number: "BU132M"
 
   PRE_PROCESSING_INSPECTION:
     serial_number: "1000101"
-    kataban: "BU602M"
+    model_number: "BU602M"
 
   ACCURACY_INSPECTION:
     serial_number: "1000143"
-    kataban: "BU602M"
+    model_number: "BU602M"
     
 Light_information:
   TOOL_INSPECTION:
