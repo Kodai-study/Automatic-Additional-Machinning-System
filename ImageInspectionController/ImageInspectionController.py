@@ -33,6 +33,10 @@ class ImageInspectionController:
         if operation_type==OperationType.ACCURACY_INSPECTION:
             img_pass = self.taking.take_picuture(InspectionType.ACCURACY_INSPECTION)
             kekka = (img_pass)
+        if operation_type==OperationType.TOOL_INSPECTION:
+            img_pass = self.taking.take_picuture(InspectionType.TOOL_INSPECTION)
+            kekka = (img_pass)
+        
         return kekka 
     
     def test(kensamei:InspectionType):
