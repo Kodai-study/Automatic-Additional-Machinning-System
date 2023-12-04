@@ -26,6 +26,10 @@ def test_integration():
 
 
 if __name__ == "__main__":
-    taking=Taking()
-    a=taking.take_picuture(InspectionType.PRE_PROCESSING_INSPECTION)
+    taking = Taking()
+    if not taking.check_camera_connection():
+        print("カメラとの接続がだめ")
+        exit()
+    a = taking.take_picture(InspectionType.PRE_PROCESSING_INSPECTION)
+    taking.close()
     print(a)
