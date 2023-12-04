@@ -1,5 +1,7 @@
 from queue import Queue
 from GUIDesigner.GUIDesigner import GUIDesigner
+from ImageInspectionController.ProcessDatas import InspectionType
+from ImageInspectionController.Taking import Taking
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 
@@ -24,4 +26,6 @@ def test_integration():
 
 
 if __name__ == "__main__":
-    test_integration()
+    taking=Taking()
+    a=taking.take_picuture(InspectionType.TOOL_INSPECTION)
+    print(a)
