@@ -77,37 +77,29 @@ class Monitoring(ScreenBase):
         forward_buttons: List[tk.Button] = []  # 正転ボタン用のリスト
         reverse_buttons: List[tk.Button] = []  # 後転ボタン用のリスト
 
-        button = tk.Button(self, text="OFF", width=10, bg="red",command=lambda: self.push_button("test"))
-        button.grid(row=6,column=1)
+        # ボタンのコマンドリストを作成します
+        on_commands = ["backlight_on\n", "barlight_on\n", "ringlight_on\n", "UR_attach\n",
+                        "doorlock1_on\n", "doorlock2_on\n", "doorlock3_on\n", "doorlock4_on\n"]
+        off_commands = ["backlight_off\n", "barlight_off\n", "ringlight_off\n", "UR_detach\n", 
+                        "doorlock1_off\n", "doorlock2_off\n", "doorlock3_off\n", "doorlock4_off\n"]
+        forward_commands = ["servomotor_forward\n", "beltconveyor_forward\n", "processing_cylinder_forward\n", "inspection_cylinder_forward\n", 
+                            "toolchanger_cylinder_forward\n", "inspectionwall_cylinder_forward\n", "processing_table_cylinder_forward\n"]
+        reverse_commands = ["servomotor_reverse\n", "beltconveyor_reverse\n", "processing_cylinder_reverse\n", "inspection_cylinder_reverse\n", 
+                            "toolchanger_cylinder_reverse\n", "inspectionwall_cylinder_reverse\n", "processing_table_cylinder_reverse\n"]
 
+        # 各ボタンに対して異なるコマンドを設定します
         for i in range(8):
-            # ONボタンとOFFボタンを作成
-            on_button = tk.Button(
-                self, text="ON", state="normal", width=10, bg="orange")
-            off_button = tk.Button(
-                self, text="OFF", state="disabled", width=10, bg="cyan")
+            on_button = tk.Button(self, text="ON", state="normal", width=10, bg="orange", command=lambda i=i: (self.push_button(on_commands[i]), toggle_button(on_buttons[i], off_buttons[i])))
+            off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="cyan", command=lambda i=i: (self.push_button(off_commands[i]), toggle_button(on_buttons[i], off_buttons[i])))
             on_buttons.append(on_button)
             off_buttons.append(off_button)
 
+        # 同様に、正転と後転のボタンにも異なるコマンドを設定します
         for i in range(8):
-            forward_button = tk.Button(
-                self, text="正転", state="normal", width=10, bg="orange")
-            reverse_button = tk.Button(
-                self, text="後転", state="disabled", width=10, bg="cyan")
+            forward_button = tk.Button(self, text="正転", state="normal", width=10, bg="orange", command=lambda i=i: (self.push_button(forward_commands[i]), toggle_button(forward_buttons[i], reverse_buttons[i])))
+            reverse_button = tk.Button(self, text="後転", state="disabled", width=10, bg="cyan", command=lambda i=i: (self.push_button(reverse_commands[i]), toggle_button(forward_buttons[i], reverse_buttons[i])))
             forward_buttons.append(forward_button)
             reverse_buttons.append(reverse_button)
-
-        for i in range(8):
-            on_buttons[i].config(command=lambda i=i: toggle_button(
-                on_buttons[i], off_buttons[i]))
-            off_buttons[i].config(command=lambda i=i: toggle_button(
-                on_buttons[i], off_buttons[i]))
-            forward_buttons[i].config(command=lambda i=i: self.push_button(
-                forward_buttons[i], reverse_buttons[i]))
-            reverse_buttons[i].config(command=lambda i=i: self.push_button(
-                forward_buttons[i], reverse_buttons[i]))
-        
-
 
         for i in range(8):
             on_buttons[i].grid(row=i + 1, column=2)
