@@ -13,11 +13,9 @@ Camera_information:
     
 Light_information:
   pinnumbers:
-    TOOL_INSPECTION:1
-      
-    PRE_PROCESSING_INSPECTION:2
-    
-    ACCURACY_INSPECTION:3
+    TOOL_INSPECTION: 0
+    PRE_PROCESSING_INSPECTION: 1 
+    ACCURACY_INSPECTION: 2
    
   ON: 1
   OFF: 0

@@ -1,4 +1,5 @@
 from queue import Queue
+import time
 from GUIDesigner.GUIDesigner import GUIDesigner
 from ImageInspectionController.ProcessDatas import InspectionType
 from ImageInspectionController.light import Light
@@ -28,4 +29,14 @@ def test_integration():
 
 if __name__ == "__main__":
     L=Light()
-    L.light_switch(InspectionType.ACCURACY_INSPECTION,"OFF")
+    L.light_onoff(InspectionType.ACCURACY_INSPECTION,"ON")
+    time.sleep(1)
+    L.light_onoff(InspectionType.ACCURACY_INSPECTION,"OFF")
+    time.sleep(1)
+    L.light_onoff(InspectionType.PRE_PROCESSING_INSPECTION,"ON")
+    time.sleep(1)
+    L.light_onoff(InspectionType.PRE_PROCESSING_INSPECTION,"OFF")
+    time.sleep(1)
+    L.light_onoff(InspectionType.TOOL_INSPECTION,"ON")
+    time.sleep(1)
+    L.light_onoff(InspectionType.TOOL_INSPECTION,"OFF")

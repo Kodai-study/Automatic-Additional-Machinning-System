@@ -40,9 +40,9 @@ class Light:
 
     def light_onoff(self, camera: InspectionType, ONorOFF)->str:
         if ONorOFF == "ON":
-            cmd = cmd + " set "
+            cmd = "set"
         elif ONorOFF == "OFF":
-            cmd = cmd + " clear "
+            cmd = "clear"
         gpio_pin_number = self.getpinnum(camera)
         self.serPort.write(f"gpio {cmd} {gpio_pin_number}\r".encode('utf-8'))
         return "OK"
