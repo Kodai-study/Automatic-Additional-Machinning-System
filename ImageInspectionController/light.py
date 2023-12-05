@@ -1,32 +1,18 @@
 import serial
+import yaml
 from ImageInspectionController.ProcessDatas import InspectionType
 from light_control import Light_control
 
 
 class Light:
     def __init__(self):
-        self.IOBOARD_PID = 2050
-        self.IOBOARD_VID = 10777
-        # self.dic = {Camera_type.Accuracy: 1,
-        #             Camera_type.Inspection: 2, Camera_type.Preprocessing: 3}
-        self.IT = {InspectionType.ACCURACY_INSPECTION: 1,
-                   InspectionType.PRE_PROCESSING_INSPECTION:2,InspectionType.TOOL_INSPECTION:3}
-
-    def light_on(self, camera: InspectionType, ONorOFF="NONE")->str:
-        """指定された検査名から指定の照明をONまたはOFFする。
-        引数から検査の種類とONまたはOFFを受け取り、返り値としてOKもしくは
-        エラーを示すERを返す。
-
-        Args:
-            camera (InspectionType): _description_
-            ONorOFF (str, optional): "ON"or"OFF". Defaults to "NONE".
-
-        Returns:
-            str:"OK" 
-                "ER"
-        """
-        # COMポートの一覧を取得
         ports = list(serial.tools.list_ports.comports())
+        file_path = 'ImageInspectionController/kensa_config.yaml'
+        with open(file_path, 'r') as yaml_file:
+            self.data = yaml.safe_load(yaml_file)
+        gpio_setting = self.data['Light_information']['gpio']
+        self.IOBOARD_PID = gpio_setting['IOBOARD_PID']
+        self.IOBOARD_VID = gpio_setting['IOBOARD_VID']        # COMポートの一覧を取得
         com_num = None
 
         for port in ports:
@@ -38,16 +24,25 @@ class Light:
             return "ER"
 
         else:
-            serPort = serial.Serial(com_num, 19200, timeout=1)
+            self.serPort = serial.Serial(com_num, 19200, timeout=1)
             print(f"COMポート {com_num} を使用します。")
+        return
+    
+    def getpinnum(self, camera: InspectionType):
+        pinnum = self.data['Light_information']['pinnumbers']
+        if camera == InspectionType.ACCURACY_INSPECTION:
+            pinnum = pinnum['ACCURACY_INSPECTION']
+        elif camera == InspectionType.PRE_PROCESSING_INSPECTION:
+            pinnum = pinnum['PRE_PROCESSING_INSPECTION']
+        elif camera == InspectionType.TOOL_INSPECTION:
+            pinnum = pinnum['TOOL_INSPECTION']
+        return pinnum
 
-        cmd = "gpio"
-
+    def light_onoff(self, camera: InspectionType, ONorOFF)->str:
         if ONorOFF == "ON":
             cmd = cmd + " set "
         elif ONorOFF == "OFF":
             cmd = cmd + " clear "
-
-        cmd = cmd + str(self.IT[camera])
-        serPort.write((cmd + "\r").encode('utf-8'))
+        gpio_pin_number = self.getpinnum(camera)
+        self.serPort.write(f"gpio {cmd} {gpio_pin_number}\r".encode('utf-8'))
         return "OK"

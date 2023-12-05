@@ -1,0 +1,26 @@
+Camera_information:
+  TOOL_INSPECTION:
+    serial_number: "1000522"
+    model_number: "BU132M"
+
+  PRE_PROCESSING_INSPECTION:
+    serial_number: "1000101"
+    model_number: "BU602M"
+
+  ACCURACY_INSPECTION:
+    serial_number: "1000143"
+    model_number: "BU602M"
+    
+Light_information:
+  pinnumbers:
+    TOOL_INSPECTION:1
+      
+    PRE_PROCESSING_INSPECTION:2
+    
+    ACCURACY_INSPECTION:3
+   
+  ON: 1
+  OFF: 0
+  gpio:
+    IOBOARD_PID: 2050
+    IOBOARD_VID: 10777
