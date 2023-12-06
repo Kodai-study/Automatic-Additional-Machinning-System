@@ -21,12 +21,12 @@ class Light:
 
         if com_num is None:
             print("COMポートが見つかりませんでした。")
-            return "ER"
+
 
         else:
             self.serPort = serial.Serial(com_num, 19200, timeout=1)
             print(f"COMポート {com_num} を使用します。")
-        return
+        
     
     def getpinnum(self, camera: InspectionType):
         pinnum = self.data['Light_information']['pinnumbers']
