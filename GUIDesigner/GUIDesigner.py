@@ -40,7 +40,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.MONITORING
+        self.current_screen = Frames.LOGIN
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
@@ -93,7 +93,7 @@ class GUIDesigner(tk.Tk):
             self, self.robot_status, self.send_message_queue)
         self.screens[Frames.EMERGENCY_STOP] = EmergencyStop(self)
         self.screens[Frames.WORK_REQUEST_OVERVIEW] = WorkRequest(
-            self, self.image_resources)
+            self, self.image_resources,bg="white")
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")

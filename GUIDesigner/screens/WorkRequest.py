@@ -7,8 +7,8 @@ from GUIDesigner.screens.ScreenBase import ScreenBase
 
 
 class WorkRequest(ScreenBase):
-    def __init__(self, parent: tk.Tk, image_resources: dict):
-        super().__init__(parent)
+    def __init__(self, parent: tk.Tk, image_resources: dict, *args, **keywords):
+        super().__init__(parent, *args, **keywords)
         self.work_img = image_resources["work"]
         self.processing_data_list = [
             ProcessingData(1, "ModelA", timedelta(

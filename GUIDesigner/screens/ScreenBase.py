@@ -14,8 +14,8 @@ class ScreenBase(tk.Frame, ABC):
     handle_queued_request()を呼び出す。
     """
 
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, parent, *args, **keywords):
+        super().__init__(parent, *args, **keywords)
         self.change_frame = parent.change_frame
 
     @abstractmethod

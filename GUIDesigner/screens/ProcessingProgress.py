@@ -23,11 +23,6 @@ class ProcessingProgress(ScreenBase):
         self.selected_items = selected_items
         self._create_widgets()
 
-        # ボタンを、画面右上に表示
-        self.back_button = tk.Button(self, text="戻る", command=lambda: self.handle_queued_request(GUISignalCategory.SENSOR_STATUS_UPDATE), font=(
-            "AR丸ゴシック体M", 18), width=22)
-        self.back_button.place(rely=0.25, relx=0.75)
-
         # 1000ミリ秒ごとにupdate_ui_threadを呼び出す
         # self.root.after(1000, self.update_ui_thread)
 
@@ -87,8 +82,13 @@ class ProcessingProgress(ScreenBase):
             self, text="0", font=("AR丸ゴシック体M", 20))
 
         # ボタン作成
-        self.result_button = tk.Button(self, text="結果表示", font=(
-            "AR丸ゴシック体M", 18), width=22, command=lambda: self.change_frame(Frames.WORK_RESULT_OVERVIEW))
+        # self.result_button = tk.Button(self, text="結果表示", font=(
+        #     "AR丸ゴシック体M", 18), width=22, command=lambda: self.change_frame(Frames.WORK_RESULT_OVERVIEW))
+        # self.result_button.place(rely=0.87, relx=0.75)
+        # ボタンを、画面右上に表示
+        # self.back_button = tk.Button(self, text="戻る", command=lambda: self.handle_queued_request(GUISignalCategory.SENSOR_STATUS_UPDATE), font=(
+        #     "AR丸ゴシック体M", 18), width=22)
+        # self.back_button.place(rely=0.25, relx=0.75)
 
         # プログレスバー、ラベル、ボタンを配置
         self.progress_bar.grid(row=1, column=1, padx=10, pady=10)
@@ -103,24 +103,16 @@ class ProcessingProgress(ScreenBase):
         self.remaining_work_bar.grid(row=4, column=1, padx=10, pady=10)
         self.remaining_work_label.grid(row=4, column=2, padx=10, pady=10)
 
-        self.result_button.place(rely=0.87, relx=0.75)
-
         # データ名を表示するラベル
         self.current_data_label = tk.Label(
             self, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
         self.current_data_label.grid(row=0, column=0, columnspan=2, pady=40)
-
-        # # ネットワーク状況を表示するラベル
-        # self.connection_status_label = tk.Label(
-        #     self, text="Connection", image=self.off_image, compound=tk.BOTTOM)
-        # self.connection_status_label.place(x=1500, y=400)
 
         # ネットワーク状況を表示するラベル
         self.connection_status_label = tk.Label(
             self, text="Connection", image=self.off_image, compound=tk.BOTTOM)
         self.connection_status_label.place(x=1500, y=400)
         self._update_connection_status_label()  # 初期表示を更新
-
 
         # ステータスを確認し、適切な画像を設定
         self.ejector_status = "UR: attach" if self.robot_status[
@@ -259,15 +251,6 @@ class ProcessingProgress(ScreenBase):
         for sensor_label in sensor_labels:
             sensor_label.grid_forget()
 
-    # def _update_connection_status_label(self):
-    #     if self.connection_status_label:
-    #         if self.robot_status["is_connection"]:
-    #             self.connection_status_label.config(
-    #                 text="Connection: On", image=self.on_image)
-    #         else:
-    #             self.connection_status_label.config(
-    #                 text="Connection: Off", image=self.off_image)
-    
     def _update_connection_status_label(self):
         if self.connection_status_label:
             connection_text = "Connection: On" if self.robot_status["is_connection"] else "Connection: Off"

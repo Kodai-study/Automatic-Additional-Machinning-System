@@ -58,8 +58,9 @@ class CheckSelection(ScreenBase):
             self, text="モニタ画面", command=lambda: self.change_frame(Frames.MONITORING), font=("AR丸ゴシック体M", 18), width=22)
         go_check_button = tk.Button(self, text="進捗画面", command=lambda: self.change_frame(
             Frames.PROCESSING_PROGRESS), font=("AR丸ゴシック体M", 18), width=22)
+        
         go_monitor_button.place(rely=0.85, relx=0.1)
-        go_check_button.place(rely=0.65, relx=0.1)
+        # go_check_button.place(rely=0.65, relx=0.1)
 
         self.decoy_label.grid(row=0, column=0)
         self.label.grid(row=0, column=1, pady=40)
