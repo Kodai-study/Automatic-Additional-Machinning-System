@@ -1,10 +1,15 @@
 from queue import Queue
+import time
 from GUIDesigner.GUIDesigner import GUIDesigner
+from ImageInspectionController.ProcessDatas import InspectionType
+from ImageInspectionController.Taking import Taking
+from ImageInspectionController.light import Light
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
+import light_control
 from common_data_type import CameraType, LightingType, WorkPieceShape
 
 
@@ -70,5 +75,5 @@ def test_lighting():
 
 
 if __name__ == "__main__":
-    test_camera_snapshot()
+    # test_camera_snapshot()
     test_lighting()

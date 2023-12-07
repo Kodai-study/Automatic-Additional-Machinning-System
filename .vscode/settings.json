@@ -1,0 +1,14 @@
+{
+    "launch": {
+
+        "configurations": [
+            {
+                "name": "Python: Current File",
+                "type": "python",
+                "request": "launch",
+                "args": ["COM4","1","set"]
+            }
+        ],
+        "compounds": []
+    }
+}

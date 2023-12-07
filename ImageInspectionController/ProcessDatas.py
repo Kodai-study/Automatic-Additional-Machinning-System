@@ -65,8 +65,6 @@ class ToolsInfo:
     """
     ツールの長さ 検査した値
     """
-
-
 class InspectionType(Enum):
     ACCURACY_INSPECTION = auto(),
     PRE_PROCESSING_INSPECTION = auto(),
