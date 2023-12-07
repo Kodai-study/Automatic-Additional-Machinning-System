@@ -24,10 +24,10 @@ class Taking:
             self.data = yaml.safe_load(yaml_file)
         self.cam_system = self._initial_cam_setting(1)
 
-        # self.cam_device_tool, self.receive_signal_tool = self._get_camera_device(
-        #     "TOOL_INSPECTION")
-        self.cam_device_kakou, self.receive_signal_kakou = self._get_camera_device(
-            "PRE_PROCESSING_INSPECTION")
+        self.cam_device_tool, self.receive_signal_tool = self._get_camera_device(
+            "TOOL_INSPECTION")
+        # self.cam_device_kakou, self.receive_signal_kakou = self._get_camera_device(
+        #     "PRE_PROCESSING_INSPECTION")
         return
         # self.cam_device_seido, self.receive_signal_seido = self._get_camera_device(
         #     "ACCURACY_INSPECTION")
@@ -64,7 +64,7 @@ class Taking:
     def take_picture(self, kensamei: InspectionType) -> str:
         if self.cam_system == None:
             return "era"
-        self.light.light_onoff(kensamei)
+        # self.light.light_onoff(kensamei)
 
         if kensamei == InspectionType.TOOL_INSPECTION:
             np_arr = self._get_image_data(
@@ -76,7 +76,7 @@ class Taking:
             np_arr = self._get_image_data(
                 self.cam_device_seido,  self.receive_signal_seido)
 
-        cv2.imwrite('img/grayscale_image.png', np_arr)
+        cv2.imwrite('/home/kuga/img/', np_arr)
 
         return 'img/grayscale_image.png'
 

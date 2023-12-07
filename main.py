@@ -29,10 +29,17 @@ def test_integration():
 
 
 if __name__ == "__main__":
-    L=Light()
-    T=Taking()
+    L = Light()
+    T = Taking()
     time.sleep(1)
-    L.light_onoff(InspectionType.TOOL_INSPECTION,"ON")
+    L.light_onoff(InspectionType.TOOL_INSPECTION, "ON")
+    time.sleep(1)
+    L.light_onoff(InspectionType.PRE_PROCESSING_INSPECTION, "ON")
+    time.sleep(1)
+    L.light_onoff(InspectionType.ACCURACY_INSPECTION, "ON")
     T.take_picture(InspectionType.TOOL_INSPECTION)
+    L.light_onoff(InspectionType.TOOL_INSPECTION, "OFF")
     time.sleep(1)
-    L.light_onoff(InspectionType.TOOL_INSPECTION,"OFF")
+    L.light_onoff(InspectionType.PRE_PROCESSING_INSPECTION, "OFF")
+    time.sleep(1)
+    L.light_onoff(InspectionType.ACCURACY_INSPECTION, "OFF")
