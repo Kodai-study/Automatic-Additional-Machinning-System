@@ -9,6 +9,19 @@ from ImageInspectionController.Taking import Taking
 from common_data_type import CameraType, LightingType
 from typing import Tuple, Union, List
 
+# inspectionからカメラの種類を取得できるdictを宣言してください
+camera_type_dict = {
+    InspectionType.TOOL_INSPECTION: CameraType.TOOL_CAMERA,
+    InspectionType.ACCURACY_INSPECTION: CameraType.ACCURACY_CAMERA,
+    InspectionType.PRE_PROCESSING_INSPECTION: CameraType.PRE_PROCESSING_CAMERA
+}
+
+
+def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
+    for key, value in camera_type_dict.items():
+        if value == camera_type:
+            return key
+
 
 class ImageInspectionController:
 
@@ -26,6 +39,21 @@ class ImageInspectionController:
         Returns:
             Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo]]: 検査の結果。合否と、検査で出された様々な値。検査の種類によって型が異なる
         """
+        if operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT:
+            request_result = []
+            for camera_type in inspection_data:
+                inspection_type = get_inspectionType_with_camera(camera_type)
+                img_pass = self.taking.take_picuture(
+                    inspection_type)
+
+                if img_pass is None:
+                    request_result.append(
+                        CameraControlResult(is_success=False, camera_type=camera_type, image_path=None))
+                    continue
+
+                request_result.append(
+                    CameraControlResult(is_success=True, camera_type=camera_type, image_path=img_pass))
+
         if operation_type == OperationType.PRE_PROCESSING_INSPECTION:
             img_pass = self.taking.take_picuture(
                 InspectionType.PRE_PROCESSING_INSPECTION)
