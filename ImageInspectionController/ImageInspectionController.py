@@ -9,7 +9,6 @@ from ImageInspectionController.Taking import Taking
 from common_data_type import CameraType, LightingType
 from typing import Tuple, Union, List
 
-# inspectionからカメラの種類を取得できるdictを宣言してください
 camera_type_dict = {
     InspectionType.TOOL_INSPECTION: CameraType.TOOL_CAMERA,
     InspectionType.ACCURACY_INSPECTION: CameraType.ACCURACY_CAMERA,
@@ -28,6 +27,15 @@ class ImageInspectionController:
     def __init__(self):
         self.taking = Taking()
 
+    def _take_inspection_snapshot(self, camera_type):
+        inspection_type = get_inspectionType_with_camera(camera_type)
+        img_pass = self.taking.take_picuture(inspection_type)
+
+        if img_pass is None:
+            return CameraControlResult(is_success=False, camera_type=camera_type, image_path=None)
+
+        return CameraControlResult(is_success=True, camera_type=camera_type, image_path=img_pass)
+
     def perform_image_operation(self, operation_type: OperationType, inspection_data: Union[PreProcessingInspectionData, ToolInspectionData, List[HoleCheckInfo], Tuple[LightingType, bool], List[CameraType]]) \
             -> Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo], LightningControlResult, CameraControlResult]:
         """
@@ -40,19 +48,8 @@ class ImageInspectionController:
             Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo]]: 検査の結果。合否と、検査で出された様々な値。検査の種類によって型が異なる
         """
         if operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT:
-            request_result = []
-            for camera_type in inspection_data:
-                inspection_type = get_inspectionType_with_camera(camera_type)
-                img_pass = self.taking.take_picuture(
-                    inspection_type)
-
-                if img_pass is None:
-                    request_result.append(
-                        CameraControlResult(is_success=False, camera_type=camera_type, image_path=None))
-                    continue
-
-                request_result.append(
-                    CameraControlResult(is_success=True, camera_type=camera_type, image_path=img_pass))
+            request_result = [self._take_inspection_snapshot(
+                camera_type) for camera_type in inspection_data]
             return request_result
 
         if operation_type == OperationType.PRE_PROCESSING_INSPECTION:
@@ -69,8 +66,3 @@ class ImageInspectionController:
             kekka = (img_pass)
 
         return kekka
-
-    def test(kensamei: InspectionType):
-        img_pass = Taking.take_picuture(kensamei)
-
-        return img_pass

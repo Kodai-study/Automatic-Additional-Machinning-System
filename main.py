@@ -3,7 +3,6 @@ from GUIDesigner.GUIDesigner import GUIDesigner
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
-from ImageInspectionController.ProcessDatas import InspectionType
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 from common_data_type import CameraType, WorkPieceShape
@@ -55,6 +54,4 @@ def test_inspections():
 
 
 if __name__ == "__main__":
-
     test_camera_snapshot()
-    print(list)
