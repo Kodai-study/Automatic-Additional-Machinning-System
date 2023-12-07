@@ -15,6 +15,8 @@ import cv2
 from ImageInspectionController.ProcessDatas import InspectionType
 from ImageInspectionController.light import Light
 
+NUM_REQUIRED_CAMERAS = 1
+
 
 class Taking:
     def __init__(self):
@@ -22,15 +24,14 @@ class Taking:
         file_path = 'ImageInspectionController/kensa_config.yaml'
         with open(file_path, 'r') as yaml_file:
             self.data = yaml.safe_load(yaml_file)
-        self.cam_system = self._initial_cam_setting(1)
+        self.cam_system = self._initial_cam_setting(NUM_REQUIRED_CAMERAS)
+
+        if not self.cam_system:
+            print("カメラの初期化がうまくできませんでした。 カメラの接続を確認してください")
+            return
 
         self.cam_device_tool, self.receive_signal_tool = self._get_camera_device(
-            "TOOL_INSPECTION")
-        # self.cam_device_kakou, self.receive_signal_kakou = self._get_camera_device(
-        #     "PRE_PROCESSING_INSPECTION")
-        return
-        # self.cam_device_seido, self.receive_signal_seido = self._get_camera_device(
-        #     "ACCURACY_INSPECTION")
+            "ACCURACY_INSPECTION")
 
     def _get_camera_device(self, camera_type: str):
         serial_number, model_number = self._get_serial_and_model(camera_type)
