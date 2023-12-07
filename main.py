@@ -5,7 +5,7 @@ from ImageInspectionController.InspectDatas import PreProcessingInspectionData, 
 from ImageInspectionController.OperationType import OperationType
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
-from common_data_type import CameraType, WorkPieceShape
+from common_data_type import CameraType, LightingType, WorkPieceShape
 
 
 def test_gui():
@@ -53,5 +53,22 @@ def test_inspections():
     print(f"TOOL_INSPECTION: {result}")
 
 
+def test_lighting():
+    image_inspection_controller = ImageInspectionController()
+
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.CONTROL_LIGHTING, (LightingType.PRE_PROCESSING_LIGHTING, True))
+    print(f"加工前検査照明テスト: {result}")
+
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.CONTROL_LIGHTING, (LightingType.ACCURACY_LIGHTING, True))
+    print(f"精度検査照明テスト: {result}")
+
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.CONTROL_LIGHTING, (LightingType.TOOL_LIGHTING, False))
+    print(f"工具検査照明テスト: {result}")
+
+
 if __name__ == "__main__":
     test_camera_snapshot()
+    test_lighting()

@@ -3,6 +3,7 @@
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
+from ImageInspectionController.light import Light
 from ImageInspectionController.pre_processing_inspection import process_qr_code
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
 from ImageInspectionController.Taking import Taking
@@ -26,6 +27,7 @@ class ImageInspectionController:
 
     def __init__(self):
         self.taking = Taking()
+        self.lighting = Light()
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
@@ -52,15 +54,24 @@ class ImageInspectionController:
                 camera_type) for camera_type in inspection_data]
             return request_result
 
-        if operation_type == OperationType.PRE_PROCESSING_INSPECTION:
+        elif operation_type == OperationType.CONTROL_LIGHTING:
+            lightning_type, is_on = inspection_data
+            lightning_control_result = self.lighting.light_on(
+                lightning_type, is_on)
+            if lightning_control_result == "OK":
+                return LightningControlResult(is_success=True, lighting_type=lightning_type, lighting_state=is_on)
+            else:
+                return LightningControlResult(is_success=False, lighting_type=lightning_type, lighting_state=not is_on)
+
+        elif operation_type == OperationType.PRE_PROCESSING_INSPECTION:
             img_pass = self.taking.take_picuture(
                 InspectionType.PRE_PROCESSING_INSPECTION)
             kekka = process_qr_code(img_pass)
-        if operation_type == OperationType.ACCURACY_INSPECTION:
+        elif operation_type == OperationType.ACCURACY_INSPECTION:
             img_pass = self.taking.take_picuture(
                 InspectionType.ACCURACY_INSPECTION)
             kekka = (img_pass)
-        if operation_type == OperationType.TOOL_INSPECTION:
+        elif operation_type == OperationType.TOOL_INSPECTION:
             img_pass = self.taking.take_picuture(
                 InspectionType.TOOL_INSPECTION)
             kekka = (img_pass)
