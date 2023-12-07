@@ -16,6 +16,9 @@ from ImageInspectionController.ProcessDatas import InspectionType
 from ImageInspectionController.light import Light
 
 NUM_REQUIRED_CAMERAS = 1
+USE_TOOL_INSPECTION_CAMERA = False
+USE_PRE_PROCESSING_INSPECTION_CAMERA = False
+USE_ACCURACY_INSPECTION_CAMERA = True
 
 
 class Taking:
@@ -30,8 +33,17 @@ class Taking:
             print("カメラの初期化がうまくできませんでした。 カメラの接続を確認してください")
             return
 
-        self.cam_device_tool, self.receive_signal_tool = self._get_camera_device(
-            "ACCURACY_INSPECTION")
+        if USE_TOOL_INSPECTION_CAMERA:
+            self.cam_device_tool, self.receive_signal_tool = self._get_camera_device(
+                "ACCURACY_INSPECTION")
+
+        if USE_PRE_PROCESSING_INSPECTION_CAMERA:
+            self.cam_device_kakou, self.receive_signal_kakou = self._get_camera_device(
+                "PRE_PROCESSING_INSPECTION")
+
+        if USE_ACCURACY_INSPECTION_CAMERA:
+            self.cam_device_seido, self.receive_signal_seido = self._get_camera_device(
+                "PRE_PROCESSING_INSPECTION")
 
     def _get_camera_device(self, camera_type: str):
         serial_number, model_number = self._get_serial_and_model(camera_type)
@@ -46,20 +58,24 @@ class Taking:
         if not self.cam_system:
             return False
 
-        if not (self.cam_device_kakou and self.cam_device_kakou.cam_stream.is_open):
-            return False
-        if not (self.cam_device_kakou and self.cam_device_kakou.is_open):
-            return False
+        if USE_PRE_PROCESSING_INSPECTION_CAMERA:
+            if not (self.cam_device_kakou and self.cam_device_kakou.cam_stream.is_open):
+                return False
+            if not (self.cam_device_kakou and self.cam_device_kakou.is_open):
+                return False
 
-        # if not (self.cam_device_tool and self.cam_device_tool.cam_stream.is_open):
-        #     return False
-        # if not (self.cam_device_tool and self.cam_device_tool.is_open):
-        #     return False
+        if USE_TOOL_INSPECTION_CAMERA:
+            if not (self.cam_device_tool and self.cam_device_tool.cam_stream.is_open):
+                return False
+            if not (self.cam_device_tool and self.cam_device_tool.is_open):
+                return False
 
-        # if not (self.cam_device_seido and self.cam_device_seido.cam_stream.is_open):
-        #     return False
-        # if not (self.cam_device_seido and self.cam_device_seido.is_open):
-        #     return False
+        if USE_ACCURACY_INSPECTION_CAMERA:
+            if not (self.cam_device_seido and self.cam_device_seido.cam_stream.is_open):
+                return False
+            if not (self.cam_device_seido and self.cam_device_seido.is_open):
+                return False
+
         return True
 
     def take_picture(self, kensamei: InspectionType) -> str:
@@ -133,34 +149,38 @@ class Taking:
                     return image_data.get_ndarray(pytelicam.OutputImageType.Bgr24)
 
     def close(self):
-        # if self.cam_device_tool and self.cam_device_tool.cam_stream.is_open:
-        #     self.cam_device_tool.cam_stream.stop()
-        #     self.cam_device_tool.cam_stream.close()
 
-        # if self.cam_device_tool and self.cam_device_tool.is_open:
-        #     self.cam_device_tool.close()
+        if USE_PRE_PROCESSING_INSPECTION_CAMERA:
+            if self.cam_device_kakou and self.cam_device_kakou.cam_stream.is_open:
+                self.cam_device_kakou.cam_stream.stop()
+                self.cam_device_kakou.cam_stream.close()
 
-        # if self.receive_signal_tool:
-        #     self.cam_system.close_signal(self.receive_signal_tool)
+            if self.cam_device_kakou and self.cam_device_kakou.is_open:
+                self.cam_device_kakou.close()
 
-        if self.cam_device_kakou and self.cam_device_kakou.cam_stream.is_open:
-            self.cam_device_kakou.cam_stream.stop()
-            self.cam_device_kakou.cam_stream.close()
+            if self.receive_signal_kakou:
+                self.cam_system.close_signal(self.receive_signal_kakou)
 
-        if self.cam_device_kakou and self.cam_device_kakou.is_open:
-            self.cam_device_kakou.close()
+        if USE_TOOL_INSPECTION_CAMERA:
+            if self.cam_device_tool and self.cam_device_tool.cam_stream.is_open:
+                self.cam_device_tool.cam_stream.stop()
+                self.cam_device_tool.cam_stream.close()
 
-        if self.receive_signal_kakou:
-            self.cam_system.close_signal(self.receive_signal_kakou)
+                if self.cam_device_tool and self.cam_device_tool.is_open:
+                    self.cam_device_tool.close()
 
-        # if self.cam_device_seido and self.cam_device_seido.cam_stream.is_open:
-        #     self.cam_device_seido.cam_stream.stop()
-        #     self.cam_device_seido.cam_stream.close()
+                if self.receive_signal_tool:
+                    self.cam_system.close_signal(self.receive_signal_tool)
 
-        # if self.cam_device_seido and self.cam_device_seido.is_open:
-        #     self.cam_device_seido.close()
+        if USE_ACCURACY_INSPECTION_CAMERA:
+            if self.cam_device_seido and self.cam_device_seido.cam_stream.is_open:
+                self.cam_device_seido.cam_stream.stop()
+                self.cam_device_seido.cam_stream.close()
 
-        # if self.receive_signal_seido:
-        #     self.cam_system.close_signal(self.receive_signal_seido)
+            if self.cam_device_seido and self.cam_device_seido.is_open:
+                self.cam_device_seido.close()
+
+            if self.receive_signal_seido:
+                self.cam_system.close_signal(self.receive_signal_seido)
 
         self.cam_system.terminate()
