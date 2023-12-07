@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
 
+
 def process_qr_code(image_path):
     # 画像の読み込み
     image = cv2.imread(image_path)
@@ -13,14 +14,15 @@ def process_qr_code(image_path):
     edges = cv2.Canny(gray, 50, 150)
 
     # 輪郭検出
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(
+        edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     qr_code_info = None
     rectangle_coords = []
-
     for contour in contours:
         # 四角形の検出
-        approx = cv2.approxPolyDP(contour, 0.02 * cv2.arcLength(contour, True), True)
+        approx = cv2.approxPolyDP(
+            contour, 0.02 * cv2.arcLength(contour, True), True)
         if len(approx) == 4:
             # 四角形の大きさを表示
             x, y, w, h = cv2.boundingRect(approx)
@@ -42,6 +44,7 @@ def process_qr_code(image_path):
             print("QRコードの内容:", qr_code_info)
 
     return rectangle_coords, qr_code_info
+
 
 if __name__ == "__main__":
     # 画像ファイルのパスを指定
