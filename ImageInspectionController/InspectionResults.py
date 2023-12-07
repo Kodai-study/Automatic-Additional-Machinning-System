@@ -1,9 +1,9 @@
-# 工具検査のデータクラス
 from dataclasses import dataclass
 
-from ImageInspectionController.ProcessDatas import  HoleCheckInfo
+from ImageInspectionController.ProcessDatas import HoleCheckInfo
 from common_data_type import CameraType, LightingType, ToolType
-from typing import Union,List
+from typing import Union, List
+
 
 @dataclass
 class ToolInspectionResult:
