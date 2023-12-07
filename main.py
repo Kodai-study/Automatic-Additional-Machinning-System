@@ -28,16 +28,33 @@ def test_integration():
     integration.main()
 
 
-if __name__ == "__main__":
-    # img_pass=ImageInspectionController.test(InspectionType.PRE_PROCESSING_INSPECTION)
-    # print(img_pass)
+def test_camera_snapshot():
+    camera_list = [CameraType.ACCURACY_CAMERA,
+                   CameraType.PRE_PROCESSING_CAMERA, CameraType.TOOL_CAMERA]
     image_inspection_controller = ImageInspectionController()
-    # a=image_inspection_controller.perform_image_operation(OperationType.PRE_PROCESSING_INSPECTION,PreProcessingInspectionData(WorkPieceShape.CIRCLE,work_dimension=30) )
-    # a=image_inspection_controller.perform_image_operation(OperationType.ACCURACY_INSPECTION,5)
-    # image_inspection_controller.perform_image_operation(OperationType.CONTROL_LIGHTING)
-    # image_inspection_controller.perform_image_operation(OperationType.TAKE_INSPECTION_SNAPSHOT)
-    # a = image_inspection_controller.perform_image_operation(
-    #     OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=1))
-    list = image_inspection_controller.perform_image_operation(OperationType.TAKE_INSPECTION_SNAPSHOT, [
-                                                               CameraType.ACCURACY_CAMERA, CameraType.PRE_PROCESSING_CAMERA, CameraType.TOOL_CAMERA])
+
+    list = image_inspection_controller.perform_image_operation(
+        OperationType.TAKE_INSPECTION_SNAPSHOT, camera_list)
+    print(list)
+
+
+def test_inspections():
+    image_inspection_controller = ImageInspectionController()
+
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.CIRCLE, work_dimension=30))
+    print(f"PRE_PROCESSING_INSPECTION: {result}")
+
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.ACCURACY_INSPECTION, 5)
+    print(f"ACCURACY_INSPECTION: {result}")
+
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=1))
+    print(f"TOOL_INSPECTION: {result}")
+
+
+if __name__ == "__main__":
+
+    test_camera_snapshot()
     print(list)
