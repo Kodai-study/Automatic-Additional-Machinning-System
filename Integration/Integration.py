@@ -44,6 +44,11 @@ class Integration:
                     else:
                         self.send_request_queue.put(
                             {"target": TransmissionTarget.UR, "message": str(send_data[1])})
+                elif send_data[0] == GUIRequestType.LIGHTING_CONTROL_REQUEST:
+                    self.gui_request_queue.put((GUIRequestType.LIGHTING_CONTROL_REQUEST, {
+                                               "target": send_data[1][0], "state":  send_data[1][1]}))
+                print(f"GUIREQUEST_RECEIVED!   type : {send_data[0]}, data : {send_data[1]}")
+
             time.sleep(0.1)
 
     def _robot_message_handle(self):
