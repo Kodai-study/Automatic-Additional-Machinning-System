@@ -4,6 +4,9 @@ from ImageInspectionController.light import Light
 
 class Taking:
     def take_picuture(self, kensamei: InspectionType) -> str:
+        self._test_takepicture_ok(kensamei)
+
+    def _test_takepicture_ok(self, kensamei: InspectionType) -> str:
         if (kensamei == InspectionType.PRE_PROCESSING_INSPECTION):
             ONorOFF = "ON"
             houkoku = Light.light_on(kensamei, ONorOFF)
