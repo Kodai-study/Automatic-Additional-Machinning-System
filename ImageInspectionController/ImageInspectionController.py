@@ -16,6 +16,12 @@ camera_type_dict = {
     InspectionType.PRE_PROCESSING_INSPECTION: CameraType.PRE_PROCESSING_CAMERA
 }
 
+light_to_inspect_dict = {
+    LightingType.ACCURACY_LIGHTING: InspectionType.ACCURACY_INSPECTION,
+    LightingType.PRE_PROCESSING_LIGHTING: InspectionType.PRE_PROCESSING_INSPECTION,
+    LightingType.TOOL_LIGHTING: InspectionType.TOOL_INSPECTION
+}
+
 
 def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
     for key, value in camera_type_dict.items():
@@ -56,8 +62,8 @@ class ImageInspectionController:
 
         elif operation_type == OperationType.CONTROL_LIGHTING:
             lightning_type, is_on = inspection_data
-            lightning_control_result = self.lighting.light_on(
-                lightning_type, is_on)
+            lightning_control_result = self.lighting.light_onoff(
+                light_to_inspect_dict[lightning_type], "ON" if is_on else "OFF")
             if lightning_control_result == "OK":
                 return LightningControlResult(is_success=True, lighting_type=lightning_type, lighting_state=is_on)
             else:
