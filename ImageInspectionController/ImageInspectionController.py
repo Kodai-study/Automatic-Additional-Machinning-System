@@ -53,6 +53,7 @@ class ImageInspectionController:
 
                 request_result.append(
                     CameraControlResult(is_success=True, camera_type=camera_type, image_path=img_pass))
+            return request_result
 
         if operation_type == OperationType.PRE_PROCESSING_INSPECTION:
             img_pass = self.taking.take_picuture(
