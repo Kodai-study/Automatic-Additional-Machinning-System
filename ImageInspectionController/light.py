@@ -21,28 +21,25 @@ class Light:
 
         if com_num is None:
             print("COMポートが見つかりませんでした。")
-
-
         else:
             self.serPort = serial.Serial(com_num, 19200, timeout=1)
             print(f"COMポート {com_num} を使用します。")
-        
-    
-    def getpinnum(self, camera: InspectionType):
-        pinnum = self.data['Light_information']['pinnumbers']
+
+    def _getpinnum(self, camera: InspectionType):
+        pin_numbers = self.data['Light_information']['pinnumbers']
         if camera == InspectionType.ACCURACY_INSPECTION:
-            pinnum = pinnum['ACCURACY_INSPECTION']
+            pinnum = pin_numbers['ACCURACY_INSPECTION']
         elif camera == InspectionType.PRE_PROCESSING_INSPECTION:
-            pinnum = pinnum['PRE_PROCESSING_INSPECTION']
+            pinnum = pin_numbers['PRE_PROCESSING_INSPECTION']
         elif camera == InspectionType.TOOL_INSPECTION:
-            pinnum = pinnum['TOOL_INSPECTION']
+            pinnum = pin_numbers['TOOL_INSPECTION']
         return pinnum
 
-    def light_onoff(self, camera: InspectionType, ONorOFF)->str:
+    def light_onoff(self, camera: InspectionType, ONorOFF) -> str:
         if ONorOFF == "ON":
             cmd = "set"
         elif ONorOFF == "OFF":
             cmd = "clear"
-        gpio_pin_number = self.getpinnum(camera)
+        gpio_pin_number = self._getpinnum(camera)
         self.serPort.write(f"gpio {cmd} {gpio_pin_number}\r".encode('utf-8'))
         return "OK"
