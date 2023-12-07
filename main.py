@@ -1,15 +1,11 @@
 from queue import Queue
 import time
 from GUIDesigner.GUIDesigner import GUIDesigner
-from ImageInspectionController.ProcessDatas import InspectionType
-from ImageInspectionController.Taking import Taking
-from ImageInspectionController.light import Light
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
-import light_control
 from common_data_type import CameraType, LightingType, WorkPieceShape
 
 
@@ -59,19 +55,23 @@ def test_inspections():
 
 
 def test_lighting():
+    light_state = True
     image_inspection_controller = ImageInspectionController()
+    while True:
 
-    result = image_inspection_controller.perform_image_operation(
-        OperationType.CONTROL_LIGHTING, (LightingType.PRE_PROCESSING_LIGHTING, True))
-    print(f"加工前検査照明テスト: {result}")
+        result = image_inspection_controller.perform_image_operation(
+            OperationType.CONTROL_LIGHTING, (LightingType.PRE_PROCESSING_LIGHTING, light_state))
+        print(f"加工前検査照明テスト: {result}")
 
-    result = image_inspection_controller.perform_image_operation(
-        OperationType.CONTROL_LIGHTING, (LightingType.ACCURACY_LIGHTING, True))
-    print(f"精度検査照明テスト: {result}")
+        result = image_inspection_controller.perform_image_operation(
+            OperationType.CONTROL_LIGHTING, (LightingType.ACCURACY_LIGHTING, light_state))
+        print(f"精度検査照明テスト: {result}")
 
-    result = image_inspection_controller.perform_image_operation(
-        OperationType.CONTROL_LIGHTING, (LightingType.TOOL_LIGHTING, False))
-    print(f"工具検査照明テスト: {result}")
+        result = image_inspection_controller.perform_image_operation(
+            OperationType.CONTROL_LIGHTING, (LightingType.TOOL_LIGHTING, light_state))
+        print(f"工具検査照明テスト: {result}")
+        light_state = not light_state
+        time.sleep(5)
 
 
 if __name__ == "__main__":
