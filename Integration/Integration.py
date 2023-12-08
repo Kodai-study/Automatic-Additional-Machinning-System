@@ -104,7 +104,7 @@ class Integration:
              "remaining_count": 10}
         ]
 
-    def _test_watching_guiResponce_queue(self):
+    def _watching_guiResponce_queue(self):
         """
         テスト用関数。  GUIから、ロボットへの操作要求があると、そのコマンドを送信する
         """
@@ -189,7 +189,7 @@ class Integration:
             target=self._robot_message_handle)
         test_send_thread.start()
         test_watching_guiResponce_queue_thread = Thread(
-            target=self._test_watching_guiResponce_queue)
+            target=self._watching_guiResponce_queue)
         test_watching_guiResponce_queue_thread.start()
         self.guiDesigner.start_gui(
             self.gui_request_queue, self.gui_responce_queue)
