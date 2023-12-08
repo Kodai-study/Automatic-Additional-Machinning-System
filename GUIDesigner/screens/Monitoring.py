@@ -6,8 +6,9 @@ from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
-from common_data_type import LightingType
+from common_data_type import CameraType, LightingType
 
+CAMERA_IMAGE_UPDATE_RATE = 1000
 
 class Monitoring(ScreenBase):
     def __init__(self, parent, robot_status: dict, send_to_integration_queue: Queue):
@@ -16,8 +17,9 @@ class Monitoring(ScreenBase):
         self.send_to_integration_queue = send_to_integration_queue
         self.img = tk.PhotoImage(file="./resource/images/test.png")
         self._create_widgets()
-
         self._test_camera_views_update()
+        # TODO この画面にいるときだけリクエストするように変更
+        self._request_inspection_camera_update()
 
     def _test_camera_views_update(self):
         self.after(1000, lambda: self._update_image_from_path(
@@ -26,6 +28,11 @@ class Monitoring(ScreenBase):
             self.tool_camera_views, "./resource/images/test.png"))
         self.after(3000, lambda: self._update_image_from_path(
             self.processing_camera_camera_views, "./resource/images/test.png"))
+
+    def _request_inspection_camera_update(self):
+        self.send_to_integration_queue.put((GUIRequestType.CAMERA_FEED_REQUEST, [
+            CameraType.TOOL_CAMERA, CameraType.PRE_PROCESSING_CAMERA, CameraType.ACCURACY_CAMERA]))
+        self.after(CAMERA_IMAGE_UPDATE_RATE,self._request_inspection_camera_update)
 
     def create_frame(self):
         self.tkraise()
