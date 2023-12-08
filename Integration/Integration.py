@@ -9,7 +9,9 @@ from threading import Thread
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_UR_CONNECTION_LOCAL
-from common_data_type import TransmissionTarget
+from common_data_type import CameraType, TransmissionTarget
+
+toggle_flag = True
 
 
 class Integration:
@@ -47,7 +49,10 @@ class Integration:
                 elif send_data[0] == GUIRequestType.LIGHTING_CONTROL_REQUEST:
                     self.gui_request_queue.put((GUIRequestType.LIGHTING_CONTROL_REQUEST, {
                                                "target": send_data[1][0], "state":  send_data[1][1]}))
-                print(f"GUIREQUEST_RECEIVED!   type : {send_data[0]}, data : {send_data[1]}")
+                elif send_data[0] == GUIRequestType.CAMERA_FEED_REQUEST:
+                    self._test_camera_request(send_data[1])
+                print(
+                    f"GUIREQUEST_RECEIVED!   type : {send_data[0]}, data : {send_data[1]}")
 
             time.sleep(0.1)
 
@@ -64,6 +69,17 @@ class Integration:
             {"target": TransmissionTarget.UR,
              "message": "SIG 0,ATT_IMP_READY",
              "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
+
+    def _test_camera_request(self, request_list: list):
+        global toggle_flag
+
+        toggle_flag = not toggle_flag
+        camera_image_list = []
+        for camera_type in request_list:
+            camera_image_list.append((
+                camera_type, "resource/images/title.png" if toggle_flag else "resource/images/test.png"))
+        self.gui_request_queue.put(
+            (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
 
     def main(self):
         self._test_robot_message_handler()

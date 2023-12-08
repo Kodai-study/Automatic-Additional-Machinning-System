@@ -10,14 +10,14 @@ from common_data_type import CameraType, LightingType
 
 CAMERA_IMAGE_UPDATE_RATE = 1000
 
+
 class Monitoring(ScreenBase):
     def __init__(self, parent, robot_status: dict, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.robot_status = robot_status
         self.send_to_integration_queue = send_to_integration_queue
-        self.img = tk.PhotoImage(file="./resource/images/test.png")
         self._create_widgets()
-        self._test_camera_views_update()
+
         # TODO この画面にいるときだけリクエストするように変更
         self._request_inspection_camera_update()
 
@@ -27,12 +27,13 @@ class Monitoring(ScreenBase):
         self.after(2000, lambda: self._update_image_from_path(
             self.tool_camera_views, "./resource/images/test.png"))
         self.after(3000, lambda: self._update_image_from_path(
-            self.processing_camera_camera_views, "./resource/images/test.png"))
+            self.processing_camera_views, "./resource/images/test.png"))
 
     def _request_inspection_camera_update(self):
         self.send_to_integration_queue.put((GUIRequestType.CAMERA_FEED_REQUEST, [
             CameraType.TOOL_CAMERA, CameraType.PRE_PROCESSING_CAMERA, CameraType.ACCURACY_CAMERA]))
-        self.after(CAMERA_IMAGE_UPDATE_RATE,self._request_inspection_camera_update)
+        self.after(CAMERA_IMAGE_UPDATE_RATE,
+                   self._request_inspection_camera_update)
 
     def create_frame(self):
         self.tkraise()
@@ -48,28 +49,45 @@ class Monitoring(ScreenBase):
 
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
+
         if request_type == GUIRequestType.LIGHTING_CONTROL_REQUEST:
-            if request_data['target'] == LightingType.TOOL_LIGHTING:
-                if request_data['state'] == True:
-                    self.button_state_update(
-                        self.tool_light_off_button, self.tool_light_on_button)
-                else:
-                    self.button_state_update(
-                        self.tool_light_on_button, self.tool_light_off_button)
-            if request_data['target'] == LightingType.PRE_PROCESSING_LIGHTING:
-                if request_data['state'] == True:
-                    self.button_state_update(
-                        self.processing_light_off_button, self.processing_light_on_button)
-                else:
-                    self.button_state_update(
-                        self.processing_light_on_button, self.processing_light_off_button)
-            if request_data['target'] == LightingType.ACCURACY_LIGHTING:
-                if request_data['state'] == True:
-                    self.button_state_update(
-                        self.accuracy_light_off_button, self.accuracy_light_on_button)
-                else:
-                    self.button_state_update(
-                        self.accuracy_light_on_button, self.accuracy_light_off_button)
+            self._handle_lightning_control_responce(request_data)
+
+        elif request_type == GUIRequestType.CAMERA_FEED_REQUEST:
+            for camera_type, img_path in request_data:
+                target_camera_view = None
+                if camera_type == CameraType.ACCURACY_CAMERA:
+                    target_camera_view = self.accuracy_camera_views
+                elif camera_type == CameraType.PRE_PROCESSING_CAMERA:
+                    target_camera_view = self.processing_camera_views
+                elif camera_type == CameraType.TOOL_CAMERA:
+                    target_camera_view = self.tool_camera_views
+
+                if target_camera_view:
+                    self._update_image_from_path(target_camera_view, img_path)
+
+    def _handle_lightning_control_responce(self, request_data):
+        if request_data['target'] == LightingType.TOOL_LIGHTING:
+            if request_data['state'] == True:
+                self.button_state_update(
+                    self.tool_light_off_button, self.tool_light_on_button)
+            else:
+                self.button_state_update(
+                    self.tool_light_on_button, self.tool_light_off_button)
+        if request_data['target'] == LightingType.PRE_PROCESSING_LIGHTING:
+            if request_data['state'] == True:
+                self.button_state_update(
+                    self.processing_light_off_button, self.processing_light_on_button)
+            else:
+                self.button_state_update(
+                    self.processing_light_on_button, self.processing_light_off_button)
+        if request_data['target'] == LightingType.ACCURACY_LIGHTING:
+            if request_data['state'] == True:
+                self.button_state_update(
+                    self.accuracy_light_off_button, self.accuracy_light_on_button)
+            else:
+                self.button_state_update(
+                    self.accuracy_light_on_button, self.accuracy_light_off_button)
 
     def robot_oprration_request(self, command):
         self.send_to_integration_queue.put(
@@ -101,6 +119,7 @@ class Monitoring(ScreenBase):
 
     def _create_widgets(self):
 
+        self._initial_camera_view_canvases()
         backlight_label = tk.Label(
             self, text="工具検査用のリング照明", font=("AR丸ゴシック体M", 18))
         barlight_label = tk.Label(
@@ -141,12 +160,6 @@ class Monitoring(ScreenBase):
         back_button = tk.Button(self, text="戻る", command=lambda: self.change_frame(Frames.CREATE_SELECTION), font=(
             "AR丸ゴシック体M", 18), width=22)
 
-        #
-        #
-
-        self._initial_camera_view_canvases()
-        # キャンバス作成
-
         on_buttons: List[tk.Button] = []  # ONボタン用のリスト
         off_buttons: List[tk.Button] = []  # OFFボタン用のリスト
         forward_buttons: List[tk.Button] = []  # 正転ボタン用のリスト
@@ -169,13 +182,13 @@ class Monitoring(ScreenBase):
                                               command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, True)))
         self.tool_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="#de9687",
                                                command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, False)))
-        self.processing_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="orange",
+        self.processing_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87",
                                                     command=lambda: (self.lightning_control_request(LightingType.PRE_PROCESSING_LIGHTING, True)))
-        self.processing_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="cyan",
+        self.processing_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="#de9687",
                                                      command=lambda: (self.lightning_control_request(LightingType.PRE_PROCESSING_LIGHTING, False)))
-        self.accuracy_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="orange",
+        self.accuracy_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87",
                                                   command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, True)))
-        self.accuracy_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="cyan",
+        self.accuracy_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="#de9687",
                                                    command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, False)))
 
         self.tool_light_on_button.grid(row=1, column=2)
@@ -186,25 +199,24 @@ class Monitoring(ScreenBase):
         self.accuracy_light_off_button.grid(row=3, column=3)
 
         for i in range(5):
-            on_button = tk.Button(self, text="ON", state="normal", width=10, bg="orange",
+            on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87",
                                   command=lambda i=i: (self.robot_oprration_request(on_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
-            off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="cyan",
+            off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="#de9687",
                                    command=lambda i=i: (self.robot_oprration_request(off_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
             on_buttons.append(on_button)
             off_buttons.append(off_button)
 
         # 同様に、正転と後転のボタンにも異なるコマンドを設定します
         for i in range(8):
-            forward_button = tk.Button(self, text="正転", state="normal", width=10, bg="orange",
+            forward_button = tk.Button(self, text="正転", state="normal", width=10, bg="#87de87",
                                        command=lambda i=i: (self.robot_oprration_request(forward_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
-            reverse_button = tk.Button(self, text="後転", state="disabled", width=10, bg="cyan",
+            reverse_button = tk.Button(self, text="後転", state="disabled", width=10, bg="#de9687",
                                        command=lambda i=i: (self.robot_oprration_request(reverse_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
             forward_buttons.append(forward_button)
             reverse_buttons.append(reverse_button)
 
-        for i in range(3):
-            # stop_button_state = {"on": "normal", "off": "disabled"}
-            stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="yellow",
+        for i in range(2):
+            stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366",
                                     command=lambda: (self.robot_oprration_request(stop_command[i])))
             stop_buttons.append(stop_button)
 
@@ -220,7 +232,7 @@ class Monitoring(ScreenBase):
             forward_buttons[i + 3].grid(row=i + 1, column=6)
             reverse_buttons[i + 3].grid(row=i + 1, column=7)
 
-        for i in range(3):
+        for i in range(2):
             stop_buttons[i].grid(row=i + 9, column=4)
 
         kara_label1.grid(row=0, column=0, padx=40, pady=40)
@@ -264,4 +276,4 @@ class Monitoring(ScreenBase):
         image_on_canvas = processing_camera_canvas.create_image(
             0, 0, anchor=tk.NW)
         processing_camera_canvas.place(x=1530, y=350)
-        self.processing_camera_camera_views = processing_camera_canvas, image_on_canvas
+        self.processing_camera_views = processing_camera_canvas, image_on_canvas
