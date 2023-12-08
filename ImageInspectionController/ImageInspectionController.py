@@ -37,7 +37,7 @@ class ImageInspectionController:
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
-        img_pass = self.taking.take_picuture(inspection_type)
+        img_pass = self.taking.take_picture(inspection_type)
 
         if img_pass is None:
             return CameraControlResult(is_success=False, camera_type=camera_type, image_path=None)

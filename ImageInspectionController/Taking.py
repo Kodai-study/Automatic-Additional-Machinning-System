@@ -15,9 +15,9 @@ import cv2
 from ImageInspectionController.ProcessDatas import InspectionType
 from ImageInspectionController.light import Light
 
-NUM_REQUIRED_CAMERAS = 1
-USE_TOOL_INSPECTION_CAMERA = False
-USE_PRE_PROCESSING_INSPECTION_CAMERA = False
+NUM_REQUIRED_CAMERAS = 3
+USE_TOOL_INSPECTION_CAMERA = True
+USE_PRE_PROCESSING_INSPECTION_CAMERA = True
 USE_ACCURACY_INSPECTION_CAMERA = True
 
 
@@ -35,7 +35,7 @@ class Taking:
 
         if USE_TOOL_INSPECTION_CAMERA:
             self.cam_device_tool, self.receive_signal_tool = self._get_camera_device(
-                "ACCURACY_INSPECTION")
+                "TOOL_INSPECTION")
 
         if USE_PRE_PROCESSING_INSPECTION_CAMERA:
             self.cam_device_kakou, self.receive_signal_kakou = self._get_camera_device(
@@ -43,7 +43,7 @@ class Taking:
 
         if USE_ACCURACY_INSPECTION_CAMERA:
             self.cam_device_seido, self.receive_signal_seido = self._get_camera_device(
-                "PRE_PROCESSING_INSPECTION")
+                "ACCURACY_INSPECTION")
 
     def _get_camera_device(self, camera_type: str):
         serial_number, model_number = self._get_serial_and_model(camera_type)
@@ -82,20 +82,25 @@ class Taking:
         if self.cam_system == None:
             return "era"
         # self.light.light_onoff(kensamei)
-
+        image_file_name = None
         if kensamei == InspectionType.TOOL_INSPECTION:
             np_arr = self._get_image_data(
                 self.cam_device_tool,  self.receive_signal_tool)
-        if kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
+            image_file_name = "a.png"
+        elif kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
             np_arr = self._get_image_data(
                 self.cam_device_kakou,  self.receive_signal_kakou)
-        if kensamei == InspectionType.ACCURACY_INSPECTION:
+            image_file_name = "b.png"
+
+        elif kensamei == InspectionType.ACCURACY_INSPECTION:
             np_arr = self._get_image_data(
                 self.cam_device_seido,  self.receive_signal_seido)
+            image_file_name = "c.png"
 
-        cv2.imwrite('/home/kuga/img/', np_arr)
+        write_image_path = f"~/img/{image_file_name}"
+        cv2.imwrite(write_image_path, np_arr)
 
-        return 'img/grayscale_image.png'
+        return write_image_path
 
     def _initial_cam_setting(self, cam_num=3) -> pytelicam.pytelicam.CameraSystem:
         cam_system = pytelicam.get_camera_system(
