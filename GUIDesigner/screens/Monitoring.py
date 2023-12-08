@@ -23,11 +23,11 @@ class Monitoring(ScreenBase):
 
     def _test_camera_views_update(self):
         self.after(1000, lambda: self._update_image_from_path(
-            self.accuracy_camera_views, "./resource/images/test.png"))
+            self.accuracy_camera_views, "./test/c.png"))
         self.after(2000, lambda: self._update_image_from_path(
-            self.tool_camera_views, "./resource/images/test.png"))
+            self.tool_camera_views, "./test/a.png"))
         self.after(3000, lambda: self._update_image_from_path(
-            self.processing_camera_views, "./resource/images/test.png"))
+            self.processing_camera_views, "./test/b.png"))
 
     def _request_inspection_camera_update(self):
         self.send_to_integration_queue.put((GUIRequestType.CAMERA_FEED_REQUEST, [
@@ -258,22 +258,22 @@ class Monitoring(ScreenBase):
 
     def _initial_camera_view_canvases(self):
         accuracy_camera_canvas = tk.Canvas(
-            self, bg="#deb887", height=300, width=300)
-        accuracy_camera_canvas.place(x=870, y=550)
+            self, bg="#deb887", height=250, width=370)
+        accuracy_camera_canvas.place(x=820, y=550)
         image_on_canvas = accuracy_camera_canvas.create_image(
             0, 0, anchor=tk.NW)
         self.accuracy_camera_views = accuracy_camera_canvas, image_on_canvas
 
         tool_camera_canvas = tk.Canvas(
-            self, bg="#deb887", height=300, width=300)
-        tool_camera_canvas.place(x=1200, y=550)
+            self, bg="#deb887", height=240, width=240)
+        tool_camera_canvas.place(x=1580, y=550)
         image_on_canvas = tool_camera_canvas.create_image(
             0, 0, anchor=tk.NW)
         self.tool_camera_views = tool_camera_canvas, image_on_canvas
 
         processing_camera_canvas = tk.Canvas(
-            self, bg="#deb887", height=500, width=300)
+            self, bg="#deb887", height=250, width=370)
         image_on_canvas = processing_camera_canvas.create_image(
             0, 0, anchor=tk.NW)
-        processing_camera_canvas.place(x=1530, y=350)
+        processing_camera_canvas.place(x=1200, y=550)
         self.processing_camera_views = processing_camera_canvas, image_on_canvas
