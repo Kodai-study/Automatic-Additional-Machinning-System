@@ -1,11 +1,11 @@
+import tkinter as tk
 from queue import Queue
-from typing import List
+from tkinter import PhotoImage
+from typing import List, Tuple
 from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
-import tkinter as tk
-
 from common_data_type import LightingType
 
 
@@ -14,10 +14,30 @@ class Monitoring(ScreenBase):
         super().__init__(parent)
         self.robot_status = robot_status
         self.send_to_integration_queue = send_to_integration_queue
+        self.img = tk.PhotoImage(file="./resource/images/test.png")
         self._create_widgets()
+
+        self._test_camera_views_update()
+
+    def _test_camera_views_update(self):
+        self.after(1000, lambda: self._update_image_from_path(
+            self.accuracy_camera_views, "./resource/images/test.png"))
+        self.after(2000, lambda: self._update_image_from_path(
+            self.tool_camera_views, "./resource/images/test.png"))
+        self.after(3000, lambda: self._update_image_from_path(
+            self.processing_camera_camera_views, "./resource/images/test.png"))
 
     def create_frame(self):
         self.tkraise()
+
+    def _update_image_from_path(self, canvas_datas: Tuple[tk.Canvas, int], img_path: str):
+        target_canvas = canvas_datas[0]
+        img_width = target_canvas.winfo_reqwidth()
+        img_height = target_canvas.winfo_reqheight()
+        original_image = tk.PhotoImage(file=img_path)
+        view_image = self.resize_image(img_width, img_height, original_image)
+        target_canvas.itemconfig(canvas_datas[1], image=view_image)
+        target_canvas.image = view_image  # これが重要です
 
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
@@ -51,8 +71,8 @@ class Monitoring(ScreenBase):
     def lightning_control_request(self, lightingtype, lightingstate):
         self.send_to_integration_queue.put(
             (GUIRequestType.LIGHTING_CONTROL_REQUEST, (lightingtype, lightingstate)))
-        
-    def button_state_update(self,on_button, off_button):
+
+    def button_state_update(self, on_button, off_button):
         on_button["state"] = "normal"
         off_button["state"] = "disable"
 
@@ -63,6 +83,14 @@ class Monitoring(ScreenBase):
         else:
             on_button["state"] = "normal"
             off_button["state"] = "disable"
+
+    def resize_image(self, width, height, image):
+        new_width = width
+        new_height = height
+
+        resized_image = image.subsample(
+            int(image.width() / new_width), int(image.height() / new_height))
+        return resized_image
 
     def _create_widgets(self):
 
@@ -106,6 +134,12 @@ class Monitoring(ScreenBase):
         back_button = tk.Button(self, text="戻る", command=lambda: self.change_frame(Frames.CREATE_SELECTION), font=(
             "AR丸ゴシック体M", 18), width=22)
 
+        #
+        #
+
+        self._initial_camera_view_canvases()
+        # キャンバス作成
+
         on_buttons: List[tk.Button] = []  # ONボタン用のリスト
         off_buttons: List[tk.Button] = []  # OFFボタン用のリスト
         forward_buttons: List[tk.Button] = []  # 正転ボタン用のリスト
@@ -124,9 +158,9 @@ class Monitoring(ScreenBase):
         stop_command = ["CONV 0,N\n", "CONV 0,N\n", "CONV 0,N\n"]
 
         # 証明ボタン作成
-        self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="orange",
+        self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87",
                                               command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, True)))
-        self.tool_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="cyan",
+        self.tool_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="#de9687",
                                                command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, False)))
         self.processing_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="orange",
                                                     command=lambda: (self.lightning_control_request(LightingType.PRE_PROCESSING_LIGHTING, True)))
@@ -202,3 +236,25 @@ class Monitoring(ScreenBase):
         cyl_004_label.grid(row=4, column=5, padx=30, pady=20)
 
         back_button.place(rely=0.85, relx=0.75)
+
+    def _initial_camera_view_canvases(self):
+        accuracy_camera_canvas = tk.Canvas(
+            self, bg="#deb887", height=300, width=300)
+        accuracy_camera_canvas.place(x=870, y=550)
+        image_on_canvas = accuracy_camera_canvas.create_image(
+            0, 0, anchor=tk.NW)
+        self.accuracy_camera_views = accuracy_camera_canvas, image_on_canvas
+
+        tool_camera_canvas = tk.Canvas(
+            self, bg="#deb887", height=300, width=300)
+        tool_camera_canvas.place(x=1200, y=550)
+        image_on_canvas = tool_camera_canvas.create_image(
+            0, 0, anchor=tk.NW)
+        self.tool_camera_views = tool_camera_canvas, image_on_canvas
+
+        processing_camera_canvas = tk.Canvas(
+            self, bg="#deb887", height=500, width=300)
+        image_on_canvas = processing_camera_canvas.create_image(
+            0, 0, anchor=tk.NW)
+        processing_camera_canvas.place(x=1530, y=350)
+        self.processing_camera_camera_views = processing_camera_canvas, image_on_canvas
