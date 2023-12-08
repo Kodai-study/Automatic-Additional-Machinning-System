@@ -28,6 +28,7 @@ class Taking:
         with open(file_path, 'r') as yaml_file:
             self.data = yaml.safe_load(yaml_file)
         self.cam_system = self._initial_cam_setting(NUM_REQUIRED_CAMERAS)
+        self.toggle_flag = True
 
         if not self.cam_system:
             print("カメラの初期化がうまくできませんでした。 カメラの接続を確認してください")
@@ -86,19 +87,22 @@ class Taking:
         if kensamei == InspectionType.TOOL_INSPECTION:
             np_arr = self._get_image_data(
                 self.cam_device_tool,  self.receive_signal_tool)
-            image_file_name = "a.png"
+
+            image_file_name = "a.png" if self.toggle_flag else "a_2.png"
         elif kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
             np_arr = self._get_image_data(
                 self.cam_device_kakou,  self.receive_signal_kakou)
-            image_file_name = "b.png"
+            image_file_name = "b.png" if self.toggle_flag else "b_2.png"
 
         elif kensamei == InspectionType.ACCURACY_INSPECTION:
             np_arr = self._get_image_data(
                 self.cam_device_seido,  self.receive_signal_seido)
-            image_file_name = "c.png"
+            image_file_name = "c.png" if self.toggle_flag else "c_2.png"
 
-        write_image_path = f"~/img/{image_file_name}"
-        cv2.imwrite(write_image_path, np_arr)
+        self.toggle_flag = not self.toggle_flag
+        write_image_path = f"/home/kuga/img/{image_file_name}"
+        if not cv2.imwrite(write_image_path, np_arr):
+            print("hosonFailed")
 
         return write_image_path
 

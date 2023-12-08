@@ -75,5 +75,5 @@ def test_lighting():
 
 
 if __name__ == "__main__":
-    test_camera_snapshot()
-    # test_lighting()
+    test_integration()
+    #app = WorkResultOverview()

@@ -79,8 +79,8 @@ class GuiResponceHandler:
                 update_camera_list.append(
                     (camera_result.camera_type, camera_result.image_path))
 
-        self.gui_request_queue.put(
-            GUIRequestType.CAMERA_FEED_REQUEST, update_camera_list)
+        self.gui_request_queue.put((
+            GUIRequestType.CAMERA_FEED_REQUEST, update_camera_list))
 
     def _reload_status(self):
         fetch_status_commands = [
@@ -112,6 +112,8 @@ class GuiResponceHandler:
             OperationType.CONTROL_LIGHTING, (lighting_type, status))
         if not result.is_success:
             return
+        self.gui_request_queue.put((GUIRequestType.LIGHTING_CONTROL_REQUEST, {
+            "target": lighting_type, "state":  result.lighting_state}))
 
         light_type_key = light_type_dict[lighting_type]
         for key in robot_status["lighting"]:
@@ -120,5 +122,4 @@ class GuiResponceHandler:
             else:
                 robot_status["lighting"][key] = False
         self.gui_request_queue.put(
-            (GUISignalCategory.SENSOR_STATUS_UPDATE,))
-
+            (GUISignalCategory.SENSOR_STATUS_UPDATE, None))

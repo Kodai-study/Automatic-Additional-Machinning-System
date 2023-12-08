@@ -51,6 +51,9 @@ class RobotCommunicationHandler:
 
         while True:
             try:
+                if not (sock.getsockname and sock.getpeername()):
+                    time.sleep(1)
+                    continue
                 data = sock.recv(1024)
                 if not data:
                     print("Connection closed by the server")
@@ -189,17 +192,9 @@ class RobotCommunicationHandler:
                 target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_2, self.dummy_cfd_socket))
             receive_thread2.start()
 
-        elif TEST_PROCESSING_REPORT:
-            # 2つのソケットと同時に通信するためのスレッドを2つ作成
-            receive_thread1 = Thread(
-                target=self.test_receive_string, args=(TransmissionTarget.UR, self.samp_socket_ur))
-            receive_thread1.start()
-            # send_input_command(self.samp_socket_ur)
-
         while True:
             # send_queueに値が入っているか監視
             if not self.request_send_queue.empty():
-                # send_queueから値を取り出す
                 send_data = self.request_send_queue.get()
 
                 if (send_data['target'] == TransmissionTarget.UR):
