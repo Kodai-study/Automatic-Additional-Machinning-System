@@ -24,8 +24,8 @@ def detect_circles(image_path):
         cv2.HOUGH_GRADIENT,
         dp=1,
         minDist=50,
-        param1=50,
-        param2=30,
+        param1=2000,
+        param2=150,
         minRadius=20,
         maxRadius=109
     )
@@ -91,7 +91,7 @@ def measure_dimensions(square):
     return side1, side2
 
 def main():
-    image_path = 'ImageInspectionController/img21.png'
+    image_path = '/home/kuga/img/c.png'
 
     detected_circles = detect_circles(image_path)
     detected_squares = detect_squares(image_path)
