@@ -92,15 +92,15 @@ class GuiResponceHandler:
             ("SNS", [0, 1, 2, 3, 4, 5]),
             ("WRKSNS", [0])
         ]
-        for command in fetch_status_commands:
-            for device_number in command[1]:
-                cmd = f"{command[0]} {device_number},ST"
-                if TEST_CFD_CONNECTION_LOCAL:
-                    self.send_request_queue.put(
-                        {"target": TransmissionTarget.TEST_TARGET_2, "message": cmd})
-                else:
-                    self.send_request_queue.put(
-                        {"target": TransmissionTarget.CFD, "message": cmd})
+
+        # リスト内包表記を使用
+        commands = [f"{cmd} {num},ST" for cmd,
+                    nums in fetch_status_commands for num in nums]
+
+        # 条件分岐をループの外に移動
+        target = TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD
+        for cmd in commands:
+            self.send_request_queue.put({"target": target, "message": cmd})
 
     def _lighting_feed(self,  image_inspection_controller: ImageInspectionController, robot_status: dict, lighting_type: LightingType, status: bool):
         light_type_dict = {
@@ -121,4 +121,3 @@ class GuiResponceHandler:
                 robot_status["lighting"][key] = False
         self.gui_request_queue.put(
             (GUISignalCategory.SENSOR_STATUS_UPDATE,))
-
