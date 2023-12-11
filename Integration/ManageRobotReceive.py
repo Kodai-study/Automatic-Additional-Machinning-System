@@ -27,6 +27,7 @@ class ManageRobotReceive:
             "ISRESERVED": reservation_process,
             "FIN_FST_POSITION": change_robot_first_position,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
+            "SIZE 0,ST": lambda: print("サイズを教えてください")
         }
         self._handl_selectors = {
             "SIG": self._select_handler_ur_sig,
@@ -34,6 +35,7 @@ class ManageRobotReceive:
             "WRK": self._select_handler_wrk,
             "SNS": self._select_handler_sensor,
             "RDSW": self._select_handler_sensor_reed_switch,
+            "EJCT": self._select_handler_ejector,
         }
 
     def _select_handler(self, command: str):
@@ -173,12 +175,19 @@ class ManageRobotReceive:
         if dev_num == 0 and detail == "TAP_FIN":
             return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
 
+    def _select_handler_ejector(self, dev_num: int, detail: str, command: str):
+        if detail == "ST":
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
+
     def _select_handler_sensor(self, dev_num: int, detail: str, command: str, serial_number: int = None):
         """
         SNS命令のハンドラを選択する
         """
         is_on = detail == "ON"
         sensor_time = datetime.datetime.now()
+
+        if detail == "ST":
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
 
         def _common_sensor_handler():
             write_database(self._integration_instance.database_accesser,
