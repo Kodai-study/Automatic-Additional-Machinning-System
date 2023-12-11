@@ -1,6 +1,5 @@
 # coding: utf-8
 
-from mysql.connector import pooling
 from common_data_type import *
 from typing import List, Tuple
 
