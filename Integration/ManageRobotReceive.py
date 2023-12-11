@@ -204,6 +204,8 @@ class ManageRobotReceive:
             return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
 
         def _common_sensor_handler():
+            _send_message_to_ur(
+                command, self._integration_instance.send_request_queue)
             write_database(self._integration_instance.database_accesser,
                            "SNS", dev_num, detail, sensor_time, serial_number)
             self._change_robot_status("sensor", dev_num, is_on)
