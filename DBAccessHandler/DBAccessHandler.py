@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from mysql.connector import pooling
 from common_data_type import *
 from typing import List, Tuple
 
@@ -12,7 +13,7 @@ class DBAccessHandler:
     def __init__(self):
         pass
 
-    def fetch_data_from_database(self, sql_query: str) -> List[dict]:
+    def fetch_data_from_database(self, sql_query: str, *values) -> List[dict]:
         """
         データベースからデータを取得する
 
@@ -25,7 +26,7 @@ class DBAccessHandler:
         """
         pass
 
-    def write_data_to_database(self, sql_query: str) -> Tuple[bool, str]:
+    def write_data_to_database(self, sql_query: str, *values) -> Tuple[bool, str]:
         """
         データベースにデータを書き込む
 
@@ -35,4 +36,4 @@ class DBAccessHandler:
         Returns:
             Tuple[bool, str]: 書き込みが成功したかどうかの真偽値と、エラーがあった場合はエラーの内容を返す
         """
-        pass
+        print("実行されるSQL文 : ", sql_query)

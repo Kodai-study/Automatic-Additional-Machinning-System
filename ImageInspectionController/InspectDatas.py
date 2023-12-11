@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 
 from common_data_type import WorkPieceShape
