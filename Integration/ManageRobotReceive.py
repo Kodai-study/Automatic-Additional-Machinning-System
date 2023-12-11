@@ -27,7 +27,7 @@ class ManageRobotReceive:
             "ISRESERVED": reservation_process,
             "FIN_FST_POSITION": change_robot_first_position,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
-            "SIZE 0,ST": lambda: print("サイズを教えてください")
+            "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}")
         }
         self._handl_selectors = {
             "SIG": self._select_handler_ur_sig,
@@ -38,6 +38,9 @@ class ManageRobotReceive:
             "EJCT": self._select_handler_ejector,
             "WRKSNS": self._select_handler_workSensor,
         }
+
+    def _test_get_next_size(self):
+        return 30
 
     def _select_handler(self, command: str, target: TransmissionTarget):
         """メッセージの種類に応じて、ハンドラを選択する
