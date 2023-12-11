@@ -36,6 +36,7 @@ class ManageRobotReceive:
             "SNS": self._select_handler_sensor,
             "RDSW": self._select_handler_sensor_reed_switch,
             "EJCT": self._select_handler_ejector,
+            "WRKSNS": self._select_handler_workSensor,
         }
 
     def _select_handler(self, command: str, target: TransmissionTarget):
@@ -137,6 +138,11 @@ class ManageRobotReceive:
             return _handler()
 
         return self._undefine
+
+    def _select_handler_workSensor(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
+        if dev_num != 0:
+            return self._undefine(command)
+        print("ワークの枚数は", detail, "枚です")
 
     def _select_handler_cyl(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
