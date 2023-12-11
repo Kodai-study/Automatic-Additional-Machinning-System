@@ -27,7 +27,8 @@ class ManageRobotReceive:
             "ISRESERVED": reservation_process,
             "FIN_FST_POSITION": change_robot_first_position,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
-            "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}")
+            "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}"),
+            "TEST_START": lambda: self._integration_instance._start_process(),
         }
         self._handl_selectors = {
             "SIG": self._select_handler_ur_sig,
