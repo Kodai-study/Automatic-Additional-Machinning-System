@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def measure_drill_width(drill_image_path):
+def measure_drill_width(drill_image_path, output_image_path):
     # 画像の読み込み
     image = cv2.imread(drill_image_path)
 
@@ -9,23 +9,17 @@ def measure_drill_width(drill_image_path):
         print(f"Error: Failed to load image from {drill_image_path}")
         return
 
-
     # グレースケール変換
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # エッジ検出（適切なパラメータを調整してください）
     edges = cv2.Canny(gray, 150, 160)
-    # for threshold1 in range(50, 301, 10):
-    #     edges = cv2.Canny(gray, threshold1, threshold1 + 10)
-    #     cv2.imshow("Edge Detection", edges)
-    #     cv2.waitKey(0)
 
     # 輪郭検出
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-   
+
     # 輪郭を画像に合わせて表示
     cv2.drawContours(image, contours, -1, (0, 255, 0), 2)
-    
 
     if not contours:
         print("Error: No contours found.")
@@ -51,10 +45,13 @@ def measure_drill_width(drill_image_path):
     cv2.putText(image, f"Width: {width:.2f} px", (x, y - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
-    cv2.imshow("Drill Width Measurement", image)
-    cv2.waitKey(0)
+    # 結果の画像を保存
+    cv2.imwrite(output_image_path, image)
+
+    # 表示ウィンドウを閉じる
     cv2.destroyAllWindows()
 
-# ドリルの画像ファイルのパスを指定して呼び出し
-drill_image_path = "ImageInspectionController/img.png"
-measure_drill_width(drill_image_path)
+# ドリルの画像ファイルのパスと保存先の画像ファイルのパスを指定して呼び出し
+drill_image_path = "/home/kuga/img/a.png"
+output_image_path = "/home/kuga/img/output.png"
+measure_drill_width(drill_image_path, output_image_path)
