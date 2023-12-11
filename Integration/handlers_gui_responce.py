@@ -18,12 +18,12 @@ class GuiResponceHandler:
 
     def handle(self, send_data):
         if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
-            if TEST_UR_CONNECTION_LOCAL:
+            if TEST_CFD_CONNECTION_LOCAL:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
+                    {"target": TransmissionTarget.TEST_TARGET_2, "message": str(send_data[1])})
             else:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.UR, "message": str(send_data[1])})
+                    {"target": TransmissionTarget.CFD, "message": str(send_data[1])})
 
         elif send_data[0] == GUIRequestType.UPLOAD_PROCESSING_DETAILS:
             self.is_processing_mode = True
