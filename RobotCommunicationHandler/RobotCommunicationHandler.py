@@ -217,5 +217,5 @@ class RobotCommunicationHandler:
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))
-                print(send_data['message'])
+                print(f"""{send_data['target']}に送信 : {send_data['message']}""")
             time.sleep(0.1)
