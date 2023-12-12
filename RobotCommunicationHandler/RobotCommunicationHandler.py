@@ -181,16 +181,25 @@ class RobotCommunicationHandler:
         except Exception as e:
             print('Socket Error: ', e)
 
+        receive_thread_ur = None
+        receive_thread_cfd = None
         if TEST_UR_CONNECTION_LOCAL:
             # 2つのソケットと同時に通信するためのスレッドを2つ作成
-            receive_thread1 = Thread(
+            receive_thread_ur = Thread(
                 target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_1, self.dummy_ur_socket))
-            receive_thread1.start()
+        else:
+            receive_thread_ur = Thread(
+                target=self.test_receive_string, args=(TransmissionTarget.UR, self.samp_socket_ur))
+        receive_thread_ur.start()
 
         if TEST_CFD_CONNECTION_LOCAL:
-            receive_thread2 = Thread(
+            receive_thread_cfd = Thread(
                 target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_2, self.dummy_cfd_socket))
-            receive_thread2.start()
+            receive_thread_cfd.start()
+        else:
+            receive_thread_cfd = Thread(
+                target=self.test_receive_string, args=(TransmissionTarget.CFD, self.samp_socket_cfd))
+            receive_thread_cfd.start()
 
         while True:
             # send_queueに値が入っているか監視
