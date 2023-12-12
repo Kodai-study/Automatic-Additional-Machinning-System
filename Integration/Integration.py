@@ -23,7 +23,7 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from common_data_type import CameraType, TransmissionTarget, WorkPieceShape
 
 toggle_flag = True
-
+QUEUE_WATCH_RATE = 0.03
 
 class Integration:
     """
@@ -119,7 +119,7 @@ class Integration:
                 # send_queueから値を取り出す
                 send_data = self.gui_responce_queue.get()
                 self.gui_responce_handler.handle(send_data)
-            time.sleep(0.1)
+            time.sleep(QUEUE_WATCH_RATE)
 
     def _regist_wait_command(self, target_or_message_type: TransmissionTarget, message: str):
         waiting_condition = threading.Condition()
@@ -144,7 +144,7 @@ class Integration:
 
                 self.robot_message_handler.handle_receiv_message(receiv_data)
                 print("受信データ : ", receiv_data)
-            time.sleep(0.1)
+            time.sleep(QUEUE_WATCH_RATE)
 
     def _initialization(self):
         self.is_ur_connected = False

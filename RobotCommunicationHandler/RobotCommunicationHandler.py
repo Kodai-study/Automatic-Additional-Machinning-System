@@ -6,7 +6,7 @@ import socket
 import time
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_PROCESSING_REPORT, TEST_UR_CONNECTION_LOCAL, TEST_Windows
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_Windows
 
 
 TEST_HOST_ADDRESS = 'localhost'
