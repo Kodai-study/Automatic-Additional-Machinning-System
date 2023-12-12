@@ -1,5 +1,6 @@
 import datetime
 from threading import Thread
+import time
 from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
 from Integration.handlers_database import write_database
 from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
@@ -133,13 +134,35 @@ class ManageRobotReceive:
             return self._undefine
 
         sensor_time = datetime.datetime.now()
-        if detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY" or detail == "FST_POSITION":
+        if detail == "ATT_IMP_READY":
+            def _handler():
+                # TODO データベース書き込み
+                _send_message_to_cfd(
+                    "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
+                time.sleep(0.5)
+                _send_message_to_cfd(
+                    "EJCT 0,ST", self._integration_instance.send_request_queue)
+            return _handler
+
+        elif detail == "DET_DRL_READY":
+            def _handler():
+                _send_message_to_cfd(
+                    "EJCT 0,DETACH", self._integration_instance.send_request_queue)
+                time.sleep(0.5)
+                _send_message_to_cfd(
+                    "EJCT 0,ST", self._integration_instance.send_request_queue)
+                time.sleep(0.5)
+                _send_message_to_cfd(
+                    "CYL 0,PUSH", self._integration_instance.send_request_queue)
+            return _handler
+
+        elif detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY" or detail == "FST_POSITION":
             def _handler():
                 write_database(
                     self._integration_instance.database_accesser, "SIG", dev_num, detail, sensor_time, serial_number)
                 _send_message_to_ur(
                     command, self._integration_instance.send_request_queue)
-            return _handler()
+            return _handler
 
         return self._undefine
 
