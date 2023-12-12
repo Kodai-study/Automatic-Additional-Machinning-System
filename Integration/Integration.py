@@ -123,7 +123,8 @@ class Integration:
 
     def _regist_wait_command(self, target_or_message_type: TransmissionTarget, message: str):
         waiting_condition = threading.Condition()
-        self.message_wait_conditions[(target_or_message_type,message)] = waiting_condition
+        self.message_wait_conditions[(
+            target_or_message_type, message)] = waiting_condition
         return waiting_condition
 
     def _robot_message_handle(self):
@@ -132,14 +133,17 @@ class Integration:
                 # send_queueから値を取り出す
                 receiv_data = self.comm_receiv_queue.get()
                 if receiv_data.get("message"):
-                    waiting_condition = self.message_wait_conditions.get((receiv_data["target"],receiv_data["message"]))
-                else :
-                    waiting_condition = self.message_wait_conditions.get((receiv_data["target"],receiv_data["msg_type"]))
+                    waiting_condition = self.message_wait_conditions.get(
+                        (receiv_data["target"], receiv_data["message"]))
+                else:
+                    waiting_condition = self.message_wait_conditions.get(
+                        (receiv_data["target"], receiv_data["msg_type"]))
                 if waiting_condition:
                     with waiting_condition:
                         waiting_condition.notify_all()
 
                 self.robot_message_handler.handle_receiv_message(receiv_data)
+                print("受信データ : ", receiv_data)
             time.sleep(0.1)
 
     def _initialization(self):
@@ -158,7 +162,7 @@ class Integration:
                     TransmissionTarget.TEST_TARGET_2, "DR_STK_TURNED")
                 with condition:
                     condition.wait()
-                
+
             else:
                 self.send_request_queue.put(
                     {"target": TransmissionTarget.CFD, "message": "STM 1,CW"})
@@ -188,13 +192,12 @@ class Integration:
             test_cfd_thread = Thread(target=self.test_cfd.start)
             test_cfd_thread.start()
 
-
         # 通信スレッドを立ち上げる
         self.communication_thread = Thread(
             target=self.communicationHandler.communication_loop,
             args=(self.send_request_queue, self.comm_receiv_queue))
         self.communication_thread.start()
-        
+
         time.sleep(3)
 
         test_send_thread = Thread(

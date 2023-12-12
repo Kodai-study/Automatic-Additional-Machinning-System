@@ -2,7 +2,7 @@ from queue import Queue
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_UR_CONNECTION_LOCAL
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
 def _send_message_to_cfd(message: str, send_request_queue: Queue):
@@ -12,11 +12,10 @@ def _send_message_to_cfd(message: str, send_request_queue: Queue):
     Args:
         message (str): 送信するコマンド文字列
     """
-    if TEST_UR_CONNECTION_LOCAL:
-        send_request_queue.put(
-            {"target": TransmissionTarget.TEST_TARGET_2, "message": message})
-    else:
-        print("send to cfd: ", message)
+    print("CFDに送信: " + message)
+    send_request_queue.put(
+        {"target": TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD,
+            "message": message})
 
 
 def _send_message_to_ur(message: str, send_request_queue: Queue):
@@ -26,6 +25,7 @@ def _send_message_to_ur(message: str, send_request_queue: Queue):
     Args:
         message (str): 送信するコマンド文字列
     """
+    print("URに送信: " + message)
     send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
             "message": message})
