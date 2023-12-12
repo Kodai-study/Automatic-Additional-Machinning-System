@@ -224,17 +224,18 @@ class ManageRobotReceive:
         """
         SNS命令のハンドラを選択する
         """
-        is_on = detail == "ON"
-        sensor_time = datetime.datetime.now()
 
         if detail == "ST":
             return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
 
+        is_on = detail == "ON"
+        sensor_time = datetime.datetime.now()
+
         def _common_sensor_handler():
             _send_message_to_ur(
                 command, self._integration_instance.send_request_queue)
-            write_database(self._integration_instance.database_accesser,
-                           "SNS", dev_num, detail, sensor_time, serial_number)
+            # write_database(self._integration_instance.database_accesser,
+            #                "SNS", dev_num, detail, sensor_time, serial_number)
             self._change_robot_status("sensor", dev_num, is_on)
 
         if dev_num == 1 and is_on:
@@ -263,6 +264,9 @@ class ManageRobotReceive:
         notice_change_status(self._integration_instance.gui_request_queue)
 
     def _split_command(self, command: str):
+        # 終端文字を削除
+        command = command.replace("\n", "")
+        command = command.replace("\r", "")
         command_copy = command
         _split_list = command_copy.split(" ")
         instruction = _split_list[0]
