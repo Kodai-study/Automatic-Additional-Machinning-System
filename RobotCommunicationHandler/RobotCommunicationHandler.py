@@ -161,7 +161,7 @@ class RobotCommunicationHandler:
                         self.samp_socket_cfd, TEST_HOST_ADDRESS, CFD_PORT_NUMBER)
                 else:
                     self.samp_socket_cfd = self.connect_to_cfd(
-                        self.samp_socket_cfd, HOST_LINUX_ADDRESS, CFD_PORT_NUMBER)
+                        self.samp_socket_cfd, CFD_HOST_ADDRESS, CFD_PORT_NUMBER)
 
                 receive_data_queue.put({"target": TransmissionTarget.CFD,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
@@ -208,4 +208,5 @@ class RobotCommunicationHandler:
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))
+                print(send_data['message'])
             time.sleep(0.1)
