@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 
-def detect_circles(image_path, max_circles=5):
+def detect_and_draw_circles(image_path, max_circles=5):
     image = cv2.imread(image_path)
 
     # グレースケール変換
@@ -18,11 +19,11 @@ def detect_circles(image_path, max_circles=5):
         edges,
         cv2.HOUGH_GRADIENT,
         dp=1,
-        minDist=50,
-        param1=50,
+        minDist=100,
+        param1=1000,
         param2=30,
         minRadius=20,
-        maxRadius=109
+        maxRadius=1000
     )
 
     detected_circles = []
@@ -47,16 +48,31 @@ def detect_circles(image_path, max_circles=5):
                     break
 
             if not overlap:
-                cv2.circle(image, center, radius, (0, 0, 255), 2)
-                cv2.circle(image, center, 2, (0, 255, 0), 3)
                 detected_circles.append({
                     "center": center,
                     "radius": radius,
                 })
                 print(f"円 {i + 1}: 中心 = {center}, 半径 = {radius}")
 
+                # TTFフォントを指定して読み込む
+                font_path = "ImageInspectionController/test/NotoSansJP-VariableFont_wght.ttf"  # フォントのパスを指定してください
+                font_size = 14
+                font = ImageFont.truetype(font_path, font_size)
+
+                # 検出された円の情報を画像に描画
+                image_pil = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+                draw = ImageDraw.Draw(image_pil)
+                text = f"円{i + 1}: 中心 = {center}, 半径 = {radius} px"
+                text_position = (center[0] + radius + 10, center[1] - radius - 10)
+                draw.text(text_position, text, font=font, fill=(255, 255, 255))
+
+                image = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
+
+                cv2.circle(image, center, radius, (0, 0, 255), 2)
+                cv2.circle(image, center, 2, (0, 255, 0), 3)
+
     # 画像を保存
-    output_image_path = 'ImageInspectionController/test/output_circles.png'
+    output_image_path = 'ImageInspectionController/test/output_circles_with_coordinates.png'
     cv2.imwrite(output_image_path, image)
 
     cv2.imshow('検出された形状', image)
@@ -65,15 +81,15 @@ def detect_circles(image_path, max_circles=5):
     return detected_circles, output_image_path
 
 def main():
-    image_path = 'ImageInspectionController/test/c.png'
+    image_path = 'ImageInspectionController/test/ana.png'
     max_circles_to_detect = 5  # 検出する円の最大数
 
-    detected_circles, output_image_path = detect_circles(image_path, max_circles_to_detect)
+    detected_circles, output_image_path = detect_and_draw_circles(image_path, max_circles_to_detect)
 
     for i, circle in enumerate(detected_circles):
         center = circle["center"]
         radius = circle["radius"]
-        print(f"円 {i + 1}: 中心座標 = {center}, 直径 = {radius * 2} px")
+        print(f"円 {i + 1}: 中心座標 = {center}, 半径 = {radius} px")
 
     print(f"検出結果の画像を保存しました: {output_image_path}")
     cv2.destroyAllWindows()
