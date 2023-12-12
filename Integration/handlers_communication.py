@@ -29,7 +29,6 @@ def _send_message_to_ur(message: str, send_request_queue: Queue):
     send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
             "message": message})
-    # print("send to ur: ", message)
 
 
 def _change_gui_status(gui_request_queue: Queue, robot_status: dict, device_type: str, device_num: int, status: bool):
@@ -67,11 +66,11 @@ def _send_to_gui(gui_request_queue: Queue, message: str):
         (RobotInteractionType.MESSAGE_RECEIVED, message))
 
 
-def _notice_finish_process(gui_request_queue: Queue,result:bool):
+def _notice_finish_process(gui_request_queue: Queue, result: bool):
     """処理が終了したことをGUIに通知する
 
     Args:
         message (str): ロボットから受け取ったメッセージ
     """
     gui_request_queue.put(
-        (GUISignalCategory.CANNOT_CONTINUE_PROCESSING,result))
+        (GUISignalCategory.CANNOT_CONTINUE_PROCESSING, result))

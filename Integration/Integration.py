@@ -1,5 +1,6 @@
 import datetime
 from queue import Queue
+import threading
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
@@ -84,6 +85,7 @@ class Integration:
         self.work_stock_number = -1
         self.gui_responce_handler = GuiResponceHandler(
             self, self.send_request_queue, self.gui_request_queue)
+        self.message_wait_conditions = {}
 
     def _test_insert_work_datas(self):
         self.work_list = [
@@ -119,42 +121,61 @@ class Integration:
                 self.gui_responce_handler.handle(send_data)
             time.sleep(0.1)
 
-    def _wait_command(self, target: TransmissionTarget, message: str):
-        self.wait_cmd_flag = False
-        self.wait_message = {"target": target, "message": message}
-        while not self.wait_cmd_flag:
-            time.sleep(0.1)
-        self.wait_message = None
-        return True
+    def _regist_wait_command(self, target_or_message_type: TransmissionTarget, message: str):
+        waiting_condition = threading.Condition()
+        self.message_wait_conditions[(target_or_message_type,message)] = waiting_condition
+        return waiting_condition
 
     def _robot_message_handle(self):
         while True:
             if not self.comm_receiv_queue.empty():
                 # send_queueから値を取り出す
                 receiv_data = self.comm_receiv_queue.get()
-                if self.wait_message is not None:
-                    if self.wait_message["target"] == receiv_data["target"] and self.wait_message["message"] == receiv_data["message"]:
-                        self.wait_cmd_flag = True
+                if receiv_data.get("message"):
+                    waiting_condition = self.message_wait_conditions.get((receiv_data["target"],receiv_data["message"]))
+                else :
+                    waiting_condition = self.message_wait_conditions.get((receiv_data["target"],receiv_data["msg_type"]))
+                if waiting_condition:
+                    with waiting_condition:
+                        waiting_condition.notify_all()
 
                 self.robot_message_handler.handle_receiv_message(receiv_data)
             time.sleep(0.1)
 
-    def _test_robot_message_handler(self):
-        self.robot_message_handler.handle_receiv_message(
-            {"target": TransmissionTarget.UR,
-             "message": "SIG 0,ATT_IMP_READY",
-             "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
+    def _initialization(self):
+        self.is_ur_connected = False
+        self.is_cfd_connected = False
+        # 通信が確立するまで待機
+        while not (self.is_ur_connected and self.is_cfd_connected):
+            time.sleep(0.5)
 
-    def _test_camera_request(self, request_list: list):
-        global toggle_flag
+    def _start_process(self):
+        for stock_number in range(1, 9):
+            if TEST_CFD_CONNECTION_LOCAL:
+                self.send_request_queue.put(
+                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 1,CW"})
+                condition = self._regist_wait_command(
+                    TransmissionTarget.TEST_TARGET_2, "DR_STK_TURNED")
+                with condition:
+                    condition.wait()
+                
+            else:
+                self.send_request_queue.put(
+                    {"target": TransmissionTarget.CFD, "message": "STM 1,CW"})
+                self._regist_wait_command(
+                    TransmissionTarget.CFD, "DR_STK_TURNED")
 
-        toggle_flag = not toggle_flag
-        camera_image_list = []
-        for camera_type in request_list:
-            camera_image_list.append((
-                camera_type, "resource/images/title.png" if toggle_flag else "resource/images/test.png"))
-        self.gui_request_queue.put(
-            (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
+            result = self.image_inspection_controller.perform_image_operation(
+                OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
+            print(f"工具{stock_number}個めの検査 : 結果 {result}")
+            if not result.result:
+                self.gui_request_queue.put(
+                    GUISignalCategory.CANNOT_CONTINUE_PROCESSING, f"{stock_number}個の工具がエラーです")
+                return
+
+        # TODO ワークの個数を取得する
+        self._regist_wait_command(
+            TransmissionTarget.TEST_TARGET_1, "SIG 0,ATT_IMP_READY")
 
     def main(self):
 
