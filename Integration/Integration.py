@@ -181,6 +181,17 @@ class Integration:
         self._regist_wait_command(
             TransmissionTarget.TEST_TARGET_1, "SIG 0,ATT_IMP_READY")
 
+    def _test_camera_request(self, request_list: list):
+        global toggle_flag
+
+        toggle_flag = not toggle_flag
+        camera_image_list = []
+        for camera_type in request_list:
+            camera_image_list.append((
+                camera_type, "resource/images/title.png" if toggle_flag else "resource/images/test.png"))
+        self.gui_request_queue.put(
+            (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
+
     def main(self):
 
         # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
