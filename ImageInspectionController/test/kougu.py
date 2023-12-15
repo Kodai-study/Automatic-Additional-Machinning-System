@@ -1,57 +1,78 @@
+# -*- coding: utf-8 -*-
 import cv2
 import numpy as np
 
-def measure_drill_width(drill_image_path, output_image_path):
-    # 画像の読み込み
-    image = cv2.imread(drill_image_path)
+def read_image(file_path):
+    """画像の読み込み"""
+    image = cv2.imread(file_path)
+    return image
 
-    if image is None:
-        print(f"Error: Failed to load image from {drill_image_path}")
-        return
-
-    # グレースケール変換
+def convert_to_gray(image):
+    """グレースケール変換"""
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return gray
 
-    # エッジ検出（適切なパラメータを調整してください）
-    edges = cv2.Canny(gray, 150, 160)
+def apply_gaussian_blur(image):
+    """ガウシアンブラーを適用して画像を平滑化"""
+    blurred = cv2.GaussianBlur(image, (5, 5), 0)
+    return blurred
 
-    # 輪郭検出
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+def apply_canny_edge_detection(image, low_threshold, high_threshold):
+    """Cannyエッジ検出を使用してエッジを検出"""
+    edges = cv2.Canny(image, low_threshold, high_threshold)
+    return edges
 
-    # 輪郭を画像に合わせて表示
-    cv2.drawContours(image, contours, -1, (0, 255, 0), 2)
+def find_contours(edges):
+    """輪郭の検出"""
+    contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    return contours, hierarchy
 
-    if not contours:
-        print("Error: No contours found.")
-        return
+def draw_max_contour(image, contours):
+    """最大の輪郭を描画して結果を返す"""
+    if contours:
+        max_contour = max(contours, key=cv2.contourArea)
+        contour_image = np.zeros_like(image)
+        img = cv2.drawContours(contour_image, [max_contour], -1, (255), 2)
+        return img, max_contour
+    else:
+        print("輪郭が見つかりませんでした。")
+        return None, None
 
-    # 面積最大の輪郭選択
-    max_contour = max(contours, key=cv2.contourArea)
+def draw_bounding_rectangle(image, contour):
+    """輪郭に外接する長方形を描画して寸法を返す"""
+    x, y, w, h = cv2.boundingRect(contour)
+    rectangle_image = cv2.rectangle(image.copy(), (x, y), (x + w, y + h), (0, 255, 0), 2)
+    return rectangle_image, w
 
-    # 外接矩形を取得
-    x, y, w, h = cv2.boundingRect(max_contour)
+def save_result_image(image, file_path):
+    """結果の画像を保存"""
+    cv2.imwrite(file_path, image)
 
-    # 外形を囲む四角形を描画
-    cv2.drawContours(image, [max_contour], 0, (0, 255, 0), 2)
+def main():
+    file_path = 'ImageInspectionController/test/imgdrill.png'
+    image = read_image(file_path)
 
-    # 外形の幅（直径）を計算
-    width = w
+    gray = convert_to_gray(image)
+    blurred = apply_gaussian_blur(gray)
+    edges = apply_canny_edge_detection(blurred, 50, 200)
+    contours, _ = find_contours(edges)
 
-    # 結果を表示
-    print(f"ドリルの外形の幅（直径）: {width} ピクセル")
+    result_image, max_contour = draw_max_contour(gray, contours)
+    if result_image is not None:
+        save_result_image(result_image, 'ImageInspectionController/test/contour_result.png')
 
-    # 矩形を画像上に表示
-    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
-    cv2.putText(image, f"Width: {width:.2f} px", (x, y - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+        rectangle_image, x_dimension = draw_bounding_rectangle(image, max_contour)
+        if rectangle_image is not None:
+            save_result_image(rectangle_image, 'ImageInspectionController/test/rectangle_result.png')
+            print(f'X方向の寸法: {x_dimension}')
+        else:
+            print("長方形が検出されませんでした。")
 
-    # 結果の画像を保存
-    cv2.imwrite(output_image_path, image)
-
-    # 表示ウィンドウを閉じる
+    cv2.imshow('Original Image', image)
+    cv2.imshow('Blurred Image', blurred)
+    cv2.imshow('Canny Edges', edges)
+    cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# ドリルの画像ファイルのパスと保存先の画像ファイルのパスを指定して呼び出し
-drill_image_path = "/home/kuga/img/a.png"
-output_image_path = "/home/kuga/img/output.png"
-measure_drill_width(drill_image_path, output_image_path)
+if __name__ == "__main__":
+    main()
