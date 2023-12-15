@@ -9,8 +9,8 @@ def detect_and_draw_shapes(image_path, max_circles=5, max_rectangles=5):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # 画像を2値化
-    _, threshold = cv2.threshold(gray, 25, 255, cv2.THRESH_BINARY)
-
+    _, threshold = cv2.threshold(gray, 170, 255, cv2.THRESH_BINARY)
+    cv2.imwrite("ImageInspectionController/test/threshold.png",threshold)
     # ガウシアンブラーによるノイズ低減
     blurred = cv2.GaussianBlur(threshold, (5, 5), 0)
 
@@ -24,11 +24,11 @@ def detect_and_draw_shapes(image_path, max_circles=5, max_rectangles=5):
         edges,
         cv2.HOUGH_GRADIENT,
         dp=1,
-        minDist=100,
-        param1=1000,
-        param2=30,
-        minRadius=20,
-        maxRadius=1000
+        minDist=10,
+        param1=10,
+        param2=1,
+        minRadius=5,
+        maxRadius=110
     )
 
     detected_circles = []
@@ -109,7 +109,7 @@ def detect_and_draw_shapes(image_path, max_circles=5, max_rectangles=5):
     return detected_circles, detected_black_rectangles, output_image_path
 
 def main():
-    image_path = 'ImageInspectionController/test/ana2.png'
+    image_path = 'ImageInspectionController/test/threshold2.png'
     detected_circles, detected_black_rectangles, output_image_path = detect_and_draw_shapes(image_path, max_circles=5, max_rectangles=5)
 
     if not detected_circles:
