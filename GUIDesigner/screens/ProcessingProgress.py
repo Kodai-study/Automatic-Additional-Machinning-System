@@ -1,9 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
-from typing import Dict, Union
+from typing import Dict, List, Union
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
+
+FRAME_PADDING_X = 40
+FRAME_PADDING_Y = 40
 
 
 class ProgressBar:
@@ -39,14 +42,18 @@ class LabelUnit:
         LabelUnit.off_lamp_image = off_lamp_image_resource
         LabelUnit.root_frame = root_frame_resource
 
-    def __init__(self, titel_label_string: str, row, col, on_off=False, font_name="AR丸ゴシック体M", font_size=14) -> None:
+    def __init__(self, titel_label_string: str, on_off=False, font_name="AR丸ゴシック体M", font_size=14) -> None:
         if type(titel_label_string) is not str:
             titel_label_string = str(titel_label_string)
         titel_label_string += " " * LabelUnit.padding_space
         self.lamp_image = tk.Label(
             LabelUnit.root_frame,  text=titel_label_string, compound=tk.RIGHT,
-            image=LabelUnit.on_lamp_image if on_off else LabelUnit.off_lamp_image,  font=(font_name, font_size))
-        self.lamp_image.grid(row=row, column=col, sticky=tk.W)
+            image=LabelUnit.on_lamp_image if on_off else LabelUnit.off_lamp_image,
+            font=(font_name, font_size), anchor=tk.E)
+
+    def set_grid(self, row_, col):
+        self.lamp_image.grid(row=row_, column=col,
+                             padx=10, pady=10, sticky="nsew")
 
     def update_lamp(self, is_on: bool):
         self.lamp_image.config(
@@ -61,6 +68,7 @@ class ProcessingProgress(ScreenBase):
         self.robot_status: dict = robot_status
         self.sensor_status_labels = []
         self.selected_items = selected_items
+        self.rabel_col_num = 0
 
         self.on_image = self.image_resource["green_lamp"].subsample(
             2, 2)  # 2倍縮小
@@ -84,10 +92,13 @@ class ProcessingProgress(ScreenBase):
     def create_frame(self):
         self.tkraise()
 
-    def _create_lamps(self, label_strings, col):
-        # ラベルを作成して配置
-        for i, label_text in enumerate(label_strings):
-            LabelUnit(label_text, i, col)
+    def _add_label_column(self, label_units: List[LabelUnit]):
+        for i, label_unit in enumerate(label_units):
+            label_unit.set_grid(
+                i, self.rabel_col_num)
+            self.label_frame.rowconfigure(i, weight=1)
+        self.label_frame.columnconfigure(self.rabel_col_num, weight=1)
+        self.rabel_col_num += 1
 
     def _create_widgets(self):
         # 進捗フレームを作成
@@ -97,7 +108,8 @@ class ProcessingProgress(ScreenBase):
 
         # ラベル用のフレーム
         self.label_frame = tk.Frame(self)
-        self.label_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.label_frame.pack(side=tk.TOP, fill=tk.BOTH,
+                              expand=True, padx=FRAME_PADDING_X, pady=FRAME_PADDING_Y)
 
         LabelUnit.initial_variables(
             self.label_frame, self.on_image, self.off_image)
@@ -109,61 +121,6 @@ class ProcessingProgress(ScreenBase):
         self.current_data_label = tk.Label(
             self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
         self.current_data_label.grid(row=0, column=0, columnspan=2)  # ２列にまたがる
-        # 選択されたデータの名前を取得
-        # バックライト、バーライト、リングライトのラベルを作成
-        # self.lighting_labels = self._create_lighting_status_labels()
-        # ドアロックのラベルを作成
-        # self.door_lock_labels = self._create_door_lock_status_labels()
-
-        # # プログレスバー用の変数
-        # self.progress_var = tk.DoubleVar()
-        # self.quality_var = tk.DoubleVar()
-        # self.remaining_time_var = tk.DoubleVar()
-        # self.remaining_work_var = tk.DoubleVar()
-
-        # # プログレスバー
-        # self.progress_bar = ttk.Progressbar(
-        #     self, variable=self.progress_var, length=500, mode="determinate")
-        # self.quality_bar = ttk.Progressbar(
-        #     self, variable=self.quality_var, length=500, mode="determinate")
-        # self.remaining_time_bar = ttk.Progressbar(
-        #     self, variable=self.remaining_time_var, length=500, mode="determinate")
-        # self.remaining_work_bar = ttk.Progressbar(
-        #     self, variable=self.remaining_work_var, length=500, mode="determinate")
-
-        # 数値表示用のラベル
-        self.progress_label = tk.Label(
-            self, text="0%", font=("AR丸ゴシック体M", 20))
-        self.quality_label = tk.Label(
-            self, text="0%", font=("AR丸ゴシック体M", 20))
-        self.remaining_time_label = tk.Label(
-            self, text="2:30", font=("AR丸ゴシック体M", 20))
-        self.remaining_work_label = tk.Label(
-            self, text="0", font=("AR丸ゴシック体M", 20))
-
-        # プログレスバー、ラベル、ボタンを配置
-        # self.progress_bar.grid(row=1, column=1, padx=10, pady=10)
-        # self.progress_label.grid(row=1, column=2, padx=10, pady=10)
-
-        # self.quality_bar.grid(row=2, column=1, padx=10, pady=10)
-        # self.quality_label.grid(row=2, column=2, padx=10, pady=10)
-
-        # self.remaining_time_bar.grid(row=3, column=1, padx=10, pady=10)
-        # self.remaining_time_label.grid(row=3, column=2, padx=10, pady=10)
-
-        # self.remaining_work_bar.grid(row=4, column=1, padx=10, pady=10)
-        # self.remaining_work_label.grid(row=4, column=2, padx=10, pady=10)
-
-        # データ名を表示するラベル
-        # self.current_data_label = tk.Label(
-        #     self, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
-        # self.current_data_label.grid(row=0, column=0, columnspan=2, pady=40)
-
-        # ネットワーク状況を表示するラベル
-        # self.connection_status_label = tk.Label(
-        #     self, text="Connection", image=self.off_image, compound=tk.BOTTOM)
-        # self.connection_status_label.place(x=1500, y=400)
-        # self._update_connection_status_label()  # 初期表示を更新
 
         # ステータスを確認し、適切な画像を設定
         self.ejector_status = "UR: attach" if self.robot_status[
@@ -176,30 +133,45 @@ class ProcessingProgress(ScreenBase):
             self, image=self.ejector_image, compound=tk.BOTTOM, text=self.ejector_status)
         self.ejector_image_label.place(x=1400, y=400)
 
-        # センサーステータスラベルを更新
-        # self._update_lighting_status_labels(self.lighting_labels)
-        # ドアロックステータスラベルを更新
-        # self._update_door_lock_status_labels(self.door_lock_labels)
-
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
         self.sensor_status_labels = []
         self.row_index = 6  # 適切な行に配置するためのインデックス
 
-        self.sensor_name_mapping = {
-            1: "良品センサ", 2: "不良品センサ", 3: "搬入部在荷センサ",
-            4: "加工部在荷センサ", 5: "検査部在荷センサ", 6: "URファイバセンサ"
-        }
+        # リストにする
+        sensor_names = [
+            "良品センサ", "不良品センサ", "搬入部在荷センサ",
+            "加工部在荷センサ", "検査部在荷センサ", "URファイバセンサ"
+        ]
 
-        self.cylinder_mapping = {
-            1: {"forward": "加工部位置決め前進端", "backward": "加工部位置決め後進端"},
-            2: {"forward": "加工部テーブル前進端", "backward": "加工部テーブル後進端"},
-            3: {"forward": "検査部位置決め前進端", "backward": "検査部位置決め後進端"},
-            4: {"forward": "ツールチェンジャー前進端", "backward": "ツールチェンジャー後進端"},
-            5: {"forward": "検査部壁前進端", "backward": "検査部壁後進端"}
-        }
+        self.sensor_labels = {}
 
-        self._create_lamps(self.sensor_name_mapping, 0)
+        label_row_list = []
+        for i, sensor_name in enumerate(sensor_names):
+            label_unit = LabelUnit(sensor_name)
+            label_row_list.append(label_unit)
+            self.sensor_labels[i] = label_unit
+        self._add_label_column(label_row_list)
+
+        cylinder_label_names = [
+            "加工部位置決め", "加工部テーブル", "検査部位置決め", "検査部位置決め",
+            "ツールチェンジャー", "検査部"
+        ]
+
+        label_row_list.clear()
+        for i, cylinder_name in enumerate(cylinder_label_names):
+            label_unit = LabelUnit(cylinder_name)
+            label_row_list.append(label_unit)
+            self.sensor_labels[i] = label_unit
+        self._add_label_column(label_row_list)
+
+        # self.cylinder_mapping = {
+        #     1: {"forward": "加工部位置決め前進端", "backward": "加工部位置決め後進端"},
+        #     2: {"forward": "加工部テーブル前進端", "backward": "加工部テーブル後進端"},
+        #     3: {"forward": "検査部位置決め前進端", "backward": "検査部位置決め後進端"},
+        #     4: {"forward": "ツールチェンジャー前進端", "backward": "ツールチェンジャー後進端"},
+        #     5: {"forward": "検査部壁前進端", "backward": "検査部壁後進端"}
+        # }
 
     def _create_lighting_status_labels(self):
         # ライトステータス用のラベルを作成して配置
