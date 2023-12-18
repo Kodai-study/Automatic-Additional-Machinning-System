@@ -104,6 +104,9 @@ class ProcessingProgress(ScreenBase):
         self.label_strings = ["加工進捗", "良品率", "残り時間", "残り枚数"]
         self.progress_bar_frame = tk.Frame(self)
         self.progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        for i, label_text in enumerate(self.label_strings):
+            ProgressBar(self.progress_bar_frame, label_text, i+1)
+
 
         # ラベル用のフレーム
         self.label_frame = tk.Frame(self)
@@ -112,9 +115,6 @@ class ProcessingProgress(ScreenBase):
 
         LabelUnit.initial_variables(
             self.label_frame, self.on_image, self.off_image)
-        # 要素のラベルを作成して配置
-        for i, label_text in enumerate(self.label_strings):
-            ProgressBar(self.progress_bar_frame, label_text, i+1)
 
         self.label_status_dict["sensor"] = self._create_sensor_status_labels()
         self.label_status_dict["reed_switch"] = self._create_cylinder_status_labels(
@@ -192,44 +192,24 @@ class ProcessingProgress(ScreenBase):
         self._add_label_column(door_lock_label_list)
         return door_lock_status
 
-    def _update_door_lock_status_labels(self, door_lock_labels):
-        for door_lock_label in door_lock_labels:
-            door_lock_label.grid_forget()
-        self.door_lock_status_labels = self._create_door_lock_status_labels()
-
-    def _update_lighting_status_labels(self, lighting_labels):
-        for lighting_label in lighting_labels:
-            lighting_label.grid_forget()
-        self.lighting_status_labels = self._create_lighting_status_labels()
-
-    def _update_sensor_status_labels(self, sensor_labels):
-        for sensor_label in sensor_labels:
-            sensor_label.grid_forget()
-
-    def _update_connection_status_label(self):
-        if self.connection_status_label:
-            connection_text = "Connection: On" if self.robot_status[
-                "is_connection"] else "Connection: Off"
-            connection_image = self.on_image if self.robot_status["is_connection"] else self.off_image
-
-            self.connection_status_label.config(
-                text=connection_text, image=connection_image)
-
-    def update_ui_thread(self):
-        # このメソッドはメインスレッドで実行されるようになりました
-        self._update_ui()
-        self._update_connection_status_label()  # ネットワーク状況を更新
-        self.root.after(1000, self.update_ui_thread)  # 再度このメソッドを1000ミリ秒後に呼び出す
-
     def _update_ui(self):
-        # プログレスバーなどの UI を更新する処理をここに追加
-        progress_value = 50  # 例として50%の進捗を設定
-        self.progress_var.set(progress_value)
-        self.progress_label.config(text=f"{progress_value}%")
-        # 他の要素も同様に更新
+        robot_status_differences = self.compare_dicts
 
-        # センサーステータスラベルを更新
-        self._update_sensor_status_labels(self.sensor_status_labels)
+    def compare_dicts(self, dict1, dict2, path=""):
+        differences = {}
+        for key in dict1:
+            # キーがdict2にない場合
+            if key not in dict2:
+                differences[f"{path}{key}"] = (dict1[key], None)
+            # 両方の値が辞書の場合、再帰的に比較
+            elif isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
+                deeper_differences = self.compare_dicts(
+                    dict1[key], dict2[key], path=f"{path}{key}.")
+                differences.update(deeper_differences)
+            # 値が異なる場合、変更された値のみを記録
+            elif dict1[key] != dict2[key]:
+                differences[f"{path}{key}"] = dict2[key]  # 変更後の値のみを保存
+        return differences
 
 
 if __name__ == "__main__":
