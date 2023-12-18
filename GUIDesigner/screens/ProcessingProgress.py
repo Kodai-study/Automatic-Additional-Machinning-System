@@ -129,9 +129,9 @@ class ProcessingProgress(ScreenBase):
             "ejector"]["attach"] else self.off_image
 
         # "green_lamp"または"red_lamp"の画像を表示し、画像の下にテキストを表示するためのラベル
-        self.ejector_image_label = tk.Label(
-            self, image=self.ejector_image, compound=tk.BOTTOM, text=self.ejector_status)
-        self.ejector_image_label.place(x=1400, y=400)
+        # self.ejector_image_label = tk.Label(
+        #     self, image=self.ejector_image, compound=tk.BOTTOM, text=self.ejector_status)
+        # self.ejector_image_label.place(x=1400, y=400)
 
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
@@ -145,33 +145,32 @@ class ProcessingProgress(ScreenBase):
         ]
 
         self.sensor_labels = {}
+        self.cylinder_labels = {}
 
-        label_row_list = []
+        sensor_label_row_list = []
         for i, sensor_name in enumerate(sensor_names):
             label_unit = LabelUnit(sensor_name)
-            label_row_list.append(label_unit)
+            sensor_label_row_list.append(label_unit)
             self.sensor_labels[i] = label_unit
-        self._add_label_column(label_row_list)
+        self._add_label_column(sensor_label_row_list)
 
         cylinder_label_names = [
             "加工部位置決め", "加工部テーブル", "検査部位置決め", "検査部位置決め",
             "ツールチェンジャー", "検査部"
         ]
 
-        label_row_list.clear()
+        cylinder_forward_ravel_list = []
+        cylinder_backward_ravel_list = []
         for i, cylinder_name in enumerate(cylinder_label_names):
-            label_unit = LabelUnit(cylinder_name)
-            label_row_list.append(label_unit)
-            self.sensor_labels[i] = label_unit
-        self._add_label_column(label_row_list)
-
-        # self.cylinder_mapping = {
-        #     1: {"forward": "加工部位置決め前進端", "backward": "加工部位置決め後進端"},
-        #     2: {"forward": "加工部テーブル前進端", "backward": "加工部テーブル後進端"},
-        #     3: {"forward": "検査部位置決め前進端", "backward": "検査部位置決め後進端"},
-        #     4: {"forward": "ツールチェンジャー前進端", "backward": "ツールチェンジャー後進端"},
-        #     5: {"forward": "検査部壁前進端", "backward": "検査部壁後進端"}
-        # }
+            label_unit_positive_edge = LabelUnit(cylinder_name+"前進端")
+            label_unit_negative_edge = LabelUnit(cylinder_name+"後進端")
+            cylinder_forward_ravel_list.append(label_unit_positive_edge)
+            cylinder_backward_ravel_list.append(label_unit_negative_edge)
+            self.cylinder_labels[i] = {}
+            self.cylinder_labels[i]["forward"] = label_unit_positive_edge
+            self.cylinder_labels[i]["backward"] = label_unit_negative_edge
+        self._add_label_column(cylinder_forward_ravel_list)
+        self._add_label_column(cylinder_backward_ravel_list)
 
     def _create_lighting_status_labels(self):
         # ライトステータス用のラベルを作成して配置
@@ -181,6 +180,7 @@ class ProcessingProgress(ScreenBase):
         lighting_name_mapping = {
             "back_light": "バックライト", "bar_light": "バーライト", "ring_light": "リングライト"
         }
+        
 
         for light_name, light_value in self.robot_status["lighting"].items():
             light_label = tk.Label(
