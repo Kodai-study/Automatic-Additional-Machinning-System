@@ -70,6 +70,7 @@ class ProcessingProgress(ScreenBase):
         self.sensor_status_labels = []
         self.selected_items = selected_items
         self.rabel_col_num = 0
+        self.label_status_dict = {}
 
         self.on_image = self.image_resource["green_lamp"].subsample(
             2, 2)  # 2倍縮小
@@ -77,9 +78,6 @@ class ProcessingProgress(ScreenBase):
             2, 2)
 
         self._create_widgets()
-        self._create_sensor_status_labels()
-        self._create_lighting_status_labels()
-        self._create_door_lock_status_labels()
         self.connection_status_label = None
 
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
@@ -118,6 +116,14 @@ class ProcessingProgress(ScreenBase):
         for i, label_text in enumerate(self.label_strings):
             ProgressBar(self.progress_bar_frame, label_text, i+1)
 
+        self.label_status_dict["sensor"] = self._create_sensor_status_labels()
+        self.label_status_dict["reed_switch"] = self._create_cylinder_status_labels(
+        )
+        self.label_status_dict["lighting"] = self._create_lighting_status_labels(
+        )
+        self.label_status_dict["door_lock"] = self._create_door_lock_status_labels(
+        )
+
         self.current_data_name = self.selected_items[0][0] if self.selected_items else "未選択"
         self.current_data_label = tk.Label(
             self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
@@ -131,25 +137,21 @@ class ProcessingProgress(ScreenBase):
 
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
-        self.sensor_status_labels = []
-        self.row_index = 6  # 適切な行に配置するためのインデックス
-
-        # リストにする
+        sensor_labels = {}
         sensor_names = [
             "良品センサ", "不良品センサ", "搬入部在荷センサ",
             "加工部在荷センサ", "検査部在荷センサ", "URファイバセンサ"
         ]
-
-        self.sensor_labels = {}
-        self.cylinder_labels = {}
-
         sensor_label_row_list = []
         for i, sensor_name in enumerate(sensor_names):
             label_unit = LabelUnit(sensor_name)
             sensor_label_row_list.append(label_unit)
-            self.sensor_labels[i+1] = label_unit
+            sensor_labels[i+1] = label_unit
         self._add_label_column(sensor_label_row_list)
+        return sensor_labels
 
+    def _create_cylinder_status_labels(self):
+        cylinder_labels = {}
         cylinder_label_names = [
             "加工部位置決め", "加工部テーブル", "検査部位置決め", "検査部位置決め",
             "ツールチェンジャー", "検査部"
@@ -162,30 +164,33 @@ class ProcessingProgress(ScreenBase):
             label_unit_negative_edge = LabelUnit(cylinder_name+"後進端")
             cylinder_forward_ravel_list.append(label_unit_positive_edge)
             cylinder_backward_ravel_list.append(label_unit_negative_edge)
-            self.cylinder_labels[i+1] = {}
-            self.cylinder_labels[i+1]["forward"] = label_unit_positive_edge
-            self.cylinder_labels[i+1]["backward"] = label_unit_negative_edge
+            cylinder_labels[i+1] = {}
+            cylinder_labels[i+1]["forward"] = label_unit_positive_edge
+            cylinder_labels[i+1]["backward"] = label_unit_negative_edge
         self._add_label_column(cylinder_forward_ravel_list)
         self._add_label_column(cylinder_backward_ravel_list)
+        return cylinder_labels
 
     def _create_lighting_status_labels(self):
 
-        self.lighting_name_mapping = {}
-        self.lighting_name_mapping["back_light"] = LabelUnit("バックライト")
-        self.lighting_name_mapping["bar_light"] = LabelUnit("バーライト")
-        self.lighting_name_mapping["ring_light"] = LabelUnit("リングライト")
+        lighting_name_mapping = {}
+        lighting_name_mapping["back_light"] = LabelUnit("バックライト")
+        lighting_name_mapping["bar_light"] = LabelUnit("バーライト")
+        lighting_name_mapping["ring_light"] = LabelUnit("リングライト")
 
-        self._add_label_column(self.lighting_name_mapping.values())
+        self._add_label_column(lighting_name_mapping.values())
+        return lighting_name_mapping
 
     def _create_door_lock_status_labels(self):
         # ドアロックステータス用のラベルを作成して配置
-        self.door_lock_status = {}
+        door_lock_status = {}
         door_lock_label_list = []
         for i in range(DOOR_LOCK_NUMBER):
             label_unit = LabelUnit(f"ドアロック{i+1}")
-            self.door_lock_status[i+1] = label_unit
+            door_lock_status[i+1] = label_unit
             door_lock_label_list.append(label_unit)
         self._add_label_column(door_lock_label_list)
+        return door_lock_status
 
     def _update_door_lock_status_labels(self, door_lock_labels):
         for door_lock_label in door_lock_labels:
