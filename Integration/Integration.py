@@ -30,6 +30,29 @@ class Integration:
         if TEST_UR_CONNECTION_LOCAL:
             self.test_ur = _test_ur(TEST_PORT1)
         self.robot_message_handler = ManageRobotReceive(self)
+        self.robot_status = {
+            "is_connection": False,
+            "limit_switch": False,
+            "lighting": {
+                "back_light": False, "bar_light": False, "ring_light": False
+            },
+            "sensor": {
+                1: False, 2: False, 3: False, 4: False, 5: False, 6: False
+            },
+            "reed_switch": {
+                1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
+                3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
+            },
+            "door_status": {
+                1: False, 2: False, 3: False, 4: False
+            },
+            "door_lock": {
+                1: False, 2: False, 3: False, 4: False
+            },
+            "ejector": {
+                "attach": False, "detach": False
+            }
+        }
 
     def _test_watching_guiResponce_queue(self):
         """
@@ -104,4 +127,4 @@ class Integration:
         test_watching_guiResponce_queue_thread = Thread(
             target=self._test_watching_guiResponce_queue)
         test_watching_guiResponce_queue_thread.start()
-        guiDesigner.start_gui(self.gui_request_queue, self.gui_responce_queue)
+        guiDesigner.start_gui(self.gui_request_queue, self.gui_responce_queue,self.robot_status)
