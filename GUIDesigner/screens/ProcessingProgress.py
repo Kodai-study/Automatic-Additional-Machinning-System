@@ -18,7 +18,7 @@ class ProgressBar:
     def __init__(self, root_frame, label_string: str, row, length=500) -> None:
         self.progress_ratio = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(
-            root_frame, variable=self.progress_ratio, length=500, mode="determinate")
+            root_frame, variable=self.progress_ratio, length=length, mode="determinate")
         self.title_label = tk.Label(
             root_frame, text=label_string, font=ProgressBar.default_font_title)
         self.progress_level = tk.Label(
@@ -129,11 +129,6 @@ class ProcessingProgress(ScreenBase):
         self.ejector_image = self.on_image if self.robot_status[
             "ejector"]["attach"] else self.off_image
 
-        # "green_lamp"または"red_lamp"の画像を表示し、画像の下にテキストを表示するためのラベル
-        # self.ejector_image_label = tk.Label(
-        #     self, image=self.ejector_image, compound=tk.BOTTOM, text=self.ejector_status)
-        # self.ejector_image_label.place(x=1400, y=400)
-
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
         self.sensor_status_labels = []
@@ -174,40 +169,18 @@ class ProcessingProgress(ScreenBase):
         self._add_label_column(cylinder_backward_ravel_list)
 
     def _create_lighting_status_labels(self):
-        # ライトステータス用のラベルを作成して配置
-        lighting_status_labels = []
-        row_index = 8  # 適切な行に配置するためのインデックス
 
-        lighting_name_mapping = {}
+        self.lighting_name_mapping = {}
+        self.lighting_name_mapping["back_light"] = LabelUnit("バックライト")
+        self.lighting_name_mapping["bar_light"] = LabelUnit("バーライト")
+        self.lighting_name_mapping["ring_light"] = LabelUnit("リングライト")
 
-        # "back_light": "バックライト", "bar_light": "バーライト", "ring_light": "リングライト"
-
-        lighting_name_mapping["back_light"] = LabelUnit("バックライト")
-        lighting_name_mapping["bar_light"] = LabelUnit("バーライト")
-        lighting_name_mapping["ring_light"] = LabelUnit("リングライト")
-
-        self._add_label_column(lighting_name_mapping.values())
-
-        # for light_name, light_value in self.robot_status["lighting"].items():
-        #     light_label = tk.Label(
-        #         self, text=lighting_name_mapping[light_name], font=("AR丸ゴシック体M", 14))
-        #     light_label.place(x=1150, y=row_index*85)  # 任意のy座標に適した値を指定してください
-
-        #     light_image = self.on_image if light_value else self.off_image
-        #     light_status_label = tk.Label(
-        #         self, text="On" if light_value else "Off", image=light_image)
-        #     # 任意のy座標に適した値を指定してください
-        #     light_status_label.place(x=1250, y=row_index*84)
-
-        #     lighting_status_labels.append(light_status_label)
-        #     row_index += 1
-
-        # return lighting_status_labels
+        self._add_label_column(self.lighting_name_mapping.values())
 
     def _create_door_lock_status_labels(self):
         # ドアロックステータス用のラベルを作成して配置
-        door_lock_label_list = []
         self.door_lock_status = {}
+        door_lock_label_list = []
         for i in range(DOOR_LOCK_NUMBER):
             label_unit = LabelUnit(f"ドアロック{i+1}")
             self.door_lock_status[i] = label_unit
