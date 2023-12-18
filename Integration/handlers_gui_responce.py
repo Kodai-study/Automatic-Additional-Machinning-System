@@ -18,12 +18,12 @@ class GuiResponceHandler:
 
     def handle(self, send_data):
         if send_data[0] == GUIRequestType.ROBOT_OPERATION_REQUEST:
-            if TEST_UR_CONNECTION_LOCAL:
+            if TEST_CFD_CONNECTION_LOCAL:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_1, "message": str(send_data[1])})
+                    {"target": TransmissionTarget.TEST_TARGET_2, "message": str(send_data[1])})
             else:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.UR, "message": str(send_data[1])})
+                    {"target": TransmissionTarget.CFD, "message": str(send_data[1])})
 
         elif send_data[0] == GUIRequestType.UPLOAD_PROCESSING_DETAILS:
             self.is_processing_mode = True
@@ -92,15 +92,15 @@ class GuiResponceHandler:
             ("SNS", [0, 1, 2, 3, 4, 5]),
             ("WRKSNS", [0])
         ]
-        for command in fetch_status_commands:
-            for device_number in command[1]:
-                cmd = f"{command[0]} {device_number},ST"
-                if TEST_CFD_CONNECTION_LOCAL:
-                    self.send_request_queue.put(
-                        {"target": TransmissionTarget.TEST_TARGET_2, "message": cmd})
-                else:
-                    self.send_request_queue.put(
-                        {"target": TransmissionTarget.CFD, "message": cmd})
+
+        # リスト内包表記を使用
+        commands = [f"{cmd} {num},ST" for cmd,
+                    nums in fetch_status_commands for num in nums]
+
+        # 条件分岐をループの外に移動
+        target = TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD
+        for cmd in commands:
+            self.send_request_queue.put({"target": target, "message": cmd})
 
     def _lighting_feed(self,  image_inspection_controller: ImageInspectionController, robot_status: dict, lighting_type: LightingType, status: bool):
         light_type_dict = {

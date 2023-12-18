@@ -20,6 +20,8 @@ from .screens.WorkResultOverview import WorkResultOverview
 from .Frames import Frames
 
 
+QUEUE_WATCH_RATE_ms = 10
+
 class GUIDesigner(tk.Tk):
     """
     GUIのデザインを行うクラス
@@ -104,7 +106,7 @@ class GUIDesigner(tk.Tk):
             self.screens[self.current_screen].handle_queued_request(
                 request_type, request_data)
 
-        self.after(10, self._check_queue)
+        self.after(QUEUE_WATCH_RATE_ms, self._check_queue)
 
     def change_frame(self, frame: Frames):
         self.current_screen = frame

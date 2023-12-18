@@ -6,17 +6,17 @@ import socket
 import time
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_PROCESSING_REPORT, TEST_UR_CONNECTION_LOCAL, TEST_Windows
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_Windows
 
 
 TEST_HOST_ADDRESS = 'localhost'
 HOST_LINUX_ADDRESS = '192.168.16.101'
-UR_HOST_ADDRESS = '192.168.16.8'
-CFD_HOST_ADDRESS = '192.168.16.9'
+UR_HOST_ADDRESS = '192.168.16.9'
+CFD_HOST_ADDRESS = '192.168.16.8'
 TEST_PORT1 = 5000
 TEST_PORT2 = 5001
 UR_PORT_NUMBER = 8765
-CFD_PORT_NUMBER = 8766
+CFD_PORT_NUMBER = 5678
 
 
 class RobotCommunicationHandler:
@@ -161,7 +161,7 @@ class RobotCommunicationHandler:
                         self.samp_socket_cfd, TEST_HOST_ADDRESS, CFD_PORT_NUMBER)
                 else:
                     self.samp_socket_cfd = self.connect_to_cfd(
-                        self.samp_socket_cfd, HOST_LINUX_ADDRESS, CFD_PORT_NUMBER)
+                        self.samp_socket_cfd, CFD_HOST_ADDRESS, CFD_PORT_NUMBER)
 
                 receive_data_queue.put({"target": TransmissionTarget.CFD,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
@@ -181,16 +181,25 @@ class RobotCommunicationHandler:
         except Exception as e:
             print('Socket Error: ', e)
 
+        receive_thread_ur = None
+        receive_thread_cfd = None
         if TEST_UR_CONNECTION_LOCAL:
             # 2つのソケットと同時に通信するためのスレッドを2つ作成
-            receive_thread1 = Thread(
+            receive_thread_ur = Thread(
                 target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_1, self.dummy_ur_socket))
-            receive_thread1.start()
+        else:
+            receive_thread_ur = Thread(
+                target=self.test_receive_string, args=(TransmissionTarget.UR, self.samp_socket_ur))
+        receive_thread_ur.start()
 
         if TEST_CFD_CONNECTION_LOCAL:
-            receive_thread2 = Thread(
+            receive_thread_cfd = Thread(
                 target=self.test_receive_string, args=(TransmissionTarget.TEST_TARGET_2, self.dummy_cfd_socket))
-            receive_thread2.start()
+            receive_thread_cfd.start()
+        else:
+            receive_thread_cfd = Thread(
+                target=self.test_receive_string, args=(TransmissionTarget.CFD, self.samp_socket_cfd))
+            receive_thread_cfd.start()
 
         while True:
             # send_queueに値が入っているか監視
@@ -208,4 +217,5 @@ class RobotCommunicationHandler:
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))
+                print(f"""{send_data['target']}に送信 : {send_data['message']}""")
             time.sleep(0.1)

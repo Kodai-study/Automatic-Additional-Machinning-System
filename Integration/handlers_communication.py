@@ -2,7 +2,7 @@ from queue import Queue
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_UR_CONNECTION_LOCAL
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 
 
 def _send_message_to_cfd(message: str, send_request_queue: Queue):
@@ -12,11 +12,9 @@ def _send_message_to_cfd(message: str, send_request_queue: Queue):
     Args:
         message (str): 送信するコマンド文字列
     """
-    if TEST_UR_CONNECTION_LOCAL:
-        send_request_queue.put(
-            {"target": TransmissionTarget.TEST_TARGET_2, "message": message})
-    else:
-        print("send to cfd: ", message)
+    send_request_queue.put(
+        {"target": TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD,
+            "message": message})
 
 
 def _send_message_to_ur(message: str, send_request_queue: Queue):
@@ -29,7 +27,6 @@ def _send_message_to_ur(message: str, send_request_queue: Queue):
     send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
             "message": message})
-    # print("send to ur: ", message)
 
 
 def _change_gui_status(gui_request_queue: Queue, robot_status: dict, device_type: str, device_num: int, status: bool):
@@ -67,11 +64,11 @@ def _send_to_gui(gui_request_queue: Queue, message: str):
         (RobotInteractionType.MESSAGE_RECEIVED, message))
 
 
-def _notice_finish_process(gui_request_queue: Queue,result:bool):
+def _notice_finish_process(gui_request_queue: Queue, result: bool):
     """処理が終了したことをGUIに通知する
 
     Args:
         message (str): ロボットから受け取ったメッセージ
     """
     gui_request_queue.put(
-        (GUISignalCategory.CANNOT_CONTINUE_PROCESSING,result))
+        (GUISignalCategory.CANNOT_CONTINUE_PROCESSING, result))

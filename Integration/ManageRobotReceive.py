@@ -1,5 +1,6 @@
 import datetime
 from threading import Thread
+import time
 from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
 from Integration.handlers_database import write_database
 from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
@@ -27,6 +28,8 @@ class ManageRobotReceive:
             "ISRESERVED": reservation_process,
             "FIN_FST_POSITION": change_robot_first_position,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
+            "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}"),
+            "TEST_START": lambda: self._integration_instance._start_process(),
         }
         self._handl_selectors = {
             "SIG": self._select_handler_ur_sig,
@@ -34,9 +37,14 @@ class ManageRobotReceive:
             "WRK": self._select_handler_wrk,
             "SNS": self._select_handler_sensor,
             "RDSW": self._select_handler_sensor_reed_switch,
+            "EJCT": self._select_handler_ejector,
+            "WRKSNS": self._select_handler_workSensor,
         }
 
-    def _select_handler(self, command: str):
+    def _test_get_next_size(self):
+        return 30
+
+    def _select_handler(self, command: str, target: TransmissionTarget):
         """メッセージの種類に応じて、ハンドラを選択する
 
         Args:
@@ -71,7 +79,7 @@ class ManageRobotReceive:
                     {"process_type": process_number, "process_time": time})
             return _handle
 
-        return handle_selector(dev_num, detail, command=command)
+        return handle_selector(dev_num, detail, command=command, target=target)
 
     def _manage_work_status_list(self, process_num):
 
@@ -118,7 +126,7 @@ class ManageRobotReceive:
                 if detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY":
                     return lambda: _send_to_gui(self._integration_instance.gui_request_queue, command)
 
-    def _select_handler_ur_sig(self, dev_num: int, detail: str, command: str, serial_number: int = None):
+    def _select_handler_ur_sig(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         SIG命令のハンドラを選択する
         """
@@ -126,17 +134,44 @@ class ManageRobotReceive:
             return self._undefine
 
         sensor_time = datetime.datetime.now()
-        if detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY" or detail == "FST_POSITION":
+        if detail == "ATT_IMP_READY":
+            def _handler():
+                # TODO データベース書き込み
+                _send_message_to_cfd(
+                    "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
+                time.sleep(0.5)
+                _send_message_to_cfd(
+                    "EJCT 0,ST", self._integration_instance.send_request_queue)
+            return _handler
+
+        elif detail == "DET_DRL_READY":
+            def _handler():
+                _send_message_to_cfd(
+                    "EJCT 0,DETACH", self._integration_instance.send_request_queue)
+                time.sleep(0.5)
+                _send_message_to_cfd(
+                    "EJCT 0,ST", self._integration_instance.send_request_queue)
+                time.sleep(0.5)
+                _send_message_to_cfd(
+                    "CYL 0,PUSH", self._integration_instance.send_request_queue)
+            return _handler
+
+        elif detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY" or detail == "FST_POSITION":
             def _handler():
                 write_database(
                     self._integration_instance.database_accesser, "SIG", dev_num, detail, sensor_time, serial_number)
                 _send_message_to_ur(
                     command, self._integration_instance.send_request_queue)
-            return _handler()
+            return _handler
 
         return self._undefine
 
-    def _select_handler_cyl(self, dev_num: int, detail: str, command: str, serial_number: int = None):
+    def _select_handler_workSensor(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
+        if dev_num != 0:
+            return self._undefine(command)
+        print("ワークの枚数は", detail, "枚です")
+
+    def _select_handler_cyl(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         CYL命令のハンドラを選択する
         """
@@ -166,23 +201,41 @@ class ManageRobotReceive:
 
         return change_cylinder_status
 
-    def _select_handler_wrk(self, dev_num: int, detail: str, command: str, serial_number: int = None):
+    def _select_handler_wrk(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         WRK命令のハンドラを選択する
         """
         if dev_num == 0 and detail == "TAP_FIN":
             return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
 
-    def _select_handler_sensor(self, dev_num: int, detail: str, command: str, serial_number: int = None):
+    def _select_handler_ejector(self, dev_num: int, detail: str, command: str, target: TransmissionTarget):
+        if detail == "ST":
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
+
+        if dev_num != 0:
+            return self._undefine(command)
+
+        if target == TransmissionTarget.CFD or target == TransmissionTarget.TEST_TARGET_2:
+            return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
+        elif target == TransmissionTarget.UR or target == TransmissionTarget.TEST_TARGET_1:
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
+
+    def _select_handler_sensor(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         SNS命令のハンドラを選択する
         """
+
+        if detail == "ST":
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
+
         is_on = detail == "ON"
         sensor_time = datetime.datetime.now()
 
         def _common_sensor_handler():
-            write_database(self._integration_instance.database_accesser,
-                           "SNS", dev_num, detail, sensor_time, serial_number)
+            _send_message_to_ur(
+                command, self._integration_instance.send_request_queue)
+            # write_database(self._integration_instance.database_accesser,
+            #                "SNS", dev_num, detail, sensor_time, serial_number)
             self._change_robot_status("sensor", dev_num, is_on)
 
         if dev_num == 1 and is_on:
@@ -203,7 +256,7 @@ class ManageRobotReceive:
 
         return _common_sensor_handler
 
-    def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None):
+    def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         door_number = (dev_num / 2) + 1
         kind = "forward" if dev_num % 2 == 0 else "backward"
         self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
@@ -211,6 +264,9 @@ class ManageRobotReceive:
         notice_change_status(self._integration_instance.gui_request_queue)
 
     def _split_command(self, command: str):
+        # 終端文字を削除
+        command = command.replace("\n", "")
+        command = command.replace("\r", "")
         command_copy = command
         _split_list = command_copy.split(" ")
         instruction = _split_list[0]
@@ -260,7 +316,8 @@ class ManageRobotReceive:
             return
 
         if receiv_data["msg_type"] == RobotInteractionType.MESSAGE_RECEIVED:
-            handler = self._select_handler(receiv_data["message"])
+            handler = self._select_handler(
+                receiv_data["message"], receiv_data["target"])
 
         if not handler:
             def handler(): self._undefine(receiv_data["message"])

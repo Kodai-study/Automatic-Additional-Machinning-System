@@ -39,16 +39,13 @@ class Monitoring(ScreenBase):
         self.tkraise()
 
     def _update_image_from_path(self, canvas_datas: Tuple[tk.Canvas, int], img_path: str):
-        try:
-            target_canvas = canvas_datas[0]
-            img_width = target_canvas.winfo_reqwidth()
-            img_height = target_canvas.winfo_reqheight()
-            original_image = tk.PhotoImage(file=img_path)
-            view_image = self.resize_image(img_width, img_height, original_image)
-            target_canvas.itemconfig(canvas_datas[1], image=view_image)
-            target_canvas.image = view_image  # これが重要です
-        except:
-            print("画像の読み取りエラー",img_path)
+        target_canvas = canvas_datas[0]
+        img_width = target_canvas.winfo_reqwidth()
+        img_height = target_canvas.winfo_reqheight()
+        original_image = tk.PhotoImage(file=img_path)
+        view_image = self.resize_image(img_width, img_height, original_image)
+        target_canvas.itemconfig(canvas_datas[1], image=view_image)
+        target_canvas.image = view_image  # これが重要です
 
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
@@ -77,7 +74,6 @@ class Monitoring(ScreenBase):
             else:
                 self.button_state_update(
                     self.tool_light_on_button, self.tool_light_off_button)
-
         if request_data['target'] == LightingType.PRE_PROCESSING_LIGHTING:
             if request_data['state'] == True:
                 self.button_state_update(
@@ -85,7 +81,6 @@ class Monitoring(ScreenBase):
             else:
                 self.button_state_update(
                     self.processing_light_on_button, self.processing_light_off_button)
-
         if request_data['target'] == LightingType.ACCURACY_LIGHTING:
             if request_data['state'] == True:
                 self.button_state_update(
@@ -169,6 +164,8 @@ class Monitoring(ScreenBase):
         off_buttons: List[tk.Button] = []  # OFFボタン用のリスト
         forward_buttons: List[tk.Button] = []  # 正転ボタン用のリスト
         reverse_buttons: List[tk.Button] = []  # 後転ボタン用のリスト
+        pull_buttons: List[tk.Button] = []  # シリンダボタン用のリスト
+        push_buttons: List[tk.Button] = []  # シリンダボタン用のリスト
         stop_buttons: List[tk.Button] = []
 
         # ボタンのコマンドリストを作成します
@@ -176,13 +173,13 @@ class Monitoring(ScreenBase):
                        "DLC 1,LOCK\n", "DLC 2,LOCK\n", "DLC 3,LOCK\n"]
         off_commands = ["EJCT 0,DETACH\n", "DLC 0,UNLOCK\n",
                         "DLC 1,UNLOCK\n", "DLC 2,UNLOCK\n", "DLC 3,UNLOCK\n"]
-        forward_commands = ["SVM 0,CW,1\n", "CONV 0,CW\n", "CYL 001,PUSH\n",
-                            "CYL 002,PUSH\n", "CYL 003,PUSH\n", "CYL 004,PUSH\n", "CYL 005,PUSH\n"]
-        reverse_commands = ["SVM 0,BREAK,0\n", "CONV 0,OFF\n", "CYL 001,PULL\n",
-                            "CYL 002,PULL\n", "CYL 003,PULL\n", "CYL 004,PULL\n", "CYL 005,PULL\n"]
+        forward_commands = ["SVM 0,CW,1\n", "CONV 0,CW\n"]
+        reverse_commands = ["SVM 0,BREAK,0\n", "CONV 0,OFF\n"]
+        pull_commands = ["CYL 001,PULL\n","CYL 002,PULL\n", "CYL 003,PULL\n", "CYL 004,PULL\n", "CYL 005,PULL\n"]
+        push_commands = ["CYL 001,PUSH\n","CYL 002,PUSH\n", "CYL 003,PUSH\n", "CYL 004,PUSH\n", "CYL 005,PUSH\n"]
         stop_command = ["CONV 0,N\n", "CONV 0,N\n", "CONV 0,N\n"]
 
-        # 証明ボタン作成
+        # 照明ボタン作成
         self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87",
                                               command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, True)))
         self.tool_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="#de9687",
@@ -195,14 +192,17 @@ class Monitoring(ScreenBase):
                                                   command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, True)))
         self.accuracy_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, bg="#de9687",
                                                    command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, False)))
+        
+        #シリンダボタン
+        for i in range(5):
+            push_button = tk.Button(self, text="PUSH", state="normal", width=10, bg="#87de87",
+                                  command=lambda i=i: (self.robot_oprration_request(push_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
+            pull_button = tk.Button(self, text="PULL", state="disabled", width=10, bg="#de9687",
+                                   command=lambda i=i: (self.robot_oprration_request(pull_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
+            push_buttons.append(push_button)
+            pull_buttons.append(pull_button)
 
-        self.tool_light_on_button.grid(row=1, column=2)
-        self.tool_light_off_button.grid(row=1, column=3)
-        self.processing_light_on_button.grid(row=2, column=2)
-        self.processing_light_off_button.grid(row=2, column=3)
-        self.accuracy_light_on_button.grid(row=3, column=2)
-        self.accuracy_light_off_button.grid(row=3, column=3)
-
+        #URドアロックボタン
         for i in range(5):
             on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87",
                                   command=lambda i=i: (self.robot_oprration_request(on_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
@@ -210,32 +210,32 @@ class Monitoring(ScreenBase):
                                    command=lambda i=i: (self.robot_oprration_request(off_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
             on_buttons.append(on_button)
             off_buttons.append(off_button)
-
-        # 同様に、正転と後転のボタンにも異なるコマンドを設定します
-        for i in range(8):
+        #サーボモータベルトコンベアボタン
+        for i in range(2):
             forward_button = tk.Button(self, text="正転", state="normal", width=10, bg="#87de87",
                                        command=lambda i=i: (self.robot_oprration_request(forward_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
             reverse_button = tk.Button(self, text="後転", state="disabled", width=10, bg="#de9687",
                                        command=lambda i=i: (self.robot_oprration_request(reverse_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
             forward_buttons.append(forward_button)
             reverse_buttons.append(reverse_button)
-
+        #停止ボタン
         for i in range(2):
             stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366",
                                     command=lambda: (self.robot_oprration_request(stop_command[i])))
             stop_buttons.append(stop_button)
 
+        #ボタン配置
         for i in range(5):
             on_buttons[i].grid(row=i + 4, column=2)
             off_buttons[i].grid(row=i + 4, column=3)
 
-        for i in range(3):
+        for i in range(2):
             forward_buttons[i].grid(row=i + 9, column=2)
             reverse_buttons[i].grid(row=i + 9, column=3)
 
-        for i in range(4):
-            forward_buttons[i + 3].grid(row=i + 1, column=6)
-            reverse_buttons[i + 3].grid(row=i + 1, column=7)
+        for i in range(5):
+            push_buttons[i].grid(row=i + 1, column=6)
+            pull_buttons[i].grid(row=i + 1, column=7)
 
         for i in range(2):
             stop_buttons[i].grid(row=i + 9, column=4)
@@ -251,13 +251,22 @@ class Monitoring(ScreenBase):
         dlc2_label.grid(row=7, column=1, padx=30, pady=20)
         dlc3_label.grid(row=8, column=1, padx=30, pady=20)
 
+        self.tool_light_on_button.grid(row=1, column=2)
+        self.tool_light_off_button.grid(row=1, column=3)
+        self.processing_light_on_button.grid(row=2, column=2)
+        self.processing_light_off_button.grid(row=2, column=3)
+        self.accuracy_light_on_button.grid(row=3, column=2)
+        self.accuracy_light_off_button.grid(row=3, column=3)
+
+
+
         svm_label.grid(row=9, column=1, padx=30, pady=20)
         conv_label.grid(row=10, column=1, padx=30, pady=20)
-        cyl_000_label.grid(row=11, column=1, padx=30, pady=20)
-        cyl_001_label.grid(row=1, column=5, padx=30, pady=20)
-        cyl_002_label.grid(row=2, column=5, padx=30, pady=20)
-        cyl_003_label.grid(row=3, column=5, padx=30, pady=20)
-        cyl_004_label.grid(row=4, column=5, padx=30, pady=20)
+        cyl_000_label.grid(row=1, column=5, padx=30, pady=20)
+        cyl_001_label.grid(row=2, column=5, padx=30, pady=20)
+        cyl_002_label.grid(row=3, column=5, padx=30, pady=20)
+        cyl_003_label.grid(row=4, column=5, padx=30, pady=20)
+        cyl_004_label.grid(row=5, column=5, padx=30, pady=20)
 
         back_button.place(rely=0.85, relx=0.75)
 
