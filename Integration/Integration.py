@@ -220,4 +220,4 @@ class Integration:
                 target=self._watching_guiResponce_queue)
             test_watching_guiResponce_queue_thread.start()
             self.guiDesigner.start_gui(
-                self.gui_request_queue, self.gui_responce_queue)
+                self.gui_request_queue, self.gui_responce_queue,self.robot_status)
