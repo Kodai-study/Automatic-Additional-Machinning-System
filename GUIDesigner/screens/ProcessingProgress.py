@@ -6,26 +6,40 @@ from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 
 
+class ProgressBar:
+
+    default_font = ("AR丸ゴシック体M", 20)
+
+    def __init__(self, root_frame, label_string: str, row, length=500) -> None:
+        self.progress_ratio = tk.DoubleVar()
+        self.progress_bar = ttk.Progressbar(
+            root_frame, variable=self.progress_ratio, length=500, mode="determinate")
+        self.title_label = tk.Label(
+            root_frame, text=label_string, font=ProgressBar.default_font)
+        self.progress_bar.grid(row=row, column=1, padx=10, pady=10)
+        self.title_label.grid(row=row, column=0, padx=10, pady=10)
+
+
 class LabelUnit:
 
-    on_lamp_image = None
-    off_lamp_image = None
-    root_frame = None
+    on_lamp_image: tk.PhotoImage = None
+    off_lamp_image: tk.PhotoImage = None
+    root_frame: tk.Tk = None
     default_font = ("AR丸ゴシック体M", 14)
     padding_space = 5
 
     @staticmethod
-    def _initial_variables(root_frame_resource: tk.Tk, on_lamp_image_resouce: tk.PhotoImage, off_lamp_image_resource: tk.PhotoImage):
+    def initial_variables(root_frame_resource: tk.Tk, on_lamp_image_resouce: tk.PhotoImage, off_lamp_image_resource: tk.PhotoImage):
         LabelUnit.on_lamp_image = on_lamp_image_resouce
         LabelUnit.off_lamp_image = off_lamp_image_resource
         LabelUnit.root_frame = root_frame_resource
 
-    def __init__(self, titel_label_string: str, font_name="AR丸ゴシック体M", font_size=14) -> None:
+    def __init__(self, titel_label_string: str, row, col, on_off=False, font_name="AR丸ゴシック体M", font_size=14) -> None:
         titel_label_string += " " * LabelUnit.padding_space
         self.lamp_image = tk.Label(
             LabelUnit.root_frame,  text=titel_label_string, compound=tk.RIGHT,
-            image=LabelUnit.off_lamp_image,  font=(font_name, font_size))
-        self.lamp_image.grid(row=0, column=0, sticky=tk.W)
+            image=LabelUnit.on_lamp_image if on_off else LabelUnit.off_lamp_image,  font=(font_name, font_size))
+        self.lamp_image.grid(row=row, column=col, sticky=tk.W)
 
     def update_lamp(self, is_on: bool):
         self.lamp_image.config(
@@ -34,26 +48,29 @@ class LabelUnit:
 
 class ProcessingProgress(ScreenBase):
 
-    def __init__(self, parent: tk.Tk, image_resource: Dict[str, tk.PhotoImage],  selected_items, robot_status):
+    def __init__(self, parent: tk.Tk, image_resource: Dict[str, tk.PhotoImage],  selected_items: list, robot_status):
         super().__init__(parent)
         self.image_resource: dict = image_resource
+        self.robot_status: dict = robot_status
+        self.sensor_status_labels = []
+        self.selected_items = selected_items
+
+        # ラベル用のフレーム
+        self.label_frame = tk.Frame(self)
+        self.label_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
         self.on_image = self.image_resource["green_lamp"].subsample(
             2, 2)  # 2倍縮小
         self.off_image = self.image_resource["red_lamp"].subsample(
             2, 2)
-        self.connection_status_label = None  # coneection のステータスラベル
-        self.robot_status: dict = robot_status
-        self.sensor_status_labels = []
-        self._create_sensor_status_labels()
-        self._update_connection_status_label()
-        self.selected_items = selected_items
-        self._create_widgets()
-        LabelUnit._initial_variables(
+        LabelUnit.initial_variables(
             self, self.on_image, self.off_image)
-        self.samp_image = LabelUnit("サンプル")
-        self.samp_image.update_lamp(True)
-        # 1000ミリ秒ごとにupdate_ui_threadを呼び出す
-        # self.root.after(1000, self.update_ui_thread)
+
+        # self._create_sensor_status_labels()
+        # self._update_connection_status_label()
+        self._create_widgets()
+
+        self.connection_status_label = None
 
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
@@ -68,37 +85,35 @@ class ProcessingProgress(ScreenBase):
 
     def _create_widgets(self):
         # 進捗フレームを作成
-        self.label_strings = ["", "加工進捗", "良品率", "残り時間", "残り枚数"]
-
+        self.label_strings = ["加工進捗", "良品率", "残り時間", "残り枚数"]
+        self.progress_bar_frame = tk.Frame(self.label_frame)
+        self.progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # 要素のラベルを作成して配置
         for i, label_text in enumerate(self.label_strings):
-            label = tk.Label(self,
-                             text=label_text, font=("AR丸ゴシック体M", 20))
-            label.grid(row=i, column=0, padx=50, pady=10, sticky=tk.W)
+            ProgressBar(self.progress_bar_frame, label_text, i)
 
         # 選択されたデータの名前を取得
         self.current_data_name = self.selected_items[0][0] if self.selected_items else "未選択"
-
         # バックライト、バーライト、リングライトのラベルを作成
-        self.lighting_labels = self._create_lighting_status_labels()
+        # self.lighting_labels = self._create_lighting_status_labels()
         # ドアロックのラベルを作成
-        self.door_lock_labels = self._create_door_lock_status_labels()
+        # self.door_lock_labels = self._create_door_lock_status_labels()
 
-        # プログレスバー用の変数
-        self.progress_var = tk.DoubleVar()
-        self.quality_var = tk.DoubleVar()
-        self.remaining_time_var = tk.DoubleVar()
-        self.remaining_work_var = tk.DoubleVar()
+        # # プログレスバー用の変数
+        # self.progress_var = tk.DoubleVar()
+        # self.quality_var = tk.DoubleVar()
+        # self.remaining_time_var = tk.DoubleVar()
+        # self.remaining_work_var = tk.DoubleVar()
 
-        # プログレスバー
-        self.progress_bar = ttk.Progressbar(
-            self, variable=self.progress_var, length=500, mode="determinate")
-        self.quality_bar = ttk.Progressbar(
-            self, variable=self.quality_var, length=500, mode="determinate")
-        self.remaining_time_bar = ttk.Progressbar(
-            self, variable=self.remaining_time_var, length=500, mode="determinate")
-        self.remaining_work_bar = ttk.Progressbar(
-            self, variable=self.remaining_work_var, length=500, mode="determinate")
+        # # プログレスバー
+        # self.progress_bar = ttk.Progressbar(
+        #     self, variable=self.progress_var, length=500, mode="determinate")
+        # self.quality_bar = ttk.Progressbar(
+        #     self, variable=self.quality_var, length=500, mode="determinate")
+        # self.remaining_time_bar = ttk.Progressbar(
+        #     self, variable=self.remaining_time_var, length=500, mode="determinate")
+        # self.remaining_work_bar = ttk.Progressbar(
+        #     self, variable=self.remaining_work_var, length=500, mode="determinate")
 
         # 数値表示用のラベル
         self.progress_label = tk.Label(
@@ -111,28 +126,28 @@ class ProcessingProgress(ScreenBase):
             self, text="0", font=("AR丸ゴシック体M", 20))
 
         # プログレスバー、ラベル、ボタンを配置
-        self.progress_bar.grid(row=1, column=1, padx=10, pady=10)
-        self.progress_label.grid(row=1, column=2, padx=10, pady=10)
+        # self.progress_bar.grid(row=1, column=1, padx=10, pady=10)
+        # self.progress_label.grid(row=1, column=2, padx=10, pady=10)
 
-        self.quality_bar.grid(row=2, column=1, padx=10, pady=10)
-        self.quality_label.grid(row=2, column=2, padx=10, pady=10)
+        # self.quality_bar.grid(row=2, column=1, padx=10, pady=10)
+        # self.quality_label.grid(row=2, column=2, padx=10, pady=10)
 
-        self.remaining_time_bar.grid(row=3, column=1, padx=10, pady=10)
-        self.remaining_time_label.grid(row=3, column=2, padx=10, pady=10)
+        # self.remaining_time_bar.grid(row=3, column=1, padx=10, pady=10)
+        # self.remaining_time_label.grid(row=3, column=2, padx=10, pady=10)
 
-        self.remaining_work_bar.grid(row=4, column=1, padx=10, pady=10)
-        self.remaining_work_label.grid(row=4, column=2, padx=10, pady=10)
+        # self.remaining_work_bar.grid(row=4, column=1, padx=10, pady=10)
+        # self.remaining_work_label.grid(row=4, column=2, padx=10, pady=10)
 
         # データ名を表示するラベル
-        self.current_data_label = tk.Label(
-            self, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
-        self.current_data_label.grid(row=0, column=0, columnspan=2, pady=40)
+        # self.current_data_label = tk.Label(
+        #     self, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
+        # self.current_data_label.grid(row=0, column=0, columnspan=2, pady=40)
 
         # ネットワーク状況を表示するラベル
-        self.connection_status_label = tk.Label(
-            self, text="Connection", image=self.off_image, compound=tk.BOTTOM)
-        self.connection_status_label.place(x=1500, y=400)
-        self._update_connection_status_label()  # 初期表示を更新
+        # self.connection_status_label = tk.Label(
+        #     self, text="Connection", image=self.off_image, compound=tk.BOTTOM)
+        # self.connection_status_label.place(x=1500, y=400)
+        # self._update_connection_status_label()  # 初期表示を更新
 
         # ステータスを確認し、適切な画像を設定
         self.ejector_status = "UR: attach" if self.robot_status[
@@ -146,9 +161,9 @@ class ProcessingProgress(ScreenBase):
         self.ejector_image_label.place(x=1400, y=400)
 
         # センサーステータスラベルを更新
-        self._update_lighting_status_labels(self.lighting_labels)
+        # self._update_lighting_status_labels(self.lighting_labels)
         # ドアロックステータスラベルを更新
-        self._update_door_lock_status_labels(self.door_lock_labels)
+        # self._update_door_lock_status_labels(self.door_lock_labels)
 
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
