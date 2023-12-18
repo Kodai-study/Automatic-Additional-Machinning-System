@@ -1,7 +1,10 @@
-import serial
-import yaml
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
+
+if TEST_FEATURE_IMAGE_PROCESSING:
+    import serial
+    import yaml
+    from light_control import Light_control
 from ImageInspectionController.ProcessDatas import InspectionType
-from light_control import Light_control
 
 
 class Light:

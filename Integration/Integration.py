@@ -19,11 +19,12 @@ from threading import Thread
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
 from common_data_type import CameraType, TransmissionTarget, WorkPieceShape
 
 toggle_flag = True
 QUEUE_WATCH_RATE = 0.03
+
 
 class Integration:
     """
@@ -214,8 +215,9 @@ class Integration:
         test_send_thread = Thread(
             target=self._robot_message_handle)
         test_send_thread.start()
-        test_watching_guiResponce_queue_thread = Thread(
-            target=self._watching_guiResponce_queue)
-        test_watching_guiResponce_queue_thread.start()
-        self.guiDesigner.start_gui(
-            self.gui_request_queue, self.gui_responce_queue)
+        if TEST_FEATURE_GUI:
+            test_watching_guiResponce_queue_thread = Thread(
+                target=self._watching_guiResponce_queue)
+            test_watching_guiResponce_queue_thread.start()
+            self.guiDesigner.start_gui(
+                self.gui_request_queue, self.gui_responce_queue)
