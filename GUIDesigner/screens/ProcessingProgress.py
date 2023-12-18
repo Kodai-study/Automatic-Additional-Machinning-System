@@ -77,6 +77,7 @@ class ProcessingProgress(ScreenBase):
 
         self._create_widgets()
         self._create_sensor_status_labels()
+        self._create_lighting_status_labels()
         # self._update_connection_status_label()
 
         self.connection_status_label = None
@@ -177,26 +178,31 @@ class ProcessingProgress(ScreenBase):
         lighting_status_labels = []
         row_index = 8  # 適切な行に配置するためのインデックス
 
-        lighting_name_mapping = {
-            "back_light": "バックライト", "bar_light": "バーライト", "ring_light": "リングライト"
-        }
-        
+        lighting_name_mapping = {}
 
-        for light_name, light_value in self.robot_status["lighting"].items():
-            light_label = tk.Label(
-                self, text=lighting_name_mapping[light_name], font=("AR丸ゴシック体M", 14))
-            light_label.place(x=1150, y=row_index*85)  # 任意のy座標に適した値を指定してください
+        # "back_light": "バックライト", "bar_light": "バーライト", "ring_light": "リングライト"
 
-            light_image = self.on_image if light_value else self.off_image
-            light_status_label = tk.Label(
-                self, text="On" if light_value else "Off", image=light_image)
-            # 任意のy座標に適した値を指定してください
-            light_status_label.place(x=1250, y=row_index*84)
+        lighting_name_mapping["back_light"] = LabelUnit("バックライト")
+        lighting_name_mapping["bar_light"] = LabelUnit("バーライト")
+        lighting_name_mapping["ring_light"] = LabelUnit("リングライト")
 
-            lighting_status_labels.append(light_status_label)
-            row_index += 1
+        self._add_label_column(lighting_name_mapping.values())
 
-        return lighting_status_labels
+        # for light_name, light_value in self.robot_status["lighting"].items():
+        #     light_label = tk.Label(
+        #         self, text=lighting_name_mapping[light_name], font=("AR丸ゴシック体M", 14))
+        #     light_label.place(x=1150, y=row_index*85)  # 任意のy座標に適した値を指定してください
+
+        #     light_image = self.on_image if light_value else self.off_image
+        #     light_status_label = tk.Label(
+        #         self, text="On" if light_value else "Off", image=light_image)
+        #     # 任意のy座標に適した値を指定してください
+        #     light_status_label.place(x=1250, y=row_index*84)
+
+        #     lighting_status_labels.append(light_status_label)
+        #     row_index += 1
+
+        # return lighting_status_labels
 
     def _create_door_lock_status_labels(self):
         # ドアロックステータス用のラベルを作成して配置
