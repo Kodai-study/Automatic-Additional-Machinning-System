@@ -7,6 +7,7 @@ from GUIDesigner.screens.ScreenBase import ScreenBase
 
 FRAME_PADDING_X = 40
 FRAME_PADDING_Y = 40
+DOOR_LOCK_NUMBER = 4
 
 
 class ProgressBar:
@@ -78,8 +79,7 @@ class ProcessingProgress(ScreenBase):
         self._create_widgets()
         self._create_sensor_status_labels()
         self._create_lighting_status_labels()
-        # self._update_connection_status_label()
-
+        self._create_door_lock_status_labels()
         self.connection_status_label = None
 
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
@@ -206,26 +206,13 @@ class ProcessingProgress(ScreenBase):
 
     def _create_door_lock_status_labels(self):
         # ドアロックステータス用のラベルを作成して配置
-        self.door_lock_status_labels = []
-        row_index = 10  # 適切な行に配置するためのインデックス
-
-        for door_num, door_lock_value in self.robot_status["door_lock"].items():
-            self.door_lock_label = tk.Label(
-                self, text=f"ドアロック{door_num}", font=("AR丸ゴシック体M", 14))
-            # 任意のy座標に適した値を指定してください
-            self.door_lock_label.place(x=1450, y=row_index*67)
-
-            door_lock_image = self.on_image if door_lock_value else self.off_image
-            door_lock_status_label = tk.Label(
-                self, text="Locked" if door_lock_value else "Unlocked",
-                image=door_lock_image, compound=tk.RIGHT, font=("AR丸ゴシック体M", 14))
-            door_lock_status_label.place(
-                x=1570, y=row_index*66)  # 任意のy座標に適した値を指定してください
-
-            self.door_lock_status_labels.append(door_lock_status_label)
-            row_index += 1
-
-        return self.door_lock_status_labels
+        door_lock_label_list = []
+        self.door_lock_status = {}
+        for i in range(DOOR_LOCK_NUMBER):
+            label_unit = LabelUnit(f"ドアロック{i+1}")
+            self.door_lock_status[i] = label_unit
+            door_lock_label_list.append(label_unit)
+        self._add_label_column(door_lock_label_list)
 
     def _update_door_lock_status_labels(self, door_lock_labels):
         for door_lock_label in door_lock_labels:
