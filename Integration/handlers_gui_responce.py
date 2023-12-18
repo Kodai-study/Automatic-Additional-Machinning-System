@@ -74,6 +74,8 @@ class GuiResponceHandler:
         camera_control_result: List[CameraControlResult] = image_inspection_controller.perform_image_operation(
             OperationType.TAKE_INSPECTION_SNAPSHOT, camera_list)
         update_camera_list = []
+        if not camera_control_result:
+            return
         for camera_result in camera_control_result:
             if camera_result.is_success:
                 update_camera_list.append(
@@ -110,7 +112,7 @@ class GuiResponceHandler:
         }
         result: LightningControlResult = image_inspection_controller.perform_image_operation(
             OperationType.CONTROL_LIGHTING, (lighting_type, status))
-        if not result.is_success:
+        if not result or not result.is_success:
             return
         self.gui_request_queue.put((GUIRequestType.LIGHTING_CONTROL_REQUEST, {
             "target": lighting_type, "state":  result.lighting_state}))

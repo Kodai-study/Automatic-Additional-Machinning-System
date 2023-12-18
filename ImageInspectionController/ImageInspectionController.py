@@ -1,12 +1,13 @@
 # coding: utf-8
-
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
+if TEST_FEATURE_IMAGE_PROCESSING:
+    from ImageInspectionController.light import Light
+    from ImageInspectionController.pre_processing_inspection import process_qr_code
+    from ImageInspectionController.Taking import Taking
 from ImageInspectionController.OperationType import OperationType
+from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
-from ImageInspectionController.light import Light
-from ImageInspectionController.pre_processing_inspection import process_qr_code
-from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
-from ImageInspectionController.Taking import Taking
 from common_data_type import CameraType, LightingType
 from typing import Tuple, Union, List
 
@@ -32,8 +33,9 @@ def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
 class ImageInspectionController:
 
     def __init__(self):
-        self.taking = Taking()
-        self.lighting = Light()
+        if TEST_FEATURE_IMAGE_PROCESSING:
+            self.taking = Taking()
+            self.lighting = Light()
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
@@ -55,6 +57,9 @@ class ImageInspectionController:
         Returns:
             Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo]]: 検査の結果。合否と、検査で出された様々な値。検査の種類によって型が異なる
         """
+        if not TEST_FEATURE_IMAGE_PROCESSING:
+            return
+
         if operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT:
             request_result = [self._take_inspection_snapshot(
                 camera_type) for camera_type in inspection_data]
