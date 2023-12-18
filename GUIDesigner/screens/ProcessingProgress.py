@@ -19,7 +19,7 @@ class ProgressBar:
             root_frame, text=label_string, font=ProgressBar.default_font_title)
         self.progress_level = tk.Label(
             root_frame, text="0", font=ProgressBar.default_font_progress)
-        
+
         self.progress_bar.grid(row=row, column=1, padx=10, pady=10)
         self.title_label.grid(row=row, column=0, padx=10, pady=10)
         self.progress_level.grid(row=row, column=2, padx=10, pady=10)
@@ -40,6 +40,8 @@ class LabelUnit:
         LabelUnit.root_frame = root_frame_resource
 
     def __init__(self, titel_label_string: str, row, col, on_off=False, font_name="AR丸ゴシック体M", font_size=14) -> None:
+        if type(titel_label_string) is not str:
+            titel_label_string = str(titel_label_string)
         titel_label_string += " " * LabelUnit.padding_space
         self.lamp_image = tk.Label(
             LabelUnit.root_frame,  text=titel_label_string, compound=tk.RIGHT,
@@ -60,20 +62,14 @@ class ProcessingProgress(ScreenBase):
         self.sensor_status_labels = []
         self.selected_items = selected_items
 
-        # ラベル用のフレーム
-        self.label_frame = tk.Frame(self)
-        self.label_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
         self.on_image = self.image_resource["green_lamp"].subsample(
             2, 2)  # 2倍縮小
         self.off_image = self.image_resource["red_lamp"].subsample(
             2, 2)
-        LabelUnit.initial_variables(
-            self, self.on_image, self.off_image)
 
-        # self._create_sensor_status_labels()
-        # self._update_connection_status_label()
         self._create_widgets()
+        self._create_sensor_status_labels()
+        # self._update_connection_status_label()
 
         self.connection_status_label = None
 
@@ -88,11 +84,23 @@ class ProcessingProgress(ScreenBase):
     def create_frame(self):
         self.tkraise()
 
+    def _create_lamps(self, label_strings, col):
+        # ラベルを作成して配置
+        for i, label_text in enumerate(label_strings):
+            LabelUnit(label_text, i, col)
+
     def _create_widgets(self):
         # 進捗フレームを作成
         self.label_strings = ["加工進捗", "良品率", "残り時間", "残り枚数"]
-        self.progress_bar_frame = tk.Frame(self.label_frame)
+        self.progress_bar_frame = tk.Frame(self)
         self.progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        # ラベル用のフレーム
+        self.label_frame = tk.Frame(self)
+        self.label_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        LabelUnit.initial_variables(
+            self.label_frame, self.on_image, self.off_image)
         # 要素のラベルを作成して配置
         for i, label_text in enumerate(self.label_strings):
             ProgressBar(self.progress_bar_frame, label_text, i+1)
@@ -191,47 +199,7 @@ class ProcessingProgress(ScreenBase):
             5: {"forward": "検査部壁前進端", "backward": "検査部壁後進端"}
         }
 
-        for sensor_num, sensor_value in self.robot_status["sensor"].items():
-            if sensor_num in self.cylinder_mapping:
-                sensor_label = tk.Label(
-                    self, text=self.sensor_name_mapping[sensor_num], font=("AR丸ゴシック体M", 14))
-                # 任意のy座標に適した値を指定してください
-                sensor_label.place(x=100, y=self.row_index*85)
-
-                sensor_image = self.on_image if sensor_value else self.off_image
-                sensor_status_label = tk.Label(
-                    self, text="On" if sensor_value else "Off", image=sensor_image)
-                sensor_status_label.place(
-                    x=260, y=self.row_index*84)  # 任意のy座標に適した値を指定してください
-
-                reed_switch_labels = []
-                for direction in ["forward", "backward"]:
-                    reed_switch_value = self.robot_status["reed_switch"][sensor_num][direction]
-                    reed_switch_image = self.on_image if reed_switch_value else self.off_image
-                    reed_switch_label = tk.Label(
-                        self, text=self.cylinder_mapping[sensor_num][direction], font=("AR丸ゴシック体M", 12))
-
-                    # 新しい配置の設定
-                    column_index = 2 if direction == "forward" else 3
-                    padx_value = 10 if direction == "forward" else 50
-                    # 任意のy座標に適した値を指定してください
-                    reed_switch_label.place(
-                        x=column_index*240 + padx_value, y=self.row_index*85)
-
-                    reed_switch_image_label = tk.Label(
-                        self, image=reed_switch_image)
-                    # 新しい配置の設定
-                    column_index = 3 if direction == "forward" else 4
-                    padx_value = 10 if direction == "forward" else 50
-                    reed_switch_image_label.place(
-                        x=column_index*225 + padx_value, y=self.row_index*84)  # 任意のy座標に適した値を指定してください
-
-                    reed_switch_labels.extend(
-                        [reed_switch_label, reed_switch_image_label])
-
-                self.sensor_status_labels.extend(
-                    [sensor_status_label] + reed_switch_labels)
-                self.row_index += 1
+        self._create_lamps(self.sensor_name_mapping, 0)
 
     def _create_lighting_status_labels(self):
         # ライトステータス用のラベルを作成して配置
