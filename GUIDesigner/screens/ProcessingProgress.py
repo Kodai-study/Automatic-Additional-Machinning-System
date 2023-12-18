@@ -1,12 +1,39 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict, Union
-from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 
+
+class LabelUnit:
+
+    on_lamp_image = None
+    off_lamp_image = None
+    root_frame = None
+    default_font = ("AR丸ゴシック体M", 14)
+    padding_space = 5
+
+    @staticmethod
+    def _initial_variables(root_frame_resource: tk.Tk, on_lamp_image_resouce: tk.PhotoImage, off_lamp_image_resource: tk.PhotoImage):
+        LabelUnit.on_lamp_image = on_lamp_image_resouce
+        LabelUnit.off_lamp_image = off_lamp_image_resource
+        LabelUnit.root_frame = root_frame_resource
+
+    def __init__(self, titel_label_string: str, font_name="AR丸ゴシック体M", font_size=14) -> None:
+        titel_label_string += " " * LabelUnit.padding_space
+        self.lamp_image = tk.Label(
+            LabelUnit.root_frame,  text=titel_label_string, compound=tk.RIGHT,
+            image=LabelUnit.off_lamp_image,  font=(font_name, font_size))
+        self.lamp_image.grid(row=0, column=0, sticky=tk.W)
+
+    def update_lamp(self, is_on: bool):
+        self.lamp_image.config(
+            image=LabelUnit.on_lamp_image if is_on else LabelUnit.off_lamp_image)
+
+
 class ProcessingProgress(ScreenBase):
+
     def __init__(self, parent: tk.Tk, image_resource: Dict[str, tk.PhotoImage],  selected_items, robot_status):
         super().__init__(parent)
         self.image_resource: dict = image_resource
@@ -21,7 +48,10 @@ class ProcessingProgress(ScreenBase):
         self._update_connection_status_label()
         self.selected_items = selected_items
         self._create_widgets()
-
+        LabelUnit._initial_variables(
+            self, self.on_image, self.off_image)
+        self.samp_image = LabelUnit("サンプル")
+        self.samp_image.update_lamp(True)
         # 1000ミリ秒ごとにupdate_ui_threadを呼び出す
         # self.root.after(1000, self.update_ui_thread)
 
@@ -79,15 +109,6 @@ class ProcessingProgress(ScreenBase):
             self, text="2:30", font=("AR丸ゴシック体M", 20))
         self.remaining_work_label = tk.Label(
             self, text="0", font=("AR丸ゴシック体M", 20))
-
-        # ボタン作成
-        # self.result_button = tk.Button(self, text="結果表示", font=(
-        #     "AR丸ゴシック体M", 18), width=22, command=lambda: self.change_frame(Frames.WORK_RESULT_OVERVIEW))
-        # self.result_button.place(rely=0.87, relx=0.75)
-        # ボタンを、画面右上に表示
-        # self.back_button = tk.Button(self, text="戻る", command=lambda: self.handle_queued_request(GUISignalCategory.SENSOR_STATUS_UPDATE), font=(
-        #     "AR丸ゴシック体M", 18), width=22)
-        # self.back_button.place(rely=0.25, relx=0.75)
 
         # プログレスバー、ラベル、ボタンを配置
         self.progress_bar.grid(row=1, column=1, padx=10, pady=10)
@@ -227,7 +248,8 @@ class ProcessingProgress(ScreenBase):
 
             door_lock_image = self.on_image if door_lock_value else self.off_image
             door_lock_status_label = tk.Label(
-                self, text="Locked" if door_lock_value else "Unlocked", image=door_lock_image)
+                self, text="Locked" if door_lock_value else "Unlocked",
+                image=door_lock_image, compound=tk.RIGHT, font=("AR丸ゴシック体M", 14))
             door_lock_status_label.place(
                 x=1570, y=row_index*66)  # 任意のy座標に適した値を指定してください
 
@@ -252,10 +274,12 @@ class ProcessingProgress(ScreenBase):
 
     def _update_connection_status_label(self):
         if self.connection_status_label:
-            connection_text = "Connection: On" if self.robot_status["is_connection"] else "Connection: Off"
+            connection_text = "Connection: On" if self.robot_status[
+                "is_connection"] else "Connection: Off"
             connection_image = self.on_image if self.robot_status["is_connection"] else self.off_image
 
-            self.connection_status_label.config(text=connection_text, image=connection_image)
+            self.connection_status_label.config(
+                text=connection_text, image=connection_image)
 
     def update_ui_thread(self):
         # このメソッドはメインスレッドで実行されるようになりました
