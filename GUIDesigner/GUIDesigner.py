@@ -47,6 +47,7 @@ class GUIDesigner(tk.Tk):
         self.robot_status = {}
         self._initial_variables()
 
+
     def _initial_variables(self):
         self.image_resources["red_lamp"] = tk.PhotoImage(
             file="./resource/images/red_lamp.png")
