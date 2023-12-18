@@ -8,16 +8,21 @@ from GUIDesigner.screens.ScreenBase import ScreenBase
 
 class ProgressBar:
 
-    default_font = ("AR丸ゴシック体M", 20)
+    default_font_title = ("AR丸ゴシック体M", 20)
+    default_font_progress = ("AR丸ゴシック体M", 20)
 
     def __init__(self, root_frame, label_string: str, row, length=500) -> None:
         self.progress_ratio = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(
             root_frame, variable=self.progress_ratio, length=500, mode="determinate")
         self.title_label = tk.Label(
-            root_frame, text=label_string, font=ProgressBar.default_font)
+            root_frame, text=label_string, font=ProgressBar.default_font_title)
+        self.progress_level = tk.Label(
+            root_frame, text="0", font=ProgressBar.default_font_progress)
+        
         self.progress_bar.grid(row=row, column=1, padx=10, pady=10)
         self.title_label.grid(row=row, column=0, padx=10, pady=10)
+        self.progress_level.grid(row=row, column=2, padx=10, pady=10)
 
 
 class LabelUnit:
@@ -90,10 +95,13 @@ class ProcessingProgress(ScreenBase):
         self.progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # 要素のラベルを作成して配置
         for i, label_text in enumerate(self.label_strings):
-            ProgressBar(self.progress_bar_frame, label_text, i)
+            ProgressBar(self.progress_bar_frame, label_text, i+1)
 
-        # 選択されたデータの名前を取得
         self.current_data_name = self.selected_items[0][0] if self.selected_items else "未選択"
+        self.current_data_label = tk.Label(
+            self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
+        self.current_data_label.grid(row=0, column=0, columnspan=2)  # ２列にまたがる
+        # 選択されたデータの名前を取得
         # バックライト、バーライト、リングライトのラベルを作成
         # self.lighting_labels = self._create_lighting_status_labels()
         # ドアロックのラベルを作成
