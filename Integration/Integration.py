@@ -49,7 +49,7 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {
             "is_connection": False,
-            "limit_switch": False,
+            "ejector": False,
             "lighting": {
                 "back_light": False, "bar_light": False, "ring_light": False
             },
@@ -57,17 +57,11 @@ class Integration:
                 1: False, 2: False, 3: False, 4: False, 5: False, 6: False
             },
             "reed_switch": {
-                1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
-                3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
-            },
-            "door_status": {
-                1: False, 2: False, 3: False, 4: False
+                1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False}, 3: {"forward": False, "backward": False},
+                4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}, 6: {"forward": False, "backward": False}
             },
             "door_lock": {
                 1: False, 2: False, 3: False, 4: False
-            },
-            "ejector": {
-                "attach": False, "detach": False
             }
         }
         self.process_data_list = []

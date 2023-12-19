@@ -73,7 +73,7 @@ class ManageRobotReceive:
             time = datetime.datetime.now()
 
             def _handle():
-                handle_selector(dev_num, detail, command=command)
+                handle_selector(dev_num, detail, command=command)()
                 self._integration_instance.write_list.append(
                     {"process_type": process_number, "process_time": time})
             return _handle

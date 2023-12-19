@@ -9,7 +9,17 @@ from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.Monitoring import Monitoring
 from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
+from typing import Dict
+from GUIDesigner.screens.CheckSelection import CheckSelection
+from GUIDesigner.screens.CreateSelection import CreateSelection
+from GUIDesigner.screens.EmergencyStop import EmergencyStop
+from GUIDesigner.screens.Login import Login
+from GUIDesigner.screens.Monitoring import Monitoring
+from GUIDesigner.screens.ScreenBase import ScreenBase
+from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from queue import Queue
+
+from GUIDesigner.screens.WorkRequest import WorkRequest
 
 from GUIDesigner.screens.WorkRequest import WorkRequest
 
@@ -47,6 +57,15 @@ class GUIDesigner(tk.Tk):
         self.robot_status = {}
         self._initial_variables()
 
+
+    def _initial_variables(self):
+        self.image_resources: Dict[str, tk.PhotoImage] = {}
+        self.previous_screen = None
+        self.screens: Dict[Frames, ScreenBase] = {}
+        self.current_screen = Frames.PROCESSING_PROGRESS
+        self.data_list = []
+        self.robot_status = {}
+        self._initial_variables()
 
     def _initial_variables(self):
         self.image_resources["red_lamp"] = tk.PhotoImage(
