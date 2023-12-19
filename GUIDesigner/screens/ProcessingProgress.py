@@ -107,17 +107,12 @@ class ProcessingProgress(ScreenBase):
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
         if request_type == GUISignalCategory.SENSOR_STATUS_UPDATE:
-            self._update_connection_status_label()
-            self._update_door_lock_status_labels(self.door_lock_status_labels)
-            self._update_lighting_status_labels(self.lighting_status_labels)
-            self._update_sensor_status_labels(self.sensor_status_labels)
+            self._update_ui(self.robot_status)
 
     def create_frame(self):
         self.tkraise()
         self.old_robot_status = self.robot_status.copy()
         self._set_robot_status(self.robot_status, self.label_status_dict)
-        self.after(3000,self._test_update_ui)
-        self.after(6000,self._test_update_ui,False)
 
     def _add_label_column(self, label_units: List[LabelUnit]):
         for i, label_unit in enumerate(label_units):
