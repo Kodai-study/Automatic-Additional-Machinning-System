@@ -1,10 +1,10 @@
 import datetime
 from threading import Thread
 import time
-from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
+from Integration.handlers_communication import _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
 from Integration.handlers_database import write_database
-from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
-from Integration.handlers_robot_action import change_robot_first_position, reservation_process, start_process
+from Integration.handlers_image_inspection import _start_pre_processing_inspection
+from Integration.handlers_robot_action import change_robot_first_position, reservation_process
 from Integration.process_number import Processes, get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
@@ -227,11 +227,16 @@ class ManageRobotReceive:
         return _common_sensor_handler
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
-        door_number = (dev_num / 2) + 1
-        kind = "forward" if dev_num % 2 == 0 else "backward"
-        self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
-            detail == "ON")
-        notice_change_status(self._integration_instance.gui_request_queue)
+        def _handler():
+            door_number = (dev_num // 2) + 1
+            kind = "forward" if dev_num % 2 == 0 else "backward"
+            try:
+                self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
+                    detail == "ON")
+                notice_change_status(self._integration_instance.gui_request_queue)
+            except KeyError:
+                print("Error: door_number", door_number, "kind", kind)
+        return _handler
 
     def _split_command(self, command: str):
         # 終端文字を削除
