@@ -115,6 +115,7 @@ class ProcessingProgress(ScreenBase):
     def create_frame(self):
         self.tkraise()
         self.old_robot_status = self.robot_status.copy()
+        self._set_robot_status(self.robot_status, self.label_status_dict)
         self.after(3000,self._test_update_ui)
         self.after(6000,self._test_update_ui,False)
 
@@ -239,6 +240,8 @@ class ProcessingProgress(ScreenBase):
                 key = int(key)
             current_element = current_element[key]
         return current_element
+    
+    
 
     def compare_dicts(self, old_dict, new_dict, path="") -> dict:
         differences = {}
@@ -256,6 +259,16 @@ class ProcessingProgress(ScreenBase):
                 differences[f"{path}{key}"] = new_dict[key]  # 変更後の値のみを保存
         self.old_robot_status = new_dict.copy()
         return differences
+    
+    def _set_robot_status(self, values_dict, instances_dict):
+        for key, value in values_dict.items():
+            if isinstance(value, dict) and key in instances_dict:
+                # 対応するキーが辞書の場合、再帰的に処理
+                self._set_robot_status(value, instances_dict[key])
+            elif key in instances_dict:
+                # インスタンスに値を設定
+                # ここでは `set_value` メソッドを使って値を設定すると仮定
+                instances_dict[key].update_lamp(value)
 
 
 if __name__ == "__main__":

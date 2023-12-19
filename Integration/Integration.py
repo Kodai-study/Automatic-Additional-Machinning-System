@@ -34,13 +34,13 @@ class Integration:
             "is_connection": False,
             "ejector": False,
             "lighting": {
-                "back_light": False, "bar_light": False, "ring_light": False
+                "back_light": True, "bar_light": False, "ring_light": False
             },
             "sensor": {
                 1: False, 2: False, 3: False, 4: False, 5: False, 6: False
             },
             "reed_switch": {
-                1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False}, 3: {"forward": False, "backward": False},
+                1: {"forward": False, "backward": True}, 2: {"forward": False, "backward": False}, 3: {"forward": False, "backward": False},
                 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}, 6: {"forward": False, "backward": False}
             },
             "door_lock": {
