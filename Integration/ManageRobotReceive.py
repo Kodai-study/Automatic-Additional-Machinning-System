@@ -33,7 +33,6 @@ class ManageRobotReceive:
         }
         self._handl_selectors = {
             "SIG": self._select_handler_ur_sig,
-            "CYL": self._select_handler_cyl,
             "WRK": self._select_handler_wrk,
             "SNS": self._select_handler_sensor,
             "RDSW": self._select_handler_sensor_reed_switch,
@@ -171,35 +170,6 @@ class ManageRobotReceive:
             return self._undefine(command)
         print("ワークの枚数は", detail, "枚です")
 
-    def _select_handler_cyl(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
-        """
-        CYL命令のハンドラを選択する
-        """
-        is_status_on = detail == "ON"
-
-        def change_cylinder_status(): return _change_gui_status(
-            self._integration_instance.gui_request_queue, self._integration_instance.robot_status,
-            "cylinder", dev_num, is_status_on)
-
-        if self._integration_instance.is_monitor_mode:
-            return change_cylinder_status
-
-        # CYL 001,ON
-        if dev_num == 1 and is_status_on:
-            def _handler():
-                start_process()
-                change_cylinder_status()
-            return _handler
-
-        # CYL 003,ON
-        elif dev_num == 3 and is_status_on:
-            def _handler():
-                _start_accuracy_inspection_inspection(
-                    self._integration_instance.image_inspection_controller)
-                change_cylinder_status()
-            return _handler
-
-        return change_cylinder_status
 
     def _select_handler_wrk(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
