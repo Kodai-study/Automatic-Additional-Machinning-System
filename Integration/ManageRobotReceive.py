@@ -188,7 +188,11 @@ class ManageRobotReceive:
         if target == TransmissionTarget.CFD or target == TransmissionTarget.TEST_TARGET_2:
             return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
         elif target == TransmissionTarget.UR or target == TransmissionTarget.TEST_TARGET_1:
-            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
+            def _handler():
+                _send_message_to_cfd(command, self._integration_instance.send_request_queue)
+                self._integration_instance.robot_status[""]
+                notice_change_status(self._integration_instance.gui_request_queue)
+            return _handler
 
     def _select_handler_sensor(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
