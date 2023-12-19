@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict, List, Union
@@ -71,6 +72,7 @@ class ProcessingProgress(ScreenBase):
         self.selected_items = selected_items
         self.rabel_col_num = 0
         self.label_status_dict = {}
+        self.old_robot_status = {}
 
         self.on_image = self.image_resource["green_lamp"].subsample(
             2, 2)  # 2倍縮小
@@ -79,6 +81,28 @@ class ProcessingProgress(ScreenBase):
 
         self._create_widgets()
         self.connection_status_label = None
+
+
+    def _test_update_ui(self,new_state = True):
+        # 上のものを全てTrueにした  
+        new_robot_status = {
+            "is_connection": new_state,
+            "ejector": new_state,
+            "lighting": {
+                "back_light": new_state, "bar_light": new_state, "ring_light": new_state
+            },
+            "sensor": {
+                1: new_state, 2: new_state, 3: new_state, 4: new_state, 5: new_state, 6: new_state
+            },
+            "reed_switch": {
+                1: {"forward": new_state, "backward": new_state}, 2: {"forward": new_state, "backward": new_state},3: {"forward": new_state, "backward": new_state},
+                4: {"forward": new_state, "backward": new_state}, 5: {"forward": new_state, "backward": new_state}, 6: {"forward": new_state, "backward": new_state}
+            },
+            "door_lock": {
+                1: new_state, 2: new_state, 3: new_state, 4: new_state
+            }
+        }
+        self._update_ui(new_robot_status)
 
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
@@ -90,9 +114,14 @@ class ProcessingProgress(ScreenBase):
 
     def create_frame(self):
         self.tkraise()
+        self.old_robot_status = self.robot_status.copy()
+        self.after(3000,self._test_update_ui)
+        self.after(6000,self._test_update_ui,False)
 
     def _add_label_column(self, label_units: List[LabelUnit]):
         for i, label_unit in enumerate(label_units):
+            if not label_unit:
+                continue
             label_unit.set_grid(
                 i, self.rabel_col_num)
             self.label_frame.rowconfigure(i, weight=1)
@@ -129,11 +158,6 @@ class ProcessingProgress(ScreenBase):
             self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
         self.current_data_label.grid(row=0, column=0, columnspan=2)  # ２列にまたがる
 
-        # ステータスを確認し、適切な画像を設定
-        self.ejector_status = "UR: attach" if self.robot_status[
-            "ejector"]["attach"] else "UR: detach"
-        self.ejector_image = self.on_image if self.robot_status[
-            "ejector"]["attach"] else self.off_image
 
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
@@ -177,14 +201,21 @@ class ProcessingProgress(ScreenBase):
         lighting_name_mapping["back_light"] = LabelUnit("バックライト")
         lighting_name_mapping["bar_light"] = LabelUnit("バーライト")
         lighting_name_mapping["ring_light"] = LabelUnit("リングライト")
+        self.label_status_dict["lighting"] = lighting_name_mapping
 
-        self._add_label_column(lighting_name_mapping.values())
+        ejector_label = LabelUnit("ワーク吸着")
+        self.label_status_dict["ejector"] = ejector_label
+        label_list = [ejector_label,None,None]
+        label_list.extend(lighting_name_mapping.values())
+        self._add_label_column(label_list)
         return lighting_name_mapping
 
     def _create_door_lock_status_labels(self):
         # ドアロックステータス用のラベルを作成して配置
         door_lock_status = {}
-        door_lock_label_list = []
+        connection_status_label = LabelUnit("ロボットとの接続")
+        self.label_status_dict["is_connection"] = connection_status_label
+        door_lock_label_list = [connection_status_label,None]
         for i in range(DOOR_LOCK_NUMBER):
             label_unit = LabelUnit(f"ドアロック{i+1}")
             door_lock_status[i+1] = label_unit
@@ -192,23 +223,38 @@ class ProcessingProgress(ScreenBase):
         self._add_label_column(door_lock_label_list)
         return door_lock_status
 
-    def _update_ui(self,new_robot_status):
-        robot_status_differences = self.compare_dicts
+    def _update_ui(self, new_robot_status):
+        robot_status_differences = self.compare_dicts(self.old_robot_status, new_robot_status)
+        for key_str in robot_status_differences.keys():
+            self._get_unit_from_keystr(key_str).update_lamp(
+                robot_status_differences[key_str])
 
-    def compare_dicts(self, dict1, dict2, path=""):
+    def _get_unit_from_keystr(self, key_str):
+        keys = key_str.split('.')
+        # 辞書の要素にアクセス
+        current_element = self.label_status_dict
+        for key in keys:
+            # 数値に変換できる場合は変換する
+            if key.isdigit():
+                key = int(key)
+            current_element = current_element[key]
+        return current_element
+
+    def compare_dicts(self, old_dict, new_dict, path="") -> dict:
         differences = {}
-        for key in dict1:
+        for key in old_dict:
             # キーがdict2にない場合
-            if key not in dict2:
-                differences[f"{path}{key}"] = (dict1[key], None)
+            if key not in new_dict:
+                differences[f"{path}{key}"] = (old_dict[key], None)
             # 両方の値が辞書の場合、再帰的に比較
-            elif isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
+            elif isinstance(old_dict[key], dict) and isinstance(new_dict[key], dict):
                 deeper_differences = self.compare_dicts(
-                    dict1[key], dict2[key], path=f"{path}{key}.")
+                    old_dict[key], new_dict[key], path=f"{path}{key}.")
                 differences.update(deeper_differences)
             # 値が異なる場合、変更された値のみを記録
-            elif dict1[key] != dict2[key]:
-                differences[f"{path}{key}"] = dict2[key]  # 変更後の値のみを保存
+            elif old_dict[key] != new_dict[key]:
+                differences[f"{path}{key}"] = new_dict[key]  # 変更後の値のみを保存
+        self.old_robot_status = new_dict.copy()
         return differences
 
 
