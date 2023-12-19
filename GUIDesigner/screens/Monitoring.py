@@ -206,10 +206,10 @@ class Monitoring(ScreenBase):
                         "DLC 1,UNLOCK\n", "DLC 2,UNLOCK\n", "DLC 3,UNLOCK\n"]
         forward_commands = ["SVM 0,CW,1\n", "CONV 0,CW\n"]
         reverse_commands = ["SVM 0,BREAK,0\n", "CONV 0,OFF\n"]
-        pull_commands = ["CYL 001,PULL\n","CYL 002,PULL\n", "CYL 003,PULL\n", 
-                         "CYL 004,PULL\n", "CYL 005,PULL\n"]
-        push_commands = ["CYL 001,PUSH\n","CYL 002,PUSH\n", "CYL 003,PUSH\n", 
-                         "CYL 004,PUSH\n", "CYL 005,PUSH\n"]
+        pull_commands = ["CYL 0,PULL\n","CYL 3,PULL\n", "CYL 2,PULL\n", 
+                         "CYL 4,PULL\n", "CYL 1,PULL\n"]
+        push_commands = ["CYL 0,PUSH\n","CYL 3,PUSH\n", "CYL 2,PUSH\n", 
+                         "CYL 4,PUSH\n", "CYL 1,PUSH\n"]
         stop_command = ["CONV 0,N\n", "CONV 0,N\n", "CONV 0,N\n"]
 
         # 照明ボタン作成
