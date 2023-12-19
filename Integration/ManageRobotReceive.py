@@ -325,7 +325,12 @@ class ManageRobotReceive:
         Thread(target=handler).start()
 
     def _change_robot_status(self, device_kind: str, device_number, status):
-        self._integration_instance.robot_status[device_kind][device_number] = status
+        try:
+            status_dict = self._integration_instance.robot_status[device_kind]
+            status_dict[device_number] = status
+        except KeyError:
+            print("Error: robot_status is not defined : ",
+                  device_kind, "device_number : ", device_number)
         notice_change_status(self._integration_instance.gui_request_queue)
 
     def _get_robot_status(self, device_kind: str, device_number):
