@@ -192,7 +192,7 @@ class ProcessingProgress(ScreenBase):
         self._add_label_column(door_lock_label_list)
         return door_lock_status
 
-    def _update_ui(self):
+    def _update_ui(self,new_robot_status):
         robot_status_differences = self.compare_dicts
 
     def compare_dicts(self, dict1, dict2, path=""):
