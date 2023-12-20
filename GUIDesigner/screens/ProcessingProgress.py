@@ -84,9 +84,8 @@ class ProcessingProgress(ScreenBase):
         self._create_widgets()
         self.connection_status_label = None
 
-
-    def _test_update_ui(self,new_state = True):
-        # 上のものを全てTrueにした  
+    def _test_update_ui(self, new_state=True):
+        # 上のものを全てTrueにした
         new_robot_status = {
             "is_connection": new_state,
             "ejector": new_state,
@@ -94,14 +93,14 @@ class ProcessingProgress(ScreenBase):
                 "back_light": new_state, "bar_light": new_state, "ring_light": new_state
             },
             "sensor": {
-                1: new_state, 2: new_state, 3: new_state, 4: new_state, 5: new_state, 6: new_state
+                0: new_state, 1: new_state, 2: new_state, 3: new_state, 4: new_state, 5: new_state
             },
             "reed_switch": {
-                1: {"forward": new_state, "backward": new_state}, 2: {"forward": new_state, "backward": new_state},3: {"forward": new_state, "backward": new_state},
-                4: {"forward": new_state, "backward": new_state}, 5: {"forward": new_state, "backward": new_state}, 6: {"forward": new_state, "backward": new_state}
+                0: {"forward": new_state, "backward": new_state}, 1: {"forward": new_state, "backward": new_state}, 2: {"forward": new_state, "backward": new_state},
+                3: {"forward": new_state, "backward": new_state}, 4: {"forward": new_state, "backward": new_state}, 5: {"forward": new_state, "backward": new_state}
             },
             "door_lock": {
-                1: new_state, 2: new_state, 3: new_state, 4: new_state
+                0: new_state, 1: new_state, 2: new_state, 3: new_state
             }
         }
         self._update_ui(new_robot_status)
@@ -113,7 +112,7 @@ class ProcessingProgress(ScreenBase):
 
     def create_frame(self):
         self.tkraise()
-        self.old_robot_status = copy.deepcopy(self.robot_status) 
+        self.old_robot_status = copy.deepcopy(self.robot_status)
         self._set_robot_status(self.robot_status, self.label_status_dict)
 
     def _add_label_column(self, label_units: List[LabelUnit]):
@@ -133,7 +132,6 @@ class ProcessingProgress(ScreenBase):
         self.progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         for i, label_text in enumerate(self.label_strings):
             ProgressBar(self.progress_bar_frame, label_text, i+1)
-
 
         # ラベル用のフレーム
         self.label_frame = tk.Frame(self)
@@ -155,7 +153,6 @@ class ProcessingProgress(ScreenBase):
         self.current_data_label = tk.Label(
             self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
         self.current_data_label.grid(row=0, column=0, columnspan=2)  # ２列にまたがる
-
 
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
@@ -203,7 +200,7 @@ class ProcessingProgress(ScreenBase):
 
         ejector_label = LabelUnit("ワーク吸着")
         self.label_status_dict["ejector"] = ejector_label
-        label_list = [ejector_label,None,None]
+        label_list = [ejector_label, None, None]
         label_list.extend(lighting_name_mapping.values())
         self._add_label_column(label_list)
         return lighting_name_mapping
@@ -213,7 +210,7 @@ class ProcessingProgress(ScreenBase):
         door_lock_status = {}
         connection_status_label = LabelUnit("ロボットとの接続")
         self.label_status_dict["is_connection"] = connection_status_label
-        door_lock_label_list = [connection_status_label,None]
+        door_lock_label_list = [connection_status_label, None]
         for i in range(DOOR_LOCK_NUMBER):
             label_unit = LabelUnit(f"ドアロック{i}")
             door_lock_status[i] = label_unit
@@ -222,7 +219,8 @@ class ProcessingProgress(ScreenBase):
         return door_lock_status
 
     def _update_ui(self, new_robot_status):
-        robot_status_differences = self.compare_dicts(self.old_robot_status, new_robot_status)
+        robot_status_differences = self.compare_dicts(
+            self.old_robot_status, new_robot_status)
         for key_str in robot_status_differences.keys():
             self._get_unit_from_keystr(key_str).update_lamp(
                 robot_status_differences[key_str])
@@ -237,8 +235,6 @@ class ProcessingProgress(ScreenBase):
                 key = int(key)
             current_element = current_element[key]
         return current_element
-    
-    
 
     def compare_dicts(self, old_dict, new_dict, path="") -> dict:
         differences = {}
@@ -256,7 +252,7 @@ class ProcessingProgress(ScreenBase):
                 differences[f"{path}{key}"] = new_dict[key]  # 変更後の値のみを保存
         self.old_robot_status = copy.deepcopy(new_dict)
         return differences
-    
+
     def _set_robot_status(self, values_dict, instances_dict):
         for key, value in values_dict.items():
             if isinstance(value, dict) and key in instances_dict:

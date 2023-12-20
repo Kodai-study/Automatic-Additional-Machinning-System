@@ -170,7 +170,6 @@ class ManageRobotReceive:
             return self._undefine(command)
         print("ワークの枚数は", detail, "枚です")
 
-
     def _select_handler_wrk(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         WRK命令のハンドラを選択する
@@ -187,9 +186,12 @@ class ManageRobotReceive:
 
         if target == TransmissionTarget.CFD or target == TransmissionTarget.TEST_TARGET_2:
             def _handler():
-                _send_message_to_ur(command, self._integration_instance.send_request_queue)
-                self._integration_instance.robot_status["ejector"] = (detail == "ATTACH")
-                notice_change_status(self._integration_instance.gui_request_queue)
+                _send_message_to_ur(
+                    command, self._integration_instance.send_request_queue)
+                self._integration_instance.robot_status["ejector"] = (
+                    detail == "ATTACH")
+                notice_change_status(
+                    self._integration_instance.gui_request_queue)
             return _handler
         elif target == TransmissionTarget.UR or target == TransmissionTarget.TEST_TARGET_1:
             return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
@@ -208,8 +210,8 @@ class ManageRobotReceive:
         def _common_sensor_handler():
             _send_message_to_ur(
                 command, self._integration_instance.send_request_queue)
-            # write_database(self._integration_instance.database_accesser,
-            #                "SNS", dev_num, detail, sensor_time, serial_number)
+            write_database(self._integration_instance.database_accesser,
+                           "SNS", dev_num, detail, sensor_time, serial_number)
             self._change_robot_status("sensor", dev_num, is_on)
 
         if dev_num == 1 and is_on:
@@ -237,7 +239,8 @@ class ManageRobotReceive:
             try:
                 self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
                     detail == "ON")
-                notice_change_status(self._integration_instance.gui_request_queue)
+                notice_change_status(
+                    self._integration_instance.gui_request_queue)
             except KeyError:
                 print("Error: door_number", door_number, "kind", kind)
         return _handler
