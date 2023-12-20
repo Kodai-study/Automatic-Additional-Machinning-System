@@ -156,21 +156,21 @@ class Monitoring(ScreenBase):
         tool_label = tk.Label(
             self, text="工具交換回数", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool1_label = tk.Label(
-            self, text="工具1：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具1 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool2_label = tk.Label(
-            self, text="工具2：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具2 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool3_label = tk.Label(
-            self, text="工具3：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具3 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool4_label = tk.Label(
-            self, text="工具4：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具4 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool5_label = tk.Label(
-            self, text="工具5：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具5 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool6_label = tk.Label(
-            self, text="工具6：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具6 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool7_label = tk.Label(
-            self, text="工具7：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具7 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool8_label = tk.Label(
-            self, text="工具8：", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具8 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         kara_label1 = tk.Label(
             self, text="", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         

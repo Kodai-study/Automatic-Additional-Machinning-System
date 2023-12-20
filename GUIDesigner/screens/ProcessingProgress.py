@@ -168,7 +168,7 @@ class ProcessingProgress(ScreenBase):
         for i, sensor_name in enumerate(sensor_names):
             label_unit = LabelUnit(sensor_name)
             sensor_label_row_list.append(label_unit)
-            sensor_labels[i+1] = label_unit
+            sensor_labels[i] = label_unit
         self._add_label_column(sensor_label_row_list)
         return sensor_labels
 
@@ -186,9 +186,9 @@ class ProcessingProgress(ScreenBase):
             label_unit_negative_edge = LabelUnit(cylinder_name+"後進端")
             cylinder_forward_ravel_list.append(label_unit_positive_edge)
             cylinder_backward_ravel_list.append(label_unit_negative_edge)
-            cylinder_labels[i+1] = {}
-            cylinder_labels[i+1]["forward"] = label_unit_positive_edge
-            cylinder_labels[i+1]["backward"] = label_unit_negative_edge
+            cylinder_labels[i] = {}
+            cylinder_labels[i]["forward"] = label_unit_positive_edge
+            cylinder_labels[i]["backward"] = label_unit_negative_edge
         self._add_label_column(cylinder_forward_ravel_list)
         self._add_label_column(cylinder_backward_ravel_list)
         return cylinder_labels
@@ -215,8 +215,8 @@ class ProcessingProgress(ScreenBase):
         self.label_status_dict["is_connection"] = connection_status_label
         door_lock_label_list = [connection_status_label,None]
         for i in range(DOOR_LOCK_NUMBER):
-            label_unit = LabelUnit(f"ドアロック{i+1}")
-            door_lock_status[i+1] = label_unit
+            label_unit = LabelUnit(f"ドアロック{i}")
+            door_lock_status[i] = label_unit
             door_lock_label_list.append(label_unit)
         self._add_label_column(door_lock_label_list)
         return door_lock_status
