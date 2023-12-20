@@ -232,7 +232,7 @@ class ManageRobotReceive:
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         def _handler():
-            door_number = (dev_num // 2) + 1
+            door_number = dev_num // 2
             kind = "forward" if dev_num % 2 == 0 else "backward"
             try:
                 self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
