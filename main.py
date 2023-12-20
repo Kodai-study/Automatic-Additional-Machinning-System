@@ -1,7 +1,7 @@
 from queue import Queue
 from GUIDesigner.GUIDesigner import GUIDesigner
 from ImageInspectionController.ProcessDatas import InspectionType
-from ImageInspectionController.Taking import Taking
+from ImageInspectionController.Taking_test import Taking_test
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 
@@ -26,7 +26,7 @@ def test_integration():
 
 
 if __name__ == "__main__":
-    taking = Taking()
+    taking = Taking_test()
     if not taking.check_camera_connection():
         print("カメラとの接続がだめ")
         exit()

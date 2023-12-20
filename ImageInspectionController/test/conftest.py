@@ -1,52 +1,54 @@
 import configparser
 
-# 設定ファイルのパス
-conf_file_path = 'ImageInspectionController/test/kensa.conf'
+class ConfigReader:
+    def __init__(self, config_file_path):
+        self.config = configparser.ConfigParser()
+        self.config.read(config_file_path, encoding='utf-8')
 
-# ConfigParser インスタンスの作成
-config = configparser.ConfigParser()
+    def get_camera_info(self, inspection_type):
+        try:
+            section_name = f"{inspection_type}"
+            serial_number = self.config.get(section_name, "serial_number")
+            model_number = self.config.get(section_name, "model_number")
+            return serial_number, model_number
+        except configparser.NoSectionError:
+            raise ValueError(f"指定されたセクションが存在しません: {section_name}")
 
-# 設定ファイルの読み込み
-config.read(conf_file_path)
+    def get_light_info(self, inspection_type):
+        try:
+            section_name = f"{inspection_type}"
+            pin_number = self.config.getint("Light_information", f"{section_name}_pinnumber")
+            return pin_number
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            raise ValueError(f"指定されたセクションまたはオプションが存在しません: {section_name}")
 
-# セクションごとにデータを取得
-tool_inspection_serial_number = config.get('TOOL_INSPECTION', 'serial_number')
-tool_inspection_model_number = config.get('TOOL_INSPECTION', 'model_number')
+    def get_gpio_info(self):
+        try:
+            ioboard_pid = self.config.getint("gpio", "IOBOARD_PID")
+            ioboard_vid = self.config.getint("gpio", "IOBOARD_VID")
+            return ioboard_pid, ioboard_vid
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            raise ValueError("指定されたセクションまたはオプションが存在しません: gpio")
 
-pre_processing_inspection_serial_number = config.get('PRE_PROCESSING_INSPECTION', 'serial_number')
-pre_processing_inspection_model_number = config.get('PRE_PROCESSING_INSPECTION', 'model_number')
+    def get_on_off_values(self):
+        try:
+            on_value = self.config.getint("Light_information", "ON")
+            off_value = self.config.getint("Light_information", "OFF")
+            return on_value, off_value
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            raise ValueError("指定されたセクションまたはオプションが存在しません: Light_information")
 
-accuracy_inspection_serial_number = config.get('ACCURACY_INSPECTION', 'serial_number')
-accuracy_inspection_model_number = config.get('ACCURACY_INSPECTION', 'model_number')
+# 使用例
+config_file_path = "ImageInspectionController/test/kensa.conf"  # 実際のファイルパスに置き換えてください
+config_reader = ConfigReader(config_file_path)
 
-# Light Information
-tool_inspection_pinnumber = config.getint('Light_information', 'TOOL_INSPECTION_pinnumber')
-pre_processing_inspection_pinnumber = config.getint('Light_information', 'PRE_PROCESSING_INSPECTION_pinnumber')
-accuracy_inspection_pinnumber = config.getint('Light_information', 'ACCURACY_INSPECTION_pinnumber')
-
-on_state = config.getint('Light_information', 'ON')
-off_state = config.getint('Light_information', 'OFF')
-
-# GPIO Information
-ioboard_pid = config.getint('gpio', 'IOBOARD_PID')
-ioboard_vid = config.getint('gpio', 'IOBOARD_VID')
-
-# 結果の表示（この部分は必要に応じて変更してください）
-print(f'TOOL_INSPECTION Serial Number: {tool_inspection_serial_number}')
-print(f'TOOL_INSPECTION Model Number: {tool_inspection_model_number}')
-
-print(f'PRE_PROCESSING_INSPECTION Serial Number: {pre_processing_inspection_serial_number}')
-print(f'PRE_PROCESSING_INSPECTION Model Number: {pre_processing_inspection_model_number}')
-
-print(f'ACCURACY_INSPECTION Serial Number: {accuracy_inspection_serial_number}')
-print(f'ACCURACY_INSPECTION Model Number: {accuracy_inspection_model_number}')
-
-print(f'TOOL_INSPECTION Pin Number: {tool_inspection_pinnumber}')
-print(f'PRE_PROCESSING_INSPECTION Pin Number: {pre_processing_inspection_pinnumber}')
-print(f'ACCURACY_INSPECTION Pin Number: {accuracy_inspection_pinnumber}')
-
-print(f'ON State: {on_state}')
-print(f'OFF State: {off_state}')
-
-print(f'IOBOARD_PID: {ioboard_pid}')
-print(f'IOBOARD_VID: {ioboard_vid}')
+# TOOL_INSPECTIONの情報を取得
+try:
+    tool_serial, tool_model = config_reader.get_camera_info("TOOL_INSPECTION")
+    tool_pin = config_reader.get_light_info("TOOL_INSPECTION")
+    print("TOOL_INSPECTION:")
+    print(f"Serial Number: {tool_serial}")
+    print(f"Model Number: {tool_model}")
+    print(f"Pin Number: {tool_pin}")
+except ValueError as e:
+    print(e)
