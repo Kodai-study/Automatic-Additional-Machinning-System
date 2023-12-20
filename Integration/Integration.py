@@ -192,26 +192,33 @@ class Integration:
         # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
         if TEST_UR_CONNECTION_LOCAL:
             test_ur_thread = Thread(target=self.test_ur.start)
+            test_ur_thread.daemon = True
             test_ur_thread.start()
 
         if TEST_CFD_CONNECTION_LOCAL:
             test_cfd_thread = Thread(target=self.test_cfd.start)
+            test_cfd_thread.daemon = True
             test_cfd_thread.start()
 
         # 通信スレッドを立ち上げる
         self.communication_thread = Thread(
             target=self.communicationHandler.communication_loop,
             args=(self.send_request_queue, self.comm_receiv_queue))
+        self.communication_thread.daemon = True
         self.communication_thread.start()
 
         time.sleep(3)
 
         test_send_thread = Thread(
             target=self._robot_message_handle)
+        test_send_thread.daemon = True
         test_send_thread.start()
+
         if TEST_FEATURE_GUI:
             test_watching_guiResponce_queue_thread = Thread(
                 target=self._watching_guiResponce_queue)
+            test_watching_guiResponce_queue_thread.daemon = True
             test_watching_guiResponce_queue_thread.start()
+
             self.guiDesigner.start_gui(
-                self.gui_request_queue, self.gui_responce_queue,self.robot_status)
+                self.gui_request_queue, self.gui_responce_queue, self.robot_status)

@@ -7,6 +7,7 @@ import time
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_Windows
+import atexit
 
 
 TEST_HOST_ADDRESS = 'localhost'
@@ -38,6 +39,7 @@ class RobotCommunicationHandler:
         self.request_send_queue = None
         self.receive_data_queue = None
         self.samp_stop_flag = False
+        atexit.register(self.cleanup_connection)
 
     def test_receive_string(self, target: TransmissionTarget, sock: socket.socket):
         """
@@ -219,3 +221,15 @@ class RobotCommunicationHandler:
                     send_data['message'].encode('utf-8'))
                 print(f"""{send_data['target']}に送信 : {send_data['message']}""")
             time.sleep(0.1)
+
+    def cleanup_connection(self):
+        # self.samp_socket_urが存在するか確認
+        print("cleanup")
+        if hasattr(self, 'samp_socket_ur'):
+            self.samp_socket_ur.close()
+        if hasattr(self, 'samp_socket_cfd'):
+            self.samp_socket_cfd.close()
+        if hasattr(self, 'dummy_ur_socket'):
+            self.dummy_ur_socket.close()
+        if hasattr(self, 'dummy_cfd_socket'):
+            self.dummy_cfd_socket.close()

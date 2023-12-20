@@ -32,6 +32,7 @@ from .Frames import Frames
 
 QUEUE_WATCH_RATE_ms = 10
 
+
 class GUIDesigner(tk.Tk):
     """
     GUIのデザインを行うクラス
@@ -56,7 +57,7 @@ class GUIDesigner(tk.Tk):
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
-
+        self.protocol("WM_DELETE_WINDOW", lambda: self.destroy())
 
     def _initial_variables(self):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
