@@ -2,6 +2,7 @@ import socket
 from threading import Thread
 import time
 import tkinter as tk
+import atexit
 
 
 class _test_cfd:
@@ -10,6 +11,10 @@ class _test_cfd:
         self.port = port
         self.com_to_pc_socket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
+        self.com_to_pc_socket.setsockopt(
+            socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        atexit.register(lambda: self.com_to_pc_socket.close())
 
     def _start_test_cfd_screen(self):
         """URとの通信をテストするGUIを立ち上げる関数
@@ -44,9 +49,9 @@ class _test_cfd:
         root_cfd.mainloop()
 
     def start(self):
-        self._connect()
         simulate_thread = Thread(target=self._start_test_cfd_screen)
         simulate_thread.start()
+        self._connect()
         while True:
             data = self.com_to_pc_socket.recv(1024)
             if not data:
