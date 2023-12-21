@@ -7,6 +7,7 @@
 # http://opensource.org/licenses/mit-license.php
 #
 
+import configparser
 from typing import Tuple
 import numpy as np
 import pytelicam
@@ -24,12 +25,13 @@ USE_ACCURACY_INSPECTION_CAMERA = True
 class Taking:
     def __init__(self):
         self.light = Light()
-        file_path = 'ImageInspectionController/kensa_config.yaml'
-        with open(file_path, 'r') as yaml_file:
-            self.data = yaml.safe_load(yaml_file)
+        self.config = configparser.ConfigParser()
+        file_path = 'ImageInspectionController/test/kensa.conf'
+        # with open(file_path, 'r') as yaml_file:
+        #     self.data = yaml.safe_load(yaml_file)
         self.cam_system = self._initial_cam_setting(NUM_REQUIRED_CAMERAS)
         self.toggle_flag = True
-
+        self.config.read(file_path, encoding='utf-8')
         if not self.cam_system:
             print("カメラの初期化がうまくできませんでした。 カメラの接続を確認してください")
             return
@@ -45,39 +47,50 @@ class Taking:
         if USE_ACCURACY_INSPECTION_CAMERA:
             self.cam_device_seido, self.receive_signal_seido = self._get_camera_device(
                 "ACCURACY_INSPECTION")
+            
+    def _get_camera_device(self, inspection_type):
+        try:
+            serial_number,model_number,section_name=self._get_serial_and_model(inspection_type)
+            return self._setting_cam(
+                serial_number, model_number)
+        except configparser.NoSectionError:
+            raise ValueError(f"指定されたセクションが存在しません: {section_name}")
+        
+    def _get_serial_and_model(self, inspection_type: str):
+        section_name = f"{inspection_type}"
+        serial_number = self.config.get(section_name, "serial_number")
+        model_number = self.config.get(section_name, "model_number")
+        return serial_number,model_number,section_name
+    # def _get_camera_device(self, camera_type: str):
+    #     serial_number, model_number = self._get_serial_and_model(camera_type)
+    #     return self._setting_cam(
+    #         serial_number, model_number)
+    
+    # def _get_serial_and_model(self, camera_type: str):
+    #     setting_data = self.data['Camera_information'][camera_type]
+    #     return setting_data['serial_number'], setting_data['model_number']
 
-    def _get_camera_device(self, camera_type: str):
-        serial_number, model_number = self._get_serial_and_model(camera_type)
-        return self._setting_cam(
-            serial_number, model_number)
+    def _setting_cam(self, serial_num: str, model: str)\
+                -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
+            cam_device = self.cam_system.create_device_object_from_info(
+                serial_num, model, "")
+            cam_device.open()
 
-    def _get_serial_and_model(self, camera_type: str):
-        setting_data = self.data['Camera_information'][camera_type]
-        return setting_data['serial_number'], setting_data['model_number']
+            res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
+            if res != pytelicam.CamApiStatus.Success:
+                raise Exception("Can't set TriggerMode.")
 
-    def check_camera_connection(self) -> bool:
-        if not self.cam_system:
-            return False
+            res = cam_device.genapi.set_enum_str_value('TriggerSource', 'Software')
+            if res != pytelicam.CamApiStatus.Success:
+                raise Exception("Can't set TriggerSource.")
 
-        if USE_PRE_PROCESSING_INSPECTION_CAMERA:
-            if not (self.cam_device_kakou and self.cam_device_kakou.cam_stream.is_open):
-                return False
-            if not (self.cam_device_kakou and self.cam_device_kakou.is_open):
-                return False
+            res = cam_device.genapi.set_enum_str_value(
+                'TriggerSequence', 'TriggerSequence0')
+            receive_signal = self.cam_system.create_signal()
 
-        if USE_TOOL_INSPECTION_CAMERA:
-            if not (self.cam_device_tool and self.cam_device_tool.cam_stream.is_open):
-                return False
-            if not (self.cam_device_tool and self.cam_device_tool.is_open):
-                return False
+            cam_device.cam_stream.open(receive_signal)
+            return cam_device, receive_signal
 
-        if USE_ACCURACY_INSPECTION_CAMERA:
-            if not (self.cam_device_seido and self.cam_device_seido.cam_stream.is_open):
-                return False
-            if not (self.cam_device_seido and self.cam_device_seido.is_open):
-                return False
-
-        return True
 
     def take_picture(self, kensamei: InspectionType) -> str:
         if self.cam_system == None:
@@ -105,6 +118,30 @@ class Taking:
             print("hosonFailed")
 
         return write_image_path
+    def check_camera_connection(self) -> bool:
+        if not self.cam_system:
+            return False
+
+        if USE_PRE_PROCESSING_INSPECTION_CAMERA:
+            if not (self.cam_device_kakou and self.cam_device_kakou.cam_stream.is_open):
+                return False
+            if not (self.cam_device_kakou and self.cam_device_kakou.is_open):
+                return False
+
+        if USE_TOOL_INSPECTION_CAMERA:
+            if not (self.cam_device_tool and self.cam_device_tool.cam_stream.is_open):
+                return False
+            if not (self.cam_device_tool and self.cam_device_tool.is_open):
+                return False
+
+        if USE_ACCURACY_INSPECTION_CAMERA:
+            if not (self.cam_device_seido and self.cam_device_seido.cam_stream.is_open):
+                return False
+            if not (self.cam_device_seido and self.cam_device_seido.is_open):
+                return False
+
+        return True
+
 
     def _initial_cam_setting(self, cam_num=3) -> pytelicam.pytelicam.CameraSystem:
         cam_system = pytelicam.get_camera_system(
@@ -116,27 +153,7 @@ class Taking:
             return None
         return cam_system
 
-    def _setting_cam(self, serial_num: str, model: str)\
-            -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
-        cam_device = self.cam_system.create_device_object_from_info(
-            serial_num, model, "")
-        cam_device.open()
-
-        res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
-        if res != pytelicam.CamApiStatus.Success:
-            raise Exception("Can't set TriggerMode.")
-
-        res = cam_device.genapi.set_enum_str_value('TriggerSource', 'Software')
-        if res != pytelicam.CamApiStatus.Success:
-            raise Exception("Can't set TriggerSource.")
-
-        res = cam_device.genapi.set_enum_str_value(
-            'TriggerSequence', 'TriggerSequence0')
-        receive_signal = self.cam_system.create_signal()
-
-        cam_device.cam_stream.open(receive_signal)
-        return cam_device, receive_signal
-
+   
     def _get_image_data(self, cam_device,  receive_signal) -> np.ndarray:
 
         cam_device.cam_stream.start()
