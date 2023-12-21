@@ -11,6 +11,7 @@ from ImageInspectionController.ImageInspectionController import ImageInspectionC
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
+from Integration.ProcessDataLoader import ProcessDataLoader
 from Integration.handlers_gui_responce import GuiResponceHandler
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
@@ -67,11 +68,12 @@ class Integration:
         self.process_data_list = []
         self.work_list = []
         self.write_list = []
-        self._test_insert_process_datas()
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
         self.communicationHandler = RobotCommunicationHandler()
         self.guiDesigner = GUIDesigner()
+        process_data_loader = ProcessDataLoader(self.database_accesser)
+        self.process_data_list = process_data_loader.get_process_datas()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
@@ -89,21 +91,6 @@ class Integration:
                             "process_time": datetime.datetime.now()},
                            {"process_type": Processes.move_to_process,
                             "process_time": datetime.datetime.now()}]
-
-    def _test_insert_process_datas(self):
-        self.process_data_list = [
-            {"process_data": ProcessingData(1, "加工データ(型番)1", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.CIRCLE, 10.0, "加工者1", datetime.datetime.now()),
-             "regist_process_count": 10,
-             "process_time": datetime.timedelta(minutes=12, seconds=34),
-             "good_count": 7,
-             "remaining_count": 2},
-            {"process_data": ProcessingData(2, "加工データ(型番)2", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.SQUARE, 10.0, "加工者2", datetime.datetime.now()),
-             "average_time": datetime.timedelta(minutes=2, seconds=34),
-             "regist_process_count": 20,
-             "process_time": datetime.timedelta(minutes=23, seconds=45),
-             "good_count": 8,
-             "remaining_count": 10}
-        ]
 
     def _watching_guiResponce_queue(self):
         """
