@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../../../ソフトウェア/pytelicam_v1_0_0_linux_x86_64/samples"
+		}
+	],
+	"settings": {
+		"launch": {
+			"configurations": [
+				{
+					"name": "Python: Run main.py",
+					"type": "python",
+					"request": "launch",
+					"program": "${workspaceFolder}/main.py",
+					"console": "integratedTerminal"
+				},
+				{
+					"name": "Python Run current file",
+					"type": "python",
+					"request": "launch",
+					"program": "${file}",
+					"console": "integratedTerminal"
+				}
+			],
+			"compounds": [],
+			"version": "0.2.0"
+		}
+	}
+}
