@@ -24,7 +24,6 @@ USE_ACCURACY_INSPECTION_CAMERA = True
 
 class Taking:
     def __init__(self):
-        self.light = Light()
         self.config = configparser.ConfigParser()
         file_path = 'kensa.conf'
         # with open(file_path, 'r') as yaml_file:
