@@ -44,7 +44,6 @@ class Integration:
             if TEST_CFD_CONNECTION_LOCAL:
                 self.test_cfd = _test_cfd(TEST_PORT2)
 
-        self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {
             "is_connection": False,
             "ejector": False,
@@ -71,6 +70,7 @@ class Integration:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
             self.guiDesigner = GUIDesigner()
+        self.robot_message_handler = ManageRobotReceive(self)
         self.process_data_list = process_data_loader.get_process_datas()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する

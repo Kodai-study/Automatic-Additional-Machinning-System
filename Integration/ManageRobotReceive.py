@@ -1,6 +1,7 @@
 import datetime
 from threading import Thread
 import time
+from Integration.WorkManager import WorkManager
 from Integration.handlers_communication import _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
 from Integration.handlers_database import insert_sns_update, write_database
 from Integration.handlers_image_inspection import _start_pre_processing_inspection
@@ -24,6 +25,8 @@ class ManageRobotReceive:
             このインスタンスから、キューなどにアクセスする。
         """
         self._integration_instance = integration_instance
+        self.work_manager = WorkManager(
+            self._integration_instance.database_accesser)
         self._special_command_handlers = {
             "ISRESERVED": reservation_process,
             "FIN_FST_POSITION": change_robot_first_position,
@@ -57,6 +60,9 @@ class ManageRobotReceive:
         instruction, dev_num, detail = self._split_command(command)
 
         process_number = get_process_number(instruction, dev_num, detail)
+        if process_number:
+            self.work_manager.regist_new_process(
+                process_number, datetime.datetime.now())
 
         handle_selector = self._handl_selectors_with_instruction.get(
             instruction)
