@@ -9,17 +9,17 @@ def write_database(database_accesser: DBAccessHandler, instruction, dev_num, det
 
 
 def write_database_process(database_accesser: DBAccessHandler, process_num: Processes, serial_num: int):
-    write_processing_sql = """\
-    INSERT INTO t_work_tracking(
-        serial_number,
-        process_id,
-        process_time
-    )
-    VALUES(
-        ?,
-        ?,
-        ?
-    );
+    write_processing_sql = """
+        INSERT INTO t_work_tracking(
+            serial_number,
+            process_id,
+            process_time
+        )
+        VALUES(
+            ?,
+            ?,
+            ?
+        );
     """
     database_accesser.write_data_to_database(
         write_processing_sql, serial_num, process_num.value[0], _change_mysql_time(datetime.datetime.now()))
@@ -38,7 +38,7 @@ def _change_mysql_time(sensor_date_time: datetime.datetime):
 
 
 def insert_sns_update(database_accesser: DBAccessHandler, dev_num, detail: str, sensor_date_time: datetime.datetime):
-    tracking_sensor_sql = """\
+    tracking_sensor_sql = """
         INSERT INTO t_sensor_tracking(
             sensor_id,
             sensor_status,

@@ -15,7 +15,7 @@ from RobotCommunicationHandler.RobotCommunicationHandler \
 from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_FEATURE_DB, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
 from common_data_type import TransmissionTarget
 if TEST_FEATURE_GUI:
     from GUIDesigner.GUIDesigner import GUIDesigner
@@ -68,12 +68,13 @@ class Integration:
         self.work_list = []
         self.write_list = []
         self.image_inspection_controller = ImageInspectionController()
-        self.database_accesser = DBAccessHandler()
+        if TEST_FEATURE_DB:
+            self.database_accesser = DBAccessHandler()
+            process_data_loader = ProcessDataLoader(self.database_accesser)
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
             self.guiDesigner = GUIDesigner()
-        process_data_loader = ProcessDataLoader(self.database_accesser)
         self.process_data_list = process_data_loader.get_process_datas()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
