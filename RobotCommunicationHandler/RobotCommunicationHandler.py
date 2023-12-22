@@ -7,6 +7,7 @@ import time
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_Windows
+import atexit
 
 
 TEST_HOST_ADDRESS = 'localhost'
@@ -38,6 +39,7 @@ class RobotCommunicationHandler:
         self.request_send_queue = None
         self.receive_data_queue = None
         self.samp_stop_flag = False
+        atexit.register(self.cleanup_connection)
 
     def test_receive_string(self, target: TransmissionTarget, sock: socket.socket):
         """
@@ -133,9 +135,13 @@ class RobotCommunicationHandler:
                 if TEST_Windows:
                     self.samp_socket_ur = self.connect_to_ur(
                         self.samp_socket_ur, TEST_HOST_ADDRESS, UR_PORT_NUMBER)
+                    self.samp_socket_ur.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 else:
                     self.samp_socket_ur = self.connect_to_ur(
                         self.samp_socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
+                    self.samp_socket_ur.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
                 receive_data_queue.put({"target": TransmissionTarget.UR,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
@@ -146,9 +152,13 @@ class RobotCommunicationHandler:
                 if TEST_Windows:
                     self.dummy_ur_socket = self.connect_to_ur(
                         self.dummy_ur_socket, TEST_HOST_ADDRESS, TEST_PORT1)
+                    self.dummy_ur_socket.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 else:
                     self.dummy_ur_socket = self.connect_to_ur(
                         self.dummy_ur_socket, HOST_LINUX_ADDRESS, TEST_PORT1)
+                    self.dummy_ur_socket.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
@@ -159,9 +169,13 @@ class RobotCommunicationHandler:
                 if TEST_Windows:
                     self.samp_socket_cfd = self.connect_to_cfd(
                         self.samp_socket_cfd, TEST_HOST_ADDRESS, CFD_PORT_NUMBER)
+                    self.samp_socket_cfd.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 else:
                     self.samp_socket_cfd = self.connect_to_cfd(
                         self.samp_socket_cfd, CFD_HOST_ADDRESS, CFD_PORT_NUMBER)
+                    self.samp_socket_cfd.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
                 receive_data_queue.put({"target": TransmissionTarget.CFD,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
@@ -172,9 +186,13 @@ class RobotCommunicationHandler:
                 if TEST_Windows:
                     self.dummy_cfd_socket = self.connect_to_cfd(
                         self.dummy_cfd_socket, TEST_HOST_ADDRESS, TEST_PORT2)
+                    self.dummy_cfd_socket.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 else:
                     self.dummy_cfd_socket = self.connect_to_cfd(
                         self.dummy_cfd_socket, HOST_LINUX_ADDRESS, TEST_PORT2)
+                    self.dummy_cfd_socket.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_2,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
@@ -219,3 +237,15 @@ class RobotCommunicationHandler:
                     send_data['message'].encode('utf-8'))
                 print(f"""{send_data['target']}に送信 : {send_data['message']}""")
             time.sleep(0.1)
+
+    def cleanup_connection(self):
+        # self.samp_socket_urが存在するか確認
+        print("cleanup")
+        if hasattr(self, 'samp_socket_ur'):
+            self.samp_socket_ur.close()
+        if hasattr(self, 'samp_socket_cfd'):
+            self.samp_socket_cfd.close()
+        if hasattr(self, 'dummy_ur_socket'):
+            self.dummy_ur_socket.close()
+        if hasattr(self, 'dummy_cfd_socket'):
+            self.dummy_cfd_socket.close()

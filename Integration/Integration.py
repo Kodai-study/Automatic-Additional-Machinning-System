@@ -3,25 +3,24 @@ from queue import Queue
 import threading
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
-from GUIDesigner.GUIDesigner import GUIDesigner
-from GUIDesigner.GUIRequestType import GUIRequestType
-from GUIDesigner.GUISignalCategory import GUISignalCategory
-from GUIDesigner.ProcessingData import ProcessingData
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
+from Integration.ProcessDataLoader import ProcessDataLoader
 from Integration.handlers_gui_responce import GuiResponceHandler
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
 from threading import Thread
-from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
-from common_data_type import CameraType, TransmissionTarget, WorkPieceShape
-
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_FEATURE_DB, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
+from common_data_type import TransmissionTarget
+if TEST_FEATURE_GUI:
+    from GUIDesigner.GUIDesigner import GUIDesigner
+    from GUIDesigner.GUIRequestType import GUIRequestType
+    from GUIDesigner.GUISignalCategory import GUISignalCategory
 toggle_flag = True
 QUEUE_WATCH_RATE = 0.03
 
@@ -40,44 +39,43 @@ class Integration:
         self.wait_cmd_flag = None
         self.wait_message = None
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
-        if TEST_UR_CONNECTION_LOCAL:
-            self.test_ur = _test_ur(TEST_PORT1)
+        if TEST_FEATURE_CONNECTION:
+            if TEST_UR_CONNECTION_LOCAL:
+                self.test_ur = _test_ur(TEST_PORT1)
 
-        if TEST_CFD_CONNECTION_LOCAL:
-            self.test_cfd = _test_cfd(TEST_PORT2)
+            if TEST_CFD_CONNECTION_LOCAL:
+                self.test_cfd = _test_cfd(TEST_PORT2)
 
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {
             "is_connection": False,
-            "limit_switch": False,
+            "ejector": False,
             "lighting": {
                 "back_light": False, "bar_light": False, "ring_light": False
             },
             "sensor": {
-                1: False, 2: False, 3: False, 4: False, 5: False, 6: False
+                0: False, 1: False, 2: False, 3: False, 4: False, 5: False
             },
             "reed_switch": {
-                1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
+                0: {"forward": False, "backward": False}, 1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
                 3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
             },
-            "door_status": {
-                1: False, 2: False, 3: False, 4: False
-            },
             "door_lock": {
-                1: False, 2: False, 3: False, 4: False
-            },
-            "ejector": {
-                "attach": False, "detach": False
+                0: False, 1: False, 2: False, 3: False
             }
         }
         self.process_data_list = []
         self.work_list = []
         self.write_list = []
-        self._test_insert_process_datas()
         self.image_inspection_controller = ImageInspectionController()
-        self.database_accesser = DBAccessHandler()
-        self.communicationHandler = RobotCommunicationHandler()
-        self.guiDesigner = GUIDesigner()
+        if TEST_FEATURE_DB:
+            self.database_accesser = DBAccessHandler()
+            process_data_loader = ProcessDataLoader(self.database_accesser)
+        if TEST_FEATURE_CONNECTION:
+            self.communicationHandler = RobotCommunicationHandler()
+        if TEST_FEATURE_GUI:
+            self.guiDesigner = GUIDesigner()
+        self.process_data_list = process_data_loader.get_process_datas()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
@@ -95,21 +93,6 @@ class Integration:
                             "process_time": datetime.datetime.now()},
                            {"process_type": Processes.move_to_process,
                             "process_time": datetime.datetime.now()}]
-
-    def _test_insert_process_datas(self):
-        self.process_data_list = [
-            {"process_data": ProcessingData(1, "加工データ(型番)1", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.CIRCLE, 10.0, "加工者1", datetime.datetime.now()),
-             "regist_process_count": 10,
-             "process_time": datetime.timedelta(minutes=12, seconds=34),
-             "good_count": 7,
-             "remaining_count": 2},
-            {"process_data": ProcessingData(2, "加工データ(型番)2", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.SQUARE, 10.0, "加工者2", datetime.datetime.now()),
-             "average_time": datetime.timedelta(minutes=2, seconds=34),
-             "regist_process_count": 20,
-             "process_time": datetime.timedelta(minutes=23, seconds=45),
-             "good_count": 8,
-             "remaining_count": 10}
-        ]
 
     def _watching_guiResponce_queue(self):
         """
@@ -195,29 +178,39 @@ class Integration:
 
     def main(self):
 
-        # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
-        if TEST_UR_CONNECTION_LOCAL:
-            test_ur_thread = Thread(target=self.test_ur.start)
-            test_ur_thread.start()
-
-        if TEST_CFD_CONNECTION_LOCAL:
-            test_cfd_thread = Thread(target=self.test_cfd.start)
-            test_cfd_thread.start()
-
         # 通信スレッドを立ち上げる
-        self.communication_thread = Thread(
-            target=self.communicationHandler.communication_loop,
-            args=(self.send_request_queue, self.comm_receiv_queue))
-        self.communication_thread.start()
+        if TEST_FEATURE_CONNECTION:
+            # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
+            if TEST_UR_CONNECTION_LOCAL:
+                test_ur_thread = Thread(target=self.test_ur.start)
+                test_ur_thread.daemon = True
+                test_ur_thread.start()
+
+            if TEST_CFD_CONNECTION_LOCAL:
+                test_cfd_thread = Thread(target=self.test_cfd.start)
+                test_cfd_thread.daemon = True
+                test_cfd_thread.start()
+
+                self.communication_thread = Thread(
+                    target=self.communicationHandler.communication_loop,
+                    args=(self.send_request_queue, self.comm_receiv_queue))
+                self.communication_thread.daemon = True
+                self.communication_thread.start()
 
         time.sleep(3)
 
         test_send_thread = Thread(
             target=self._robot_message_handle)
+        test_send_thread.daemon = True
         test_send_thread.start()
+
         if TEST_FEATURE_GUI:
             test_watching_guiResponce_queue_thread = Thread(
                 target=self._watching_guiResponce_queue)
+            test_watching_guiResponce_queue_thread.daemon = True
             test_watching_guiResponce_queue_thread.start()
+
             self.guiDesigner.start_gui(
-                self.gui_request_queue, self.gui_responce_queue)
+                self.gui_request_queue, self.gui_responce_queue, self.robot_status)
+        else:
+            self._watching_guiResponce_queue()

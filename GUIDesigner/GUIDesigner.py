@@ -9,7 +9,17 @@ from GUIDesigner.screens.Login import Login
 from GUIDesigner.screens.Monitoring import Monitoring
 from GUIDesigner.screens.ScreenBase import ScreenBase
 from GUIDesigner.screens.WaitConnecting import WaitConnecting
+from typing import Dict
+from GUIDesigner.screens.CheckSelection import CheckSelection
+from GUIDesigner.screens.CreateSelection import CreateSelection
+from GUIDesigner.screens.EmergencyStop import EmergencyStop
+from GUIDesigner.screens.Login import Login
+from GUIDesigner.screens.Monitoring import Monitoring
+from GUIDesigner.screens.ScreenBase import ScreenBase
+from GUIDesigner.screens.WaitConnecting import WaitConnecting
 from queue import Queue
+
+from GUIDesigner.screens.WorkRequest import WorkRequest
 
 from GUIDesigner.screens.WorkRequest import WorkRequest
 
@@ -21,6 +31,7 @@ from .Frames import Frames
 
 
 QUEUE_WATCH_RATE_ms = 10
+
 
 class GUIDesigner(tk.Tk):
     """
@@ -42,11 +53,20 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.MONITORING
+        self.current_screen = Frames.PROCESSING_PROGRESS
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
+        self.protocol("WM_DELETE_WINDOW", lambda: self.destroy())
 
+    def _initial_variables(self):
+        self.image_resources: Dict[str, tk.PhotoImage] = {}
+        self.previous_screen = None
+        self.screens: Dict[Frames, ScreenBase] = {}
+        self.current_screen = Frames.PROCESSING_PROGRESS
+        self.data_list = []
+        self.robot_status = {}
+        self._initial_variables()
 
     def _initial_variables(self):
         self.image_resources["red_lamp"] = tk.PhotoImage(
@@ -56,29 +76,6 @@ class GUIDesigner(tk.Tk):
             file="./resource/images/green_lamp.png")
         self.image_resources["work"] = tk.PhotoImage(
             file="./resource/images/work.png")
-        self.robot_status = {
-            "is_connection": False,
-            "limit_switch": False,
-            "lighting": {
-                "back_light": False, "bar_light": False, "ring_light": False
-            },
-            "sensor": {
-                1: False, 2: False, 3: False, 4: False, 5: False, 6: False
-            },
-            "reed_switch": {
-                1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
-                3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
-            },
-            # "door_status": {
-            #     1: False, 2: False, 3: False, 4: False
-            # },
-            "door_lock": {
-                1: False, 2: False, 3: False, 4: False
-            },
-            "ejector": {
-                "attach": False, "detach": False
-            }
-        }
 
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
@@ -103,7 +100,8 @@ class GUIDesigner(tk.Tk):
 
     def _check_queue(self):
         if not self.get_request_queue.empty():
-            request_type, request_data = self.get_request_queue.get()
+            request_data = self.get_request_queue.get()
+            request_type, request_data = request_data
             self.screens[self.current_screen].handle_queued_request(
                 request_type, request_data)
 
@@ -113,7 +111,7 @@ class GUIDesigner(tk.Tk):
         self.current_screen = frame
         self.screens[frame].create_frame()
 
-    def start_gui(self, get_request_queue: Queue, send_message_queue: Queue):
+    def start_gui(self, get_request_queue: Queue, send_message_queue: Queue, robot_status: dict):
         """
         GUIを起動し、ループを開始する。
 
@@ -124,7 +122,7 @@ class GUIDesigner(tk.Tk):
 
         self.get_request_queue = get_request_queue
         self.send_message_queue = send_message_queue
-
+        self.robot_status = robot_status
         self._initial_screens()
         # 画面作成のクラスのインスタンス化のテスト
         self.screens[self.current_screen].create_frame()
