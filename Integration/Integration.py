@@ -15,7 +15,7 @@ from RobotCommunicationHandler.RobotCommunicationHandler \
 from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
 from common_data_type import TransmissionTarget
 if TEST_FEATURE_GUI:
     from GUIDesigner.GUIDesigner import GUIDesigner
@@ -39,11 +39,12 @@ class Integration:
         self.wait_cmd_flag = None
         self.wait_message = None
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
-        if TEST_UR_CONNECTION_LOCAL:
-            self.test_ur = _test_ur(TEST_PORT1)
+        if TEST_FEATURE_CONNECTION:
+            if TEST_UR_CONNECTION_LOCAL:
+                self.test_ur = _test_ur(TEST_PORT1)
 
-        if TEST_CFD_CONNECTION_LOCAL:
-            self.test_cfd = _test_cfd(TEST_PORT2)
+            if TEST_CFD_CONNECTION_LOCAL:
+                self.test_cfd = _test_cfd(TEST_PORT2)
 
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {
@@ -68,7 +69,8 @@ class Integration:
         self.write_list = []
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
-        self.communicationHandler = RobotCommunicationHandler()
+        if TEST_FEATURE_CONNECTION:
+            self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
             self.guiDesigner = GUIDesigner()
         process_data_loader = ProcessDataLoader(self.database_accesser)
@@ -175,23 +177,24 @@ class Integration:
 
     def main(self):
 
-        # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
-        if TEST_UR_CONNECTION_LOCAL:
-            test_ur_thread = Thread(target=self.test_ur.start)
-            test_ur_thread.daemon = True
-            test_ur_thread.start()
-
-        if TEST_CFD_CONNECTION_LOCAL:
-            test_cfd_thread = Thread(target=self.test_cfd.start)
-            test_cfd_thread.daemon = True
-            test_cfd_thread.start()
-
         # 通信スレッドを立ち上げる
-        self.communication_thread = Thread(
-            target=self.communicationHandler.communication_loop,
-            args=(self.send_request_queue, self.comm_receiv_queue))
-        self.communication_thread.daemon = True
-        self.communication_thread.start()
+        if TEST_FEATURE_CONNECTION:
+            # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
+            if TEST_UR_CONNECTION_LOCAL:
+                test_ur_thread = Thread(target=self.test_ur.start)
+                test_ur_thread.daemon = True
+                test_ur_thread.start()
+
+            if TEST_CFD_CONNECTION_LOCAL:
+                test_cfd_thread = Thread(target=self.test_cfd.start)
+                test_cfd_thread.daemon = True
+                test_cfd_thread.start()
+
+                self.communication_thread = Thread(
+                    target=self.communicationHandler.communication_loop,
+                    args=(self.send_request_queue, self.comm_receiv_queue))
+                self.communication_thread.daemon = True
+                self.communication_thread.start()
 
         time.sleep(3)
 
