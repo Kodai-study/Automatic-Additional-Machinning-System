@@ -35,11 +35,5 @@ class DBAccessHandler:
         Returns:
             Tuple[bool, str]: 書き込みが成功したかどうかの真偽値と、エラーがあった場合はエラーの内容を返す
         """
-        print("実行されるSQL文 : ", _replace_placeholders(sql_query, values))
+        print("実行されるSQL文 : ", sql_query % values)
         return (True, "")
-
-
-def _replace_placeholders(sql: str, params):
-    for param in params:
-        sql = sql.replace("?", repr(param), 1)
-    return sql

@@ -16,9 +16,9 @@ def write_database_process(database_accesser: DBAccessHandler, process_num: Proc
             process_time
         )
         VALUES(
-            ?,
-            ?,
-            ?
+            %s,
+            %s,
+            %s
         );
     """
     database_accesser.write_data_to_database(
@@ -45,9 +45,9 @@ def insert_sns_update(database_accesser: DBAccessHandler, dev_num, detail: str, 
             sensor_date_time
         )
         VALUES(
-            ?,
-            ?,
-            ?
+            %s,
+            %s,
+            %s
         );
     """
     sensor_status = 1 if detail == "ON" else 0
