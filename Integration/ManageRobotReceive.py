@@ -31,7 +31,7 @@ class ManageRobotReceive:
             "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}"),
             "TEST_START": lambda: self._integration_instance._start_process(),
         }
-        self._handl_selectors = {
+        self._handl_selectors_with_instruction = {
             "SIG": self._select_handler_ur_sig,
             "WRK": self._select_handler_wrk,
             "SNS": self._select_handler_sensor,
@@ -54,29 +54,24 @@ class ManageRobotReceive:
         """
         if command in self._special_command_handlers:
             return self._special_command_handlers[command]
-
         instruction, dev_num, detail = self._split_command(command)
+
         process_number = get_process_number(instruction, dev_num, detail)
-        is_get_serial_num = False
-        if process_number is not None:
+        if process_number:
             is_get_serial_num, serial_number = self._manage_work_status_list(
                 process_number)
-
-        handle_selector = self._handl_selectors.get(instruction)
-        if not handle_selector:
-            return lambda: self._undefine(command)
-
-        if is_get_serial_num:
-            return handle_selector(
-                dev_num, detail, command=command, serial_number=serial_number)
-        elif process_number is not None:
-            time = datetime.datetime.now()
-
-            def _handle():
-                handle_selector(dev_num, detail, command=command)()
+            if is_get_serial_num:
+                # TODO データベース書き込み
+                pass
+            else:
+                time = datetime.datetime.now()
                 self._integration_instance.write_list.append(
                     {"process_type": process_number, "process_time": time})
-            return _handle
+
+        handle_selector = self._handl_selectors_with_instruction.get(
+            instruction)
+        if not handle_selector:
+            return lambda: self._undefine(command)
 
         return handle_selector(dev_num, detail, command=command, target=target)
 
@@ -272,7 +267,7 @@ class ManageRobotReceive:
         Args:
             message (str): _description_
         """
-        print("undefined message : ", message)
+        print("処理が定義されていないコマンドを受け取りました : ", message)
 
     def handle_receiv_message(self, receiv_data: dict):
         """
