@@ -3,10 +3,6 @@ from queue import Queue
 import threading
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
-from GUIDesigner.GUIDesigner import GUIDesigner
-from GUIDesigner.GUIRequestType import GUIRequestType
-from GUIDesigner.GUISignalCategory import GUISignalCategory
-from GUIDesigner.ProcessingData import ProcessingData
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
@@ -17,12 +13,14 @@ from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
 from threading import Thread
-from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
-from common_data_type import CameraType, TransmissionTarget, WorkPieceShape
-
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
+from common_data_type import TransmissionTarget
+if TEST_FEATURE_GUI:
+    from GUIDesigner.GUIDesigner import GUIDesigner
+    from GUIDesigner.GUIRequestType import GUIRequestType
+    from GUIDesigner.GUISignalCategory import GUISignalCategory
 toggle_flag = True
 QUEUE_WATCH_RATE = 0.03
 
@@ -71,7 +69,8 @@ class Integration:
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
         self.communicationHandler = RobotCommunicationHandler()
-        self.guiDesigner = GUIDesigner()
+        if TEST_FEATURE_GUI:
+            self.guiDesigner = GUIDesigner()
         process_data_loader = ProcessDataLoader(self.database_accesser)
         self.process_data_list = process_data_loader.get_process_datas()
 
@@ -209,3 +208,5 @@ class Integration:
 
             self.guiDesigner.start_gui(
                 self.gui_request_queue, self.gui_responce_queue, self.robot_status)
+        else:
+            self._watching_guiResponce_queue()
