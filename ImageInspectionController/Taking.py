@@ -26,7 +26,7 @@ class Taking:
     def __init__(self):
         self.light = Light()
         self.config = configparser.ConfigParser()
-        file_path = 'ImageInspectionController/test/kensa.conf'
+        file_path = 'kensa.conf'
         # with open(file_path, 'r') as yaml_file:
         #     self.data = yaml.safe_load(yaml_file)
         self.cam_system = self._initial_cam_setting(NUM_REQUIRED_CAMERAS)

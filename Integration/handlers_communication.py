@@ -41,7 +41,7 @@ def _change_gui_status(gui_request_queue: Queue, robot_status: dict, device_type
 
 def notice_change_status(gui_request_queue: Queue):
     gui_request_queue.put(
-        (GUISignalCategory.SENSOR_STATUS_UPDATE,))
+        (GUISignalCategory.SENSOR_STATUS_UPDATE,None))
 
 
 def _handle_connection_success(gui_request_queue: Queue, target: TransmissionTarget):

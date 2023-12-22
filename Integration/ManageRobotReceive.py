@@ -1,10 +1,10 @@
 import datetime
 from threading import Thread
 import time
-from Integration.handlers_communication import _change_gui_status, _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
-from Integration.handlers_database import write_database
-from Integration.handlers_image_inspection import _start_accuracy_inspection_inspection, _start_pre_processing_inspection, _start_tool_inspeciton
-from Integration.handlers_robot_action import change_robot_first_position, reservation_process, start_process
+from Integration.handlers_communication import _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
+from Integration.handlers_database import insert_sns_update, write_database
+from Integration.handlers_image_inspection import _start_pre_processing_inspection
+from Integration.handlers_robot_action import change_robot_first_position, reservation_process
 from Integration.process_number import Processes, get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
@@ -33,7 +33,6 @@ class ManageRobotReceive:
         }
         self._handl_selectors = {
             "SIG": self._select_handler_ur_sig,
-            "CYL": self._select_handler_cyl,
             "WRK": self._select_handler_wrk,
             "SNS": self._select_handler_sensor,
             "RDSW": self._select_handler_sensor_reed_switch,
@@ -74,7 +73,7 @@ class ManageRobotReceive:
             time = datetime.datetime.now()
 
             def _handle():
-                handle_selector(dev_num, detail, command=command)
+                handle_selector(dev_num, detail, command=command)()
                 self._integration_instance.write_list.append(
                     {"process_type": process_number, "process_time": time})
             return _handle
@@ -171,36 +170,6 @@ class ManageRobotReceive:
             return self._undefine(command)
         print("ワークの枚数は", detail, "枚です")
 
-    def _select_handler_cyl(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
-        """
-        CYL命令のハンドラを選択する
-        """
-        is_status_on = detail == "ON"
-
-        def change_cylinder_status(): return _change_gui_status(
-            self._integration_instance.gui_request_queue, self._integration_instance.robot_status,
-            "cylinder", dev_num, is_status_on)
-
-        if self._integration_instance.is_monitor_mode:
-            return change_cylinder_status
-
-        # CYL 001,ON
-        if dev_num == 1 and is_status_on:
-            def _handler():
-                start_process()
-                change_cylinder_status()
-            return _handler
-
-        # CYL 003,ON
-        elif dev_num == 3 and is_status_on:
-            def _handler():
-                _start_accuracy_inspection_inspection(
-                    self._integration_instance.image_inspection_controller)
-                change_cylinder_status()
-            return _handler
-
-        return change_cylinder_status
-
     def _select_handler_wrk(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         WRK命令のハンドラを選択する
@@ -216,7 +185,14 @@ class ManageRobotReceive:
             return self._undefine(command)
 
         if target == TransmissionTarget.CFD or target == TransmissionTarget.TEST_TARGET_2:
-            return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
+            def _handler():
+                _send_message_to_ur(
+                    command, self._integration_instance.send_request_queue)
+                self._integration_instance.robot_status["ejector"] = (
+                    detail == "ATTACH")
+                notice_change_status(
+                    self._integration_instance.gui_request_queue)
+            return _handler
         elif target == TransmissionTarget.UR or target == TransmissionTarget.TEST_TARGET_1:
             return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
 
@@ -234,8 +210,8 @@ class ManageRobotReceive:
         def _common_sensor_handler():
             _send_message_to_ur(
                 command, self._integration_instance.send_request_queue)
-            # write_database(self._integration_instance.database_accesser,
-            #                "SNS", dev_num, detail, sensor_time, serial_number)
+            insert_sns_update(self._integration_instance.database_accesser,
+                              dev_num, detail, sensor_time)
             self._change_robot_status("sensor", dev_num, is_on)
 
         if dev_num == 1 and is_on:
@@ -257,11 +233,17 @@ class ManageRobotReceive:
         return _common_sensor_handler
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
-        door_number = (dev_num / 2) + 1
-        kind = "forward" if dev_num % 2 == 0 else "backward"
-        self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
-            detail == "ON")
-        notice_change_status(self._integration_instance.gui_request_queue)
+        def _handler():
+            door_number = dev_num // 2
+            kind = "forward" if dev_num % 2 == 0 else "backward"
+            try:
+                self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
+                    detail == "ON")
+                notice_change_status(
+                    self._integration_instance.gui_request_queue)
+            except KeyError:
+                print("Error: door_number", door_number, "kind", kind)
+        return _handler
 
     def _split_command(self, command: str):
         # 終端文字を削除
@@ -325,7 +307,12 @@ class ManageRobotReceive:
         Thread(target=handler).start()
 
     def _change_robot_status(self, device_kind: str, device_number, status):
-        self._integration_instance.robot_status[device_kind][device_number] = status
+        try:
+            status_dict = self._integration_instance.robot_status[device_kind]
+            status_dict[device_number] = status
+        except KeyError:
+            print("Error: robot_status is not defined : ",
+                  device_kind, "device_number : ", device_number)
         notice_change_status(self._integration_instance.gui_request_queue)
 
     def _get_robot_status(self, device_kind: str, device_number):

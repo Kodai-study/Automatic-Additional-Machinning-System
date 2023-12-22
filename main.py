@@ -75,4 +75,3 @@ def test_lighting():
 
 if __name__ == "__main__":
     test_integration()
-    # app = WorkResultOverview()
