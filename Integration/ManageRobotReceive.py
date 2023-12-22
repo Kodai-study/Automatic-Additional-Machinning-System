@@ -57,16 +57,6 @@ class ManageRobotReceive:
         instruction, dev_num, detail = self._split_command(command)
 
         process_number = get_process_number(instruction, dev_num, detail)
-        if process_number:
-            is_get_serial_num, serial_number = self._manage_work_status_list(
-                process_number)
-            if is_get_serial_num:
-                # TODO データベース書き込み
-                pass
-            else:
-                time = datetime.datetime.now()
-                self._integration_instance.write_list.append(
-                    {"process_type": process_number, "process_time": time})
 
         handle_selector = self._handl_selectors_with_instruction.get(
             instruction)
@@ -74,32 +64,6 @@ class ManageRobotReceive:
             return lambda: self._undefine(command)
 
         return handle_selector(dev_num, detail, command=command, target=target)
-
-    def _manage_work_status_list(self, process_num):
-
-        filtered_progress = [
-            item for item in self._integration_instance.work_list if item["process"].value < process_num.value]
-
-        # filtered_progress の要素がない場合
-        if not filtered_progress:
-            self._integration_instance.work_list.append(
-                {"process": process_num, "serial_number": None})
-            return False, None
-
-        max_progress_item = max(
-            filtered_progress, key=lambda item: item["process"].value, default=None)
-
-        if max_progress_item is None:
-            print("ワーク管理の部分でエラーです")
-            return False, None
-
-        if process_num == Processes.end_process:
-            self._integration_instance.work_list = [d for d in self._integration_instance.work_list if d.get(
-                'process') != max_progress_item['process']]
-        else:
-            max_progress_item["process"] = process_num
-
-        return max_progress_item["serial_number"] is not None, max_progress_item["serial_number"]
 
     def _test_select_handler_report(self, command: str):
         """メッセージの種類に応じて、ハンドラを選択する
