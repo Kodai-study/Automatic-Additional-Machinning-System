@@ -1,5 +1,5 @@
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
-
+import configparser
 if TEST_FEATURE_IMAGE_PROCESSING:
     import serial
     import yaml
@@ -9,13 +9,13 @@ from ImageInspectionController.ProcessDatas import InspectionType
 
 class Light:
     def __init__(self):
+        self.config = configparser.ConfigParser()
+        file_path = 'kensa.conf'
+        self.config.read(file_path, encoding='utf-8')
         ports = list(serial.tools.list_ports.comports())
-        file_path = 'ImageInspectionController/kensa_config.yaml'
-        with open(file_path, 'r') as yaml_file:
-            self.data = yaml.safe_load(yaml_file)
-        gpio_setting = self.data['Light_information']['gpio']
-        self.IOBOARD_PID = gpio_setting['IOBOARD_PID']
-        self.IOBOARD_VID = gpio_setting['IOBOARD_VID']        # COMポートの一覧を取得
+        section_name = "gpio"
+        self.IOBOARD_PID = self.config.getint(section_name, "IOBOARD_PID")
+        self.IOBOARD_VID = self.config.getint(section_name, "IOBOARD_VID")
         com_num = None
 
         for port in ports:

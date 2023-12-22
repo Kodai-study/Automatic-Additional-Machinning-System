@@ -1,6 +1,7 @@
 from queue import Queue
 import time
 from GUIDesigner.GUIDesigner import GUIDesigner
+from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.Integration import Integration
@@ -74,4 +75,5 @@ def test_lighting():
 
 
 if __name__ == "__main__":
-    test_integration()
+    # test_integration()
+    test_camera_snapshot()
