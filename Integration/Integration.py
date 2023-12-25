@@ -11,7 +11,7 @@ from Integration.ProcessDataLoader import ProcessDataLoader
 from Integration.handlers_gui_responce import GuiResponceHandler
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
-    import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
+    import TEST_PORT1, TEST_PORT2_RECEIV, TEST_PORT2_SEND, RobotCommunicationHandler
 from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
@@ -44,7 +44,7 @@ class Integration:
                 self.test_ur = _test_ur(TEST_PORT1)
 
             if TEST_CFD_CONNECTION_LOCAL:
-                self.test_cfd = _test_cfd(TEST_PORT2)
+                self.test_cfd = _test_cfd(TEST_PORT2_SEND, TEST_PORT2_RECEIV)
 
         self.robot_message_handler = ManageRobotReceive(self)
         self.robot_status = {
