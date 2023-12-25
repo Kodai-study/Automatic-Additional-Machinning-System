@@ -62,12 +62,15 @@ class RobotCommunicationHandler:
                 if not data:
                     print("Connection closed by the server")
                     break
-                print(f"""Main_Received  target = {
-                      target}, message = {data.decode('utf-8')}""")
 
-                self.receive_data_queue.put(
-                    {"target": target, "message": data.decode('utf-8'),
-                     "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
+                # 改行で区切って、行の数だけ繰り返す
+                for line in data.decode('utf-8').splitlines():
+                    print(f"""Main_Received  target = {
+                        target}, message = {line}""")
+
+                    self.receive_data_queue.put(
+                        {"target": target, "message": line,
+                         "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
             except Exception as e:
                 print(f"Error: {e}")
                 continue
