@@ -1,4 +1,4 @@
-#
+
 # grab_software_trigger_ndarray.py (for Python 3)
 #
 # Copyright (c) 2020 Toshiba-Teli Corporation
@@ -46,50 +46,54 @@ class Taking:
         if USE_ACCURACY_INSPECTION_CAMERA:
             self.cam_device_seido, self.receive_signal_seido = self._get_camera_device(
                 "ACCURACY_INSPECTION")
-            
+
     def _get_camera_device(self, inspection_type):
         try:
-            serial_number,model_number,section_name=self._get_serial_and_model(inspection_type)
+            serial_number, model_number, section_name = self._get_serial_and_model(
+                inspection_type)
             return self._setting_cam(
                 serial_number, model_number)
         except configparser.NoSectionError:
             raise ValueError(f"指定されたセクションが存在しません: {section_name}")
-        
+
     def _get_serial_and_model(self, inspection_type: str):
         section_name = f"{inspection_type}"
         serial_number = self.config.get(section_name, "serial_number")
         model_number = self.config.get(section_name, "model_number")
-        return serial_number,model_number,section_name
+        return serial_number, model_number, section_name
     # def _get_camera_device(self, camera_type: str):
     #     serial_number, model_number = self._get_serial_and_model(camera_type)
     #     return self._setting_cam(
     #         serial_number, model_number)
-    
+
     # def _get_serial_and_model(self, camera_type: str):
     #     setting_data = self.data['Camera_information'][camera_type]
     #     return setting_data['serial_number'], setting_data['model_number']
 
     def _setting_cam(self, serial_num: str, model: str)\
-                -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
-            cam_device = self.cam_system.create_device_object_from_info(
-                serial_num, model, "")
-            cam_device.open()
+            -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
+        cam_device = self.cam_system.create_device_object_from_info(
+            serial_num, model, "")
+        cam_device.open()
 
-            res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
-            if res != pytelicam.CamApiStatus.Success:
-                raise Exception("Can't set TriggerMode.")
+        res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
+        if res != pytelicam.CamApiStatus.Success:
+            raise Exception("Can't set TriggerMode.")
 
-            res = cam_device.genapi.set_enum_str_value('TriggerSource', 'Software')
-            if res != pytelicam.CamApiStatus.Success:
-                raise Exception("Can't set TriggerSource.")
+        res = cam_device.genapi.set_enum_str_value('TriggerSource', 'Software')
+        if res != pytelicam.CamApiStatus.Success:
+            raise Exception("Can't set TriggerSource.")
 
-            res = cam_device.genapi.set_enum_str_value(
-                'TriggerSequence', 'TriggerSequence0')
-            receive_signal = self.cam_system.create_signal()
+        res = cam_device.genapi.set_enum_str_value(
+            'TriggerSequence', 'TriggerSequence0')
+        receive_signal = self.cam_system.create_signal()
+    
+        res1 = cam_device.genapi.set_feature_value("Width", "2064")
+        res2 = cam_device.genapi.set_feature_value("OffsetX", "480")
 
-            cam_device.cam_stream.open(receive_signal)
-            return cam_device, receive_signal
-
+        # ここより前に設定を書くと間違いない？
+        cam_device.cam_stream.open(receive_signal)
+        return cam_device, receive_signal
 
     def take_picture(self, kensamei: InspectionType) -> str:
         if self.cam_system == None:
@@ -117,6 +121,7 @@ class Taking:
             print("hosonFailed")
 
         return write_image_path
+
     def check_camera_connection(self) -> bool:
         if not self.cam_system:
             return False
@@ -141,7 +146,6 @@ class Taking:
 
         return True
 
-
     def _initial_cam_setting(self, cam_num=3) -> pytelicam.pytelicam.CameraSystem:
         cam_system = pytelicam.get_camera_system(
             int(pytelicam.CameraType.U3v) |
@@ -152,12 +156,12 @@ class Taking:
             return None
         return cam_system
 
-   
     def _get_image_data(self, cam_device,  receive_signal) -> np.ndarray:
 
         cam_device.cam_stream.start()
 
         res = cam_device.genapi.execute_command('TriggerSoftware')
+
         if res != pytelicam.CamApiStatus.Success:
             raise Exception("Can't execute TriggerSoftware.")
 
