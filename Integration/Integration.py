@@ -1,4 +1,3 @@
-import datetime
 from queue import Queue
 import threading
 import time
@@ -9,7 +8,6 @@ from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessDataLoader import ProcessDataLoader
 from Integration.handlers_gui_responce import GuiResponceHandler
-from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
 from threading import Thread
@@ -65,14 +63,13 @@ class Integration:
             }
         }
         self.process_data_list = []
-        self.work_list = []
-        self.write_list = []
         self.image_inspection_controller = ImageInspectionController()
         if TEST_FEATURE_DB:
             self.database_accesser = DBAccessHandler()
             process_data_loader = ProcessDataLoader(self.database_accesser)
             self.process_data_list = process_data_loader.get_process_datas()
-
+        else:
+            self.process_data_list = ProcessDataLoader._test_create_process_data()
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
@@ -87,17 +84,9 @@ class Integration:
             self, self.send_request_queue, self.gui_request_queue)
         self.message_wait_conditions = {}
 
-    def _test_insert_work_datas(self):
-        self.work_list = [
-            {"process": Processes.start, "serial_number": None}]
-        self.write_list = [{"process_type": Processes.start,
-                            "process_time": datetime.datetime.now()},
-                           {"process_type": Processes.move_to_process,
-                            "process_time": datetime.datetime.now()}]
-
     def _watching_guiResponce_queue(self):
         """
-        テスト用関数。  GUIから、ロボットへの操作要求があると、そのコマンドを送信する
+        GUIから、ロボットへの操作要求があると、そのコマンドを送信する
         """
         while True:
             if not self.gui_responce_queue.empty():
