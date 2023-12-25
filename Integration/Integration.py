@@ -15,6 +15,7 @@ from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_FEATURE_DB, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
 from common_data_type import TransmissionTarget
+
 if TEST_FEATURE_GUI:
     from GUIDesigner.GUIDesigner import GUIDesigner
     from GUIDesigner.GUIRequestType import GUIRequestType
@@ -62,14 +63,10 @@ class Integration:
                 0: False, 1: False, 2: False, 3: False
             }
         }
-        self.process_data_list = []
         self.image_inspection_controller = ImageInspectionController()
-        if TEST_FEATURE_DB:
-            self.database_accesser = DBAccessHandler()
-            process_data_loader = ProcessDataLoader(self.database_accesser)
-            self.process_data_list = process_data_loader.get_process_datas()
-        else:
-            self.process_data_list = ProcessDataLoader._test_create_process_data()
+        self.database_accesser = DBAccessHandler()
+        self.process_data_loader = ProcessDataLoader(self.database_accesser)
+        
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
@@ -103,22 +100,23 @@ class Integration:
 
     def _robot_message_handle(self):
         while True:
-            if not self.comm_receiv_queue.empty():
+            if self.comm_receiv_queue.empty():
+                time.sleep(QUEUE_WATCH_RATE)
+                continue
                 # send_queueから値を取り出す
-                receiv_data = self.comm_receiv_queue.get()
-                if receiv_data.get("message"):
-                    waiting_condition = self.message_wait_conditions.get(
-                        (receiv_data["target"], receiv_data["message"]))
-                else:
-                    waiting_condition = self.message_wait_conditions.get(
-                        (receiv_data["target"], receiv_data["msg_type"]))
-                if waiting_condition:
-                    with waiting_condition:
-                        waiting_condition.notify_all()
+            receiv_data = self.comm_receiv_queue.get()
+            if receiv_data.get("message"):
+                waiting_condition = self.message_wait_conditions.get(
+                    (receiv_data["target"], receiv_data["message"]))
+            else:
+                waiting_condition = self.message_wait_conditions.get(
+                    (receiv_data["target"], receiv_data["msg_type"]))
+            if waiting_condition:
+                with waiting_condition:
+                    waiting_condition.notify_all()
 
-                self.robot_message_handler.handle_receiv_message(receiv_data)
-                print("受信データ : ", receiv_data)
-            time.sleep(QUEUE_WATCH_RATE)
+            self.robot_message_handler.handle_receiv_message(receiv_data)
+            print("受信データ : ", receiv_data)
 
     def _initialization(self):
         self.is_ur_connected = False
