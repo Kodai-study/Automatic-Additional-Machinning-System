@@ -15,7 +15,8 @@ HOST_LINUX_ADDRESS = '192.168.16.101'
 UR_HOST_ADDRESS = '192.168.16.9'
 CFD_HOST_ADDRESS = '192.168.16.8'
 TEST_PORT1 = 5000
-TEST_PORT2 = 5001
+TEST_PORT2_RECEIV = 5001
+TEST_PORT2_SEND = 5002
 UR_PORT_NUMBER = 8765
 CFD_PORT_NUMBER_CONTROL = 5678  # 送信用
 CFD_PORT_NUMBER_VIEW = 8765  # 受信用
@@ -125,41 +126,33 @@ class RobotCommunicationHandler:
         """
         self.request_send_queue = request_send_queue
         self.receive_data_queue = receive_data_queue
+        self.socket_ur = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM)
+        self.socket_cfd_receiv = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM)
+        self.socket_cfd_send = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM)
 
         # UR、CFD用の2つのソケットの作成(現在はサンプル)
         try:
-
             if not TEST_UR_CONNECTION_LOCAL:
-                self.socket_ur = socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM)
-
                 if TEST_Windows:
                     self.socket_ur = self.connect_to_ur(
                         self.socket_ur, TEST_HOST_ADDRESS, UR_PORT_NUMBER)
-                    self.socket_ur.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 else:
                     self.socket_ur = self.connect_to_ur(
                         self.socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
-                    self.socket_ur.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
                 receive_data_queue.put({"target": TransmissionTarget.UR,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
             else:
                 self.socket_ur = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
-
                 if TEST_Windows:
                     self.socket_ur = self.connect_to_ur(
                         self.socket_ur, TEST_HOST_ADDRESS, TEST_PORT1)
-                    self.socket_ur.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 else:
                     self.socket_ur = self.connect_to_ur(
                         self.socket_ur, HOST_LINUX_ADDRESS, TEST_PORT1)
-                    self.socket_ur.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
@@ -167,35 +160,25 @@ class RobotCommunicationHandler:
                 self.socket_cfd_receiv = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
 
-                if TEST_Windows:
-                    self.socket_cfd_receiv = self.connect_to_cfd(
-                        self.socket_cfd_receiv, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
-                    self.socket_cfd_receiv.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                else:
-                    self.socket_cfd_receiv = self.connect_to_cfd(
-                        self.socket_cfd_receiv, CFD_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
-                    self.socket_cfd_receiv.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
+                self.socket_cfd_receiv = self.connect_to_cfd(
+                    self.socket_cfd_receiv, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
+                self.socket_cfd_send = self.connect_to_cfd(
+                    self.socket_cfd_send, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_CONTROL)
                 receive_data_queue.put({"target": TransmissionTarget.CFD,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
             else:
-                self.socket_cfd_receiv = socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM)
-                if TEST_Windows:
-                    self.socket_cfd_receiv = self.connect_to_cfd(
-                        self.socket_cfd_receiv, TEST_HOST_ADDRESS, TEST_PORT2)
-                    self.socket_cfd_receiv.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                else:
-                    self.socket_cfd_receiv = self.connect_to_cfd(
-                        self.socket_cfd_receiv, HOST_LINUX_ADDRESS, TEST_PORT2)
-                    self.socket_cfd_receiv.setsockopt(
-                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.socket_cfd_receiv = self.connect_to_cfd(
+                    self.socket_cfd_receiv, TEST_HOST_ADDRESS, TEST_PORT2_RECEIV)
                 receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_2,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
+
+            self.socket_ur.setsockopt(
+                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.socket_cfd_receiv.setsockopt(
+                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.socket_cfd_send.setsockopt(
+                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         except Exception as e:
             print('Socket Error: ', e)
@@ -240,8 +223,6 @@ class RobotCommunicationHandler:
             time.sleep(0.1)
 
     def cleanup_connection(self):
-        # self.samp_socket_urが存在するか確認
-        print("cleanup")
         if hasattr(self, 'samp_socket_ur'):
             self.socket_ur.close()
         if hasattr(self, 'samp_socket_cfd'):
