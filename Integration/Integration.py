@@ -71,11 +71,12 @@ class Integration:
         if TEST_FEATURE_DB:
             self.database_accesser = DBAccessHandler()
             process_data_loader = ProcessDataLoader(self.database_accesser)
+            self.process_data_list = process_data_loader.get_process_datas()
+
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
             self.guiDesigner = GUIDesigner()
-        self.process_data_list = process_data_loader.get_process_datas()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
