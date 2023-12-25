@@ -9,9 +9,10 @@ class ProcessDataLoader:
         self.database_accesser = database_accesser
 
     def get_process_datas(self) -> list:
-        return self._test_create_process_data()
+        return ProcessDataLoader._test_create_process_data()
 
-    def _test_create_process_data(self):
+    @staticmethod
+    def _test_create_process_data():
         return [
             {"process_data": ProcessingData(1, "加工データ(型番)1", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.CIRCLE, 10.0, "加工者1", datetime.datetime.now()),
              "regist_process_count": 10,
