@@ -6,7 +6,7 @@ from Integration.handlers_communication import _handle_connection_success, _noti
 from Integration.handlers_database import insert_sns_update, write_database
 from Integration.handlers_image_inspection import _start_pre_processing_inspection
 from Integration.handlers_robot_action import change_robot_first_position, reservation_process
-from Integration.process_number import Processes, get_process_number
+from Integration.process_number import get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
 
@@ -71,25 +71,6 @@ class ManageRobotReceive:
 
         return handle_selector(dev_num, detail, command=command, target=target)
 
-    def _test_select_handler_report(self, command: str):
-        """メッセージの種類に応じて、ハンドラを選択する
-
-        Args:
-            command (str): メッセージの文字列
-
-        Returns:
-            function: ハンドラ
-        """
-
-        if command == "SIG DET":
-            return lambda: _send_to_gui(self._integration_instance.gui_request_queue, command)
-
-        instruction, dev_num, detail = self._split_command(command)
-        if instruction == "SIG":
-            if dev_num == 0:
-                if detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY":
-                    return lambda: _send_to_gui(self._integration_instance.gui_request_queue, command)
-
     def _select_handler_ur_sig(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         SIG命令のハンドラを選択する
@@ -127,7 +108,6 @@ class ManageRobotReceive:
                 _send_message_to_ur(
                     command, self._integration_instance.send_request_queue)
             return _handler
-
         return self._undefine
 
     def _select_handler_workSensor(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
@@ -165,7 +145,6 @@ class ManageRobotReceive:
         """
         SNS命令のハンドラを選択する
         """
-
         if detail == "ST":
             return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
 
@@ -194,7 +173,6 @@ class ManageRobotReceive:
                     self._integration_instance.gui_request_queue, False)
                 print("不良品ワークが排出されました")
             return _handler
-
         return _common_sensor_handler
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
