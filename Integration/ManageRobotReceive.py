@@ -1,11 +1,10 @@
 import datetime
 from threading import Thread
-import time
 from Integration.WorkManager import WorkManager
-from Integration.handlers_communication import _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur, _send_to_gui
-from Integration.handlers_database import insert_sns_update, write_database
+from Integration.handlers_communication import _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur
+from Integration.handlers_database import insert_sns_update
 from Integration.handlers_image_inspection import _start_pre_processing_inspection
-from Integration.handlers_robot_action import change_robot_first_position, reservation_process
+from Integration.handlers_robot_action import reservation_process
 from Integration.process_number import get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
@@ -82,9 +81,17 @@ class ManageRobotReceive:
         return self._undefine
 
     def _select_handler_workSensor(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
+        WORK_SENSOR_NUM = 5
         if dev_num != 0:
             return self._undefine(command)
-        print("ワークの枚数は", detail, "枚です")
+        if detail == "ON" or detail == "OFF":
+            return lambda: self._change_robot_status("sensor", WORK_SENSOR_NUM, detail == "ON")
+        # detail が数字の場合
+        try:
+            work_count = int(detail)
+        except ValueError:
+            return lambda: self._undefine(command)
+        print("ワークの枚数は", work_count, "枚です")
 
     def _select_handler_wrk(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
