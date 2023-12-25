@@ -161,15 +161,17 @@ class RobotCommunicationHandler:
                     socket.AF_INET, socket.SOCK_STREAM)
 
                 self.socket_cfd_receiv = self.connect_to_cfd(
-                    self.socket_cfd_receiv, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
+                    self.socket_cfd_receiv, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_CONTROL)
                 self.socket_cfd_send = self.connect_to_cfd(
-                    self.socket_cfd_send, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_CONTROL)
+                    self.socket_cfd_send, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
                 receive_data_queue.put({"target": TransmissionTarget.CFD,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
             else:
                 self.socket_cfd_receiv = self.connect_to_cfd(
                     self.socket_cfd_receiv, TEST_HOST_ADDRESS, TEST_PORT2_RECEIV)
+                self.socket_cfd_send = self.connect_to_cfd(
+                    self.socket_cfd_send, TEST_HOST_ADDRESS, TEST_PORT2_SEND)
                 receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_2,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
