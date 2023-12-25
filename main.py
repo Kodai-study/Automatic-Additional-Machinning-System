@@ -1,9 +1,14 @@
+import datetime
 from queue import Queue
 import time
+from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
+from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.Integration import Integration
+from Integration.WorkManager import WorkManager
+from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 from common_data_type import CameraType, LightingType, WorkPieceShape
 
@@ -73,5 +78,36 @@ def test_lighting():
         time.sleep(5)
 
 
+def work_manager_test():
+    work_manager = WorkManager(DBAccessHandler())
+    work_manager.regist_new_process(Processes.start, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.attach_work_delivery, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.move_to_process, datetime.datetime.now())
+    work_manager.preprocess_inspection(1)
+    work_manager.regist_new_process(Processes.start, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.attach_work_delivery, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.start_process, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.end_process, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.move_to_process, datetime.datetime.now())
+    work_manager.preprocess_inspection(1)
+    work_manager.regist_new_process(
+        Processes.attach_work_move_inspection, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.start_process, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.move_inspection, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.end_inspection, datetime.datetime.now())
+    work_manager.regist_new_process(
+        Processes.carry_out, datetime.datetime.now())
+
+
 if __name__ == "__main__":
-    test_integration()
+    work_manager_test()
+    # test_integration()
