@@ -29,7 +29,6 @@ class ManageRobotReceive:
             self._integration_instance.database_accesser)
         self._special_command_handlers = {
             "ISRESERVED": reservation_process,
-            "FIN_FST_POSITION": change_robot_first_position,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
             "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}"),
             "TEST_START": lambda: self._integration_instance._start_process(),
@@ -79,35 +78,7 @@ class ManageRobotReceive:
             return self._undefine
 
         sensor_time = datetime.datetime.now()
-        if detail == "ATT_IMP_READY":
-            def _handler():
-                # TODO データベース書き込み
-                _send_message_to_cfd(
-                    "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
-                time.sleep(0.5)
-                _send_message_to_cfd(
-                    "EJCT 0,ST", self._integration_instance.send_request_queue)
-            return _handler
 
-        elif detail == "DET_DRL_READY":
-            def _handler():
-                _send_message_to_cfd(
-                    "EJCT 0,DETACH", self._integration_instance.send_request_queue)
-                time.sleep(0.5)
-                _send_message_to_cfd(
-                    "EJCT 0,ST", self._integration_instance.send_request_queue)
-                time.sleep(0.5)
-                _send_message_to_cfd(
-                    "CYL 0,PUSH", self._integration_instance.send_request_queue)
-            return _handler
-
-        elif detail == "ATT_IMP_READY" or detail == "ATT_DRL_READY" or detail == "FST_POSITION":
-            def _handler():
-                write_database(
-                    self._integration_instance.database_accesser, "SIG", dev_num, detail, sensor_time, serial_number)
-                _send_message_to_ur(
-                    command, self._integration_instance.send_request_queue)
-            return _handler
         return self._undefine
 
     def _select_handler_workSensor(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
