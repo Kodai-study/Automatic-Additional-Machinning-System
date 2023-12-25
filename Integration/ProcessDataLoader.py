@@ -18,11 +18,13 @@ class ProcessDataLoader:
              "regist_process_count": 10,
              "process_time": datetime.timedelta(minutes=12, seconds=34),
              "good_count": 7,
+             "data_file_path": "/test/test.json",
              "remaining_count": 2},
             {"process_data": ProcessingData(2, "加工データ(型番)2", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.SQUARE, 10.0, "加工者2", datetime.datetime.now()),
              "average_time": datetime.timedelta(minutes=2, seconds=34),
              "regist_process_count": 20,
              "process_time": datetime.timedelta(minutes=23, seconds=45),
              "good_count": 8,
+             "data_file_path": "/test/test.json",
              "remaining_count": 10}
         ]
