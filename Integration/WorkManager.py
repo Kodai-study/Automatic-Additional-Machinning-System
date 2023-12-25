@@ -20,6 +20,9 @@ class WorkManager:
             return
 
         max_progress_item = self._get_newest_work_data(process_type)
+        if max_progress_item is None:
+            print("ワーク管理の部分でエラーです")
+            return
         serial_number = max_progress_item["serial_number"]
         if serial_number is None:
             self.write_waiting_list.append(
@@ -29,7 +32,7 @@ class WorkManager:
                                    process_type, serial_number, process_time)
 
         max_progress_item["process"] = process_type
-        if process_type == Processes.end_process:
+        if process_type == Processes.carry_out:
             self._delete_finished_process()
 
     def preprocess_inspection(self, serial_number: int):
@@ -38,9 +41,18 @@ class WorkManager:
             write_database_process(self.database_accesser,
                                    waiting_item["process_type"], serial_number, time=waiting_item["process_time"])
 
+        serial_empty_item = [d for d in self.work_list if d.get(
+            'serial_number') is None]
+        inspected_item = max(
+            serial_empty_item, key=lambda item: item["process"].value, default=None)
+        if inspected_item is None:
+            print("ワーク管理の部分でエラーです")
+            return
+        inspected_item["serial_number"] = serial_number
+
     def _delete_finished_process(self):
         self.work_list = [d for d in self.work_list if d.get(
-            'process') != Processes.end_process]
+            'process') != Processes.carry_out]
 
     def _get_newest_work_data(self, new_process: Processes) -> dict:
         filtered_progress = [
@@ -50,7 +62,7 @@ class WorkManager:
         if not filtered_progress:
             self.work_list.append(
                 {"process": new_process, "serial_number": None})
-            return False, None
+            return None
 
         max_progress_item = max(
             filtered_progress, key=lambda item: item["process"].value, default=None)
