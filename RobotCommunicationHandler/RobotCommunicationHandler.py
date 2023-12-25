@@ -17,7 +17,7 @@ CFD_HOST_ADDRESS = '192.168.16.8'
 TEST_PORT1 = 5000
 TEST_PORT2_RECEIV = 5001
 TEST_PORT2_SEND = 5002
-UR_PORT_NUMBER = 8765
+UR_PORT_NUMBER = 8766
 CFD_PORT_NUMBER_CONTROL = 5678  # 送信用
 CFD_PORT_NUMBER_VIEW = 8765  # 受信用
 
@@ -103,6 +103,7 @@ class RobotCommunicationHandler:
         Returns:
             socket.socket: 接続が完了したソケット
             """
+        print("CFDとの接続", host, port)
         while True:
             try:
                 socket.connect((host, port))
@@ -161,9 +162,9 @@ class RobotCommunicationHandler:
                     socket.AF_INET, socket.SOCK_STREAM)
 
                 self.socket_cfd_receiv = self.connect_to_cfd(
-                    self.socket_cfd_receiv, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_CONTROL)
+                    self.socket_cfd_receiv, CFD_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
                 self.socket_cfd_send = self.connect_to_cfd(
-                    self.socket_cfd_send, TEST_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
+                    self.socket_cfd_send, CFD_HOST_ADDRESS, CFD_PORT_NUMBER_CONTROL)
                 receive_data_queue.put({"target": TransmissionTarget.CFD,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
@@ -213,11 +214,11 @@ class RobotCommunicationHandler:
                 if (send_data['target'] == TransmissionTarget.UR):
                     target_socket = self.socket_ur
                 elif (send_data['target'] == TransmissionTarget.CFD):
-                    target_socket = self.socket_cfd_receiv
+                    target_socket = self.socket_cfd_send
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
                     target_socket = self.socket_ur
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
-                    target_socket = self.socket_cfd_receiv
+                    target_socket = self.socket_cfd_send
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))

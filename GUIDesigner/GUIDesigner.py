@@ -53,7 +53,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.PROCESSING_PROGRESS
+        self.current_screen = Frames.MONITORING 
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()

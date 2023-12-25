@@ -191,11 +191,11 @@ class Integration:
                 test_cfd_thread.daemon = True
                 test_cfd_thread.start()
 
-                self.communication_thread = Thread(
-                    target=self.communicationHandler.communication_loop,
-                    args=(self.send_request_queue, self.comm_receiv_queue))
-                self.communication_thread.daemon = True
-                self.communication_thread.start()
+            self.communication_thread = Thread(
+                target=self.communicationHandler.communication_loop,
+                args=(self.send_request_queue, self.comm_receiv_queue))
+            self.communication_thread.daemon = True
+            self.communication_thread.start()
 
         time.sleep(3)
 
