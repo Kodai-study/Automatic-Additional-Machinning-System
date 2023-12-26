@@ -3,18 +3,26 @@ from threading import Thread
 import time
 import tkinter as tk
 import atexit
+import select
 
 
 class _test_cfd:
-    def __init__(self, port) -> None:
+    def __init__(self, receiv_control_port: int, send_cmd_port: int) -> None:
         self.is_echo_back = False
-        self.port = port
-        self.com_to_pc_socket = socket.socket(
+        self.receiv_control_port = receiv_control_port
+        self.send_cmd_port = send_cmd_port
+        self.receiv_control_socket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
-        self.com_to_pc_socket.setsockopt(
+        self.receiv_control_socket.setsockopt(
             socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        atexit.register(lambda: self.com_to_pc_socket.close())
+        self.send_cmd_socket = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM)
+        self.send_cmd_socket.setsockopt(
+            socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        atexit.register(lambda: self.receiv_control_socket.close())
+        self.receiv_control_socket.setblocking(0)  # ノンブロッキングモードに設定
+        self.send_cmd_socket.setblocking(0)        # ノンブロッキングモードに設定
 
     def _start_test_cfd_screen(self):
         """URとの通信をテストするGUIを立ち上げる関数
@@ -52,8 +60,10 @@ class _test_cfd:
         simulate_thread = Thread(target=self._start_test_cfd_screen)
         simulate_thread.start()
         self._connect()
+        self.receiv_control_socket.setblocking(1)  # ブロッキングモードに設定
+
         while True:
-            data = self.com_to_pc_socket.recv(1024)
+            data = self.receiv_control_socket.recv(1024)
             if not data:
                 print("Connection closed by the server")
                 break
@@ -61,7 +71,7 @@ class _test_cfd:
             self._add_message_history(data)
 
             if self.is_echo_back:
-                self.com_to_pc_socket.sendall(("cfd : " + data).encode())
+                self.receiv_control_socket.sendall(("cfd : " + data).encode())
 
     def _add_message_history(self, message: str):
         """受信メッセージの履歴の表示を追加する関数
@@ -80,10 +90,26 @@ class _test_cfd:
     def _connect(self):
         """こちらからPCに接続しに行き、接続が完了するまでループを回す
         """
-        self.com_to_pc_socket.bind(("localhost", self.port))
-        self.com_to_pc_socket.listen()
-        self.com_to_pc_socket, _ = self.com_to_pc_socket.accept()
-        print(f"Connected by {self.port}")
+        """両方のソケットで接続を待ち受ける"""
+        self.receiv_control_socket.bind(
+            ("localhost", self.receiv_control_port))
+        self.receiv_control_socket.listen()
+        self.send_cmd_socket.bind(("localhost", self.send_cmd_port))
+        self.send_cmd_socket.listen()
+
+        inputs = [self.receiv_control_socket, self.send_cmd_socket]
+        connections = []
+
+        while len(connections) < 2:
+            readable, _, _ = select.select(inputs, [], [])
+            for s in readable:
+                if s in inputs:
+                    connection, _ = s.accept()
+                    print(f"Connected by {s.getsockname()[1]}")
+                    connections.append(connection)
+                    inputs.remove(s)
+
+        self.receiv_control_socket, self.send_cmd_socket = connections
 
     def send_message(self, message):
-        self.com_to_pc_socket.sendall(message.encode())
+        self.send_cmd_socket.sendall(message.encode())
