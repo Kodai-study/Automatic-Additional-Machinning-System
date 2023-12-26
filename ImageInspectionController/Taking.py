@@ -58,7 +58,7 @@ class Taking:
             serial_number, model_number, section_name = self._get_serial_and_model(
                 inspection_type)
             return self._setting_cam(
-                serial_number, model_number)
+                inspection_type, serial_number, model_number)
         except configparser.NoSectionError:
             raise ValueError(f"指定されたセクションが存在しません: {section_name}")
 
@@ -67,38 +67,27 @@ class Taking:
         serial_number = self.config.get(section_name, "serial_number")
         model_number = self.config.get(section_name, "model_number")
         return serial_number, model_number, section_name
-    # def _get_camera_device(self, camera_type: str):
-    #     serial_number, model_number = self._get_serial_and_model(camera_type)
-    #     return self._setting_cam(
-    #         serial_number, model_number)
 
-    # def _get_serial_and_model(self, camera_type: str):
-    #     setting_data = self.data['Camera_information'][camera_type]
-    #     return setting_data['serial_number'], setting_data['model_number']
-
-    def _setting_cam(self, serial_num: str, model: str)\
+    def _setting_cam(self, camera_section, serial_num: str, model: str)\
             -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
 
         cam_device = self.cam_system.create_device_object_from_info(
             serial_num, model, "")
 
         # 設定された項目の一覧とその値のペアのリストを取得
-        sections = self.config.sections()
         # 1項目ずつ処理
-        for section in sections:
-            print(f"Section: {section}")
-            for key, value in self.config.items(section):
-                print(f"{key} = {value}")
-                if serial_num == value:
-                    Width = self.config.get(section, "Width")
-                    OffsetX = self.config.get(section, "OffsetX")
-                    OffsetY = self.config.get(section, "OffsetY")
-                    cam_device.genapi.set_feature_value(
-                        "ExposureTime", "5000")
-                    cam_device.genapi.set_feature_value("Width", Width)
-                    cam_device.genapi.set_feature_value("OffsetX", OffsetX)
-                    cam_device.genapi.set_feature_value("OffsetY", OffsetY)
-            print("\n")
+        # print(f"Section: {section}")
+        for key, value in self.config.items(camera_section):
+            if serial_num == value:
+                Width = self.config.get(camera_section, "Width")
+                OffsetX = self.config.get(camera_section, "OffsetX")
+                OffsetY = self.config.get(camera_section, "OffsetY")
+                cam_device.genapi.set_feature_value(
+                    "ExposureTime", "50000")
+                cam_device.genapi.set_feature_value("Width", Width)
+                cam_device.genapi.set_feature_value("OffsetX", OffsetX)
+                cam_device.genapi.set_feature_value("OffsetY", OffsetY)
+        # print("\n")
 
         cam_device.open()
         res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
@@ -182,7 +171,7 @@ class Taking:
             int(pytelicam.CameraType.Gev))
         find_cam_num = cam_system.get_num_of_cameras()
         if find_cam_num != cam_num:
-            print('Camera number is No')
+            print(f"Camera number is{find_cam_num}")
             return None
         return cam_system
 
