@@ -72,9 +72,26 @@ class Taking:
 
     def _setting_cam(self, serial_num: str, model: str)\
             -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
+          
         cam_device = self.cam_system.create_device_object_from_info(
             serial_num, model, "")
         cam_device.open()
+
+        # 設定された項目の一覧とその値のペアのリストを取得
+        sections = self.config.sections()
+        # 1項目ずつ処理
+        for section in sections:
+            print(f"Section: {section}")
+            for key, value in self.config.items(section):
+                print(f"{key} = {value}")
+                if serial_num == value:
+                    Width = self.config.get(section, "Width")
+                    OffsetX = self.config.get(section, "OffsetX")
+                    OffsetY = self.config.get(section, "OffsetY")     
+                    cam_device.genapi.set_feature_value("Width",Width)
+                    cam_device.genapi.set_feature_value("OffsetX",OffsetX)
+                    cam_device.genapi.set_feature_value("OffsetY",OffsetY)                                   
+            print("\n")
 
         res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
         if res != pytelicam.CamApiStatus.Success:
@@ -87,9 +104,7 @@ class Taking:
         res = cam_device.genapi.set_enum_str_value(
             'TriggerSequence', 'TriggerSequence0')
         receive_signal = self.cam_system.create_signal()
-    
-        res1 = cam_device.genapi.set_feature_value("Width", "2064")
-        res2 = cam_device.genapi.set_feature_value("OffsetX", "480")
+
 
         # ここより前に設定を書くと間違いない？
         cam_device.cam_stream.open(receive_signal)
