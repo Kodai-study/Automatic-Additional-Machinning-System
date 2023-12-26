@@ -6,7 +6,7 @@ import socket
 import time
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_Windows
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 import atexit
 
 
@@ -140,30 +140,17 @@ class RobotCommunicationHandler:
         # UR、CFD用の2つのソケットの作成(現在はサンプル)
         try:
             if not TEST_UR_CONNECTION_LOCAL:
-                if TEST_Windows:
-                    self.socket_ur = self.connect_to_ur(
-                        self.socket_ur, TEST_HOST_ADDRESS, UR_PORT_NUMBER)
-                else:
-                    self.socket_ur = self.connect_to_ur(
-                        self.socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
+                self.socket_ur = self.connect_to_ur(
+                    self.socket_ur, TEST_HOST_ADDRESS, UR_PORT_NUMBER)
                 receive_data_queue.put({"target": TransmissionTarget.UR,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
             else:
-                self.socket_ur = socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM)
-                if TEST_Windows:
-                    self.socket_ur = self.connect_to_ur(
-                        self.socket_ur, TEST_HOST_ADDRESS, TEST_PORT1)
-                else:
-                    self.socket_ur = self.connect_to_ur(
-                        self.socket_ur, HOST_LINUX_ADDRESS, TEST_PORT1)
+                self.socket_ur = self.connect_to_ur(
+                    self.socket_ur, TEST_HOST_ADDRESS, TEST_PORT1)
                 receive_data_queue.put({"target": TransmissionTarget.TEST_TARGET_1,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
 
             if not TEST_CFD_CONNECTION_LOCAL:
-                self.socket_cfd_receiv = socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM)
-
                 self.socket_cfd_receiv = self.connect_to_cfd(
                     self.socket_cfd_receiv, CFD_HOST_ADDRESS, CFD_PORT_NUMBER_VIEW)
                 self.socket_cfd_send = self.connect_to_cfd(
