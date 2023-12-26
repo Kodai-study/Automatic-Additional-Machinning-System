@@ -104,12 +104,15 @@ class _test_cfd:
             readable, _, _ = select.select(inputs, [], [])
             for s in readable:
                 if s in inputs:
-                    connection, _ = s.accept()
-                    print(f"Connected by {s.getsockname()[1]}")
-                    connections.append(connection)
+                    connected_socket, _ = s.accept()
+                    print(f"Connected by {connected_socket.getsockname()[1]}")
+                    connections.append(connected_socket)
                     inputs.remove(s)
-
-        self.receiv_control_socket, self.send_cmd_socket = connections
+                    if self.send_cmd_port == connected_socket.getsockname()[1]:
+                        self.send_cmd_socket = connected_socket
+                    elif self.receiv_control_port == connected_socket.getsockname()[1]:
+                        self.receiv_control_socket = connected_socket
+        print("CFDとの接続が完了しました")
 
     def send_message(self, message):
         self.send_cmd_socket.sendall(message.encode())
