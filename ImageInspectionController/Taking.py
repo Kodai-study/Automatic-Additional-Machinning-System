@@ -28,9 +28,17 @@ if USE_ACCURACY_INSPECTION_CAMERA:
     cam_count += 1
 
 
+class CaseSensitiveConfigParser(configparser.ConfigParser):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def optionxform(self, optionstr):
+        return optionstr
+
+
 class Taking:
     def __init__(self):
-        self.config = configparser.ConfigParser()
+        self.config = CaseSensitiveConfigParser()
         file_path = 'kensa.conf'
         # with open(file_path, 'r') as yaml_file:
         #     self.data = yaml.safe_load(yaml_file)
@@ -70,27 +78,24 @@ class Taking:
 
     def _setting_cam(self, camera_section, serial_num: str, model: str)\
             -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
-
+        ignore_config_list = ["serial_number", "model_number"]
         cam_device = self.cam_system.create_device_object_from_info(
             serial_num, model, "")
 
-        # 設定された項目の一覧とその値のペアのリストを取得
-        # 1項目ずつ処理
-        # print(f"Section: {section}")
-        for key, value in self.config.items(camera_section):
-            if serial_num == value:
-                Width = self.config.get(camera_section, "Width")
-                OffsetX = self.config.get(camera_section, "OffsetX")
-                OffsetY = self.config.get(camera_section, "OffsetY")
-                cam_device.genapi.set_feature_value(
-                    "ExposureTime", "50000")
-                cam_device.genapi.set_feature_value("Width", Width)
-                cam_device.genapi.set_feature_value("OffsetX", OffsetX)
-                cam_device.genapi.set_feature_value("OffsetY", OffsetY)
-        # print("\n")
-
         cam_device.open()
-        res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
+        # res = cam_device.genapi.set_enum_str_value("ExposureMode","Timed")
+        # res = cam_device.genapi.set_enum_str_value("ExposureAuto","Off")
+        # 設定された項目の一覧とその値のペアのリストを取得
+        for key, value in self.config.items(camera_section):
+            if not key in ignore_config_list:
+                setting_result = cam_device.genapi.set_feature_value(
+                    key, value)
+                if int(setting_result):
+                    print(f"""カメラの設定でエラーです コマンド : {key}={value} \
+                          エラーコード : {setting_result} \
+                           メッセージ : {cam_device.get_last_genicam_error()} """)
+
+        res = cam_device.genapi.set_enum_str_value('TriggerMode', 'Off')
         if res != pytelicam.CamApiStatus.Success:
             raise Exception("Can't set TriggerMode.")
 
@@ -98,8 +103,8 @@ class Taking:
         if res != pytelicam.CamApiStatus.Success:
             raise Exception("Can't set TriggerSource.")
 
-        res = cam_device.genapi.set_enum_str_value(
-            'TriggerSequence', 'TriggerSequence0')
+        # res = cam_device.genapi.set_enum_str_value(
+        #     'TriggerSequence', 'TriggerSequence0')
         receive_signal = self.cam_system.create_signal()
 
         # ここより前に設定を書くと間違いない？
@@ -178,23 +183,12 @@ class Taking:
     def _get_image_data(self, cam_device,  receive_signal) -> np.ndarray:
 
         cam_device.cam_stream.start()
-
-        res = cam_device.genapi.execute_command('TriggerSoftware')
-
-        if res != pytelicam.CamApiStatus.Success:
-            raise Exception("Can't execute TriggerSoftware.")
-
-        res = self.cam_system.wait_for_signal(receive_signal)
-        if res != pytelicam.CamApiStatus.Success:
-            print('Grab error! status = {0}'.format(res))
-            return
-        else:
-            with cam_device.cam_stream.get_current_buffered_image() as image_data:
-                if image_data.status != pytelicam.CamApiStatus.Success:
-                    print('Grab error! status = {0}'.format(image_data.status))
-                    return
-                else:
-                    return image_data.get_ndarray(pytelicam.OutputImageType.Bgr24)
+        with cam_device.cam_stream.get_next_image() as image_data:
+            if image_data.status != pytelicam.CamApiStatus.Success:
+                print('Grab error! status = {0}'.format(image_data.status))
+                return
+            else:
+                return image_data.get_ndarray(pytelicam.OutputImageType.Bgr24)  
 
     def close(self):
 
