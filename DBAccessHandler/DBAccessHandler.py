@@ -62,18 +62,5 @@ class DBAccessHandler:
         Returns:
             Tuple[bool, str]: 書き込みが成功したかどうかの真偽値と、エラーがあった場合はエラーの内容を返す
         """
-        if TEST_FEATURE_DB:
-            with self.pool.get_connection() as conn:
-                with conn.cursor(dictionary=True) as cursor:
-                    try:
-                        if values:
-                            cursor.execute(sql_query, values)
-                        else:
-                            cursor.execute(sql_query)
-                        conn.commit()
-                        return True, ""
-                    except Exception as e:
-                        return False, str(e)
-        else:
-            print("実行されるSQL文 : ", sql_query % values)
-            return True, ""
+        print("実行されるSQL文 : ", sql_query % values)
+        return (True, "")

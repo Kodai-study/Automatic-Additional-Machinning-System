@@ -8,7 +8,7 @@ def write_database(database_accesser: DBAccessHandler, instruction, dev_num, det
         instruction, dev_num, detail, sensor_date_time, serial_num))
 
 
-def write_database_process(database_accesser: DBAccessHandler, process_num: Processes, serial_num: int):
+def write_database_process(database_accesser: DBAccessHandler, process_num: Processes, serial_num: int, time: datetime.datetime):
     write_processing_sql = """
         INSERT INTO t_work_tracking(
             serial_number,
@@ -16,13 +16,13 @@ def write_database_process(database_accesser: DBAccessHandler, process_num: Proc
             process_time
         )
         VALUES(
-            ?,
-            ?,
-            ?
+            %s,
+            %s,
+            %s
         );
     """
     database_accesser.write_data_to_database(
-        write_processing_sql, serial_num, process_num.value[0], _change_mysql_time(datetime.datetime.now()))
+        write_processing_sql, serial_num, process_num.value, _change_mysql_time(time))
 
 
 def create_sql(instruction, dev_num, detail, sensor_date_time: datetime.datetime, serial_num: int):
@@ -45,9 +45,9 @@ def insert_sns_update(database_accesser: DBAccessHandler, dev_num, detail: str, 
             sensor_date_time
         )
         VALUES(
-            ?,
-            ?,
-            ?
+            %s,
+            %s,
+            %s
         );
     """
     sensor_status = 1 if detail == "ON" else 0

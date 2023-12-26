@@ -26,7 +26,7 @@ TEST_FEATURE_DB = False
 linux以外の環境で動かす場合はFalseにしないと動かない
 """
 
-TEST_FEATURE_CONNECTION = False
+TEST_FEATURE_CONNECTION = True
 """
 ロボットやテスト用のソケット通信を行う機能をONにする場合はTrue
 Windowsで接続を試す場合はTEST_UR_CONNECTION_LOCAL や TEST_CFD_CONNECTION_LOCALをTrueにして動かしてテストできる
