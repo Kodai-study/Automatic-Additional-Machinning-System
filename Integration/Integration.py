@@ -64,8 +64,9 @@ class Integration:
         }
         self.process_data_list = []
         self.image_inspection_controller = ImageInspectionController()
+        self.database_accesser = DBAccessHandler()
+
         if TEST_FEATURE_DB:
-            self.database_accesser = DBAccessHandler()
             process_data_loader = ProcessDataLoader(self.database_accesser)
             self.process_data_list = process_data_loader.get_process_datas()
         else:
