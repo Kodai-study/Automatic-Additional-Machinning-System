@@ -18,7 +18,7 @@ class ProgressBar:
     default_font_title = ("AR丸ゴシック体M", 20)
     default_font_progress = ("AR丸ゴシック体M", 20)
 
-    def __init__(self, root_frame, label_string: str, row, length=500) -> None:
+    def __init__(self, root_frame, label_string: str, row, length=700) -> None:
         self.progress_ratio = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(
             root_frame, variable=self.progress_ratio, length=length, mode="determinate")
@@ -27,8 +27,8 @@ class ProgressBar:
         self.progress_level = tk.Label(
             root_frame, text="0", font=ProgressBar.default_font_progress)
 
-        self.progress_bar.grid(row=row, column=1, padx=10, pady=10)
-        self.title_label.grid(row=row, column=0, padx=10, pady=10)
+        self.progress_bar.grid(row=row, column=1, padx=10, pady=20)
+        self.title_label.grid(row=row, column=0, padx=40, pady=10)
         self.progress_level.grid(row=row, column=2, padx=10, pady=10)
 
 
@@ -51,9 +51,9 @@ class LabelUnit:
             titel_label_string = str(titel_label_string)
         titel_label_string += " " * LabelUnit.padding_space
         self.lamp_image = tk.Label(
-            LabelUnit.root_frame,  text=titel_label_string, compound=tk.RIGHT,
-            image=LabelUnit.on_lamp_image if on_off else LabelUnit.off_lamp_image,
-            font=(font_name, font_size), anchor=tk.E)
+            LabelUnit.root_frame, compound=tk.RIGHT,text=titel_label_string, font=(font_name, font_size),
+            image=LabelUnit.on_lamp_image if on_off else LabelUnit.off_lamp_image,anchor=tk.E
+        )
 
     def set_grid(self, row_, col):
         self.lamp_image.grid(row=row_, column=col,
@@ -151,8 +151,8 @@ class ProcessingProgress(ScreenBase):
 
         self.current_data_name = self.selected_items[0][0] if self.selected_items else "未選択"
         self.current_data_label = tk.Label(
-            self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 18))
-        self.current_data_label.grid(row=0, column=0, columnspan=2)  # ２列にまたがる
+            self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 24 ,"bold"))
+        self.current_data_label.grid(row=0, column=0, columnspan=2, padx=40, pady=40)  # ２列にまたがる
 
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置

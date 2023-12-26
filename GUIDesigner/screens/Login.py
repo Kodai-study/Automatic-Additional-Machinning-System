@@ -6,7 +6,7 @@ from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
 
-FORM_FONT_SIZE = 24
+FORM_FONT_SIZE = 30
 
 class Login(ScreenBase):
     def __init__(self, parent: tk.Tk, send_to_integration_queue: Queue):
@@ -59,7 +59,7 @@ class Login(ScreenBase):
         # ID label
         self.username_label = tk.Label(
             self, text="ID:", font=("Arial", FORM_FONT_SIZE))
-        self.username_label.place(x=830, y=400)
+        self.username_label.place(x=814, y=400)
 
         # ID entry
         self.username_entry = tk.Entry(
@@ -70,7 +70,7 @@ class Login(ScreenBase):
         # Password label
         self.password_label = tk.Label(
             self, text="Pass:", font=("Arial", FORM_FONT_SIZE))
-        self.password_label.place(x=797, y=450)
+        self.password_label.place(x=767, y=450)
 
         # Password entry
         self.password_entry = tk.Entry(
@@ -80,8 +80,8 @@ class Login(ScreenBase):
 
         # Login button
         self.login_button = tk.Button(
-            self, text="Login", font=("Arial", FORM_FONT_SIZE), command=self._perform_login)
-        self.login_button.place(x=1270, y=550)
+            self, text="Login", font=("Arial", 24), command=self._perform_login, width=13)
+        self.login_button.place(x=1270, y=600)
 
     def _perform_login(self):
         self.send_to_integration_queue.put(
