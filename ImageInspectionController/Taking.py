@@ -17,9 +17,15 @@ from ImageInspectionController.ProcessDatas import InspectionType
 from ImageInspectionController.light import Light
 
 NUM_REQUIRED_CAMERAS = 3
-USE_TOOL_INSPECTION_CAMERA = True
+USE_TOOL_INSPECTION_CAMERA = False
 USE_PRE_PROCESSING_INSPECTION_CAMERA = True
 USE_ACCURACY_INSPECTION_CAMERA = True
+
+cam_count = 1 if USE_TOOL_INSPECTION_CAMERA else 0
+if USE_PRE_PROCESSING_INSPECTION_CAMERA:
+    cam_count += 1
+if USE_ACCURACY_INSPECTION_CAMERA:
+    cam_count += 1
 
 
 class Taking:
@@ -28,7 +34,7 @@ class Taking:
         file_path = 'kensa.conf'
         # with open(file_path, 'r') as yaml_file:
         #     self.data = yaml.safe_load(yaml_file)
-        self.cam_system = self._initial_cam_setting(NUM_REQUIRED_CAMERAS)
+        self.cam_system = self._initial_cam_setting(cam_count)
         self.toggle_flag = True
         self.config.read(file_path, encoding='utf-8')
         if not self.cam_system:
@@ -72,10 +78,9 @@ class Taking:
 
     def _setting_cam(self, serial_num: str, model: str)\
             -> Tuple[pytelicam.pytelicam.CameraDevice, pytelicam.pytelicam.SignalHandle]:
-          
+
         cam_device = self.cam_system.create_device_object_from_info(
             serial_num, model, "")
-        cam_device.open()
 
         # 設定された項目の一覧とその値のペアのリストを取得
         sections = self.config.sections()
@@ -87,12 +92,15 @@ class Taking:
                 if serial_num == value:
                     Width = self.config.get(section, "Width")
                     OffsetX = self.config.get(section, "OffsetX")
-                    OffsetY = self.config.get(section, "OffsetY")     
-                    cam_device.genapi.set_feature_value("Width",Width)
-                    cam_device.genapi.set_feature_value("OffsetX",OffsetX)
-                    cam_device.genapi.set_feature_value("OffsetY",OffsetY)                                   
+                    OffsetY = self.config.get(section, "OffsetY")
+                    cam_device.genapi.set_feature_value(
+                        "ExposureTime", "5000")
+                    cam_device.genapi.set_feature_value("Width", Width)
+                    cam_device.genapi.set_feature_value("OffsetX", OffsetX)
+                    cam_device.genapi.set_feature_value("OffsetY", OffsetY)
             print("\n")
 
+        cam_device.open()
         res = cam_device.genapi.set_enum_str_value('TriggerMode', 'On')
         if res != pytelicam.CamApiStatus.Success:
             raise Exception("Can't set TriggerMode.")
@@ -105,7 +113,6 @@ class Taking:
             'TriggerSequence', 'TriggerSequence0')
         receive_signal = self.cam_system.create_signal()
 
-
         # ここより前に設定を書くと間違いない？
         cam_device.cam_stream.open(receive_signal)
         return cam_device, receive_signal
@@ -113,27 +120,35 @@ class Taking:
     def take_picture(self, kensamei: InspectionType) -> str:
         if self.cam_system == None:
             return "era"
-        # self.light.light_onoff(kensamei)
         image_file_name = None
-        if kensamei == InspectionType.TOOL_INSPECTION:
-            np_arr = self._get_image_data(
-                self.cam_device_tool,  self.receive_signal_tool)
+        try:
+            if kensamei == InspectionType.TOOL_INSPECTION:
+                if not USE_TOOL_INSPECTION_CAMERA:
+                    raise Exception("カメラを使わない設定になっています", kensamei)
+                np_arr = self._get_image_data(
+                    self.cam_device_tool,  self.receive_signal_tool)
+                image_file_name = "a.png" if self.toggle_flag else "a_2.png"
+            elif kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
+                if not USE_PRE_PROCESSING_INSPECTION_CAMERA:
+                    raise Exception("カメラを使わない設定になっています", kensamei)
+                np_arr = self._get_image_data(
+                    self.cam_device_kakou,  self.receive_signal_kakou)
+                image_file_name = "b.png" if self.toggle_flag else "b_2.png"
 
-            image_file_name = "a.png" if self.toggle_flag else "a_2.png"
-        elif kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
-            np_arr = self._get_image_data(
-                self.cam_device_kakou,  self.receive_signal_kakou)
-            image_file_name = "b.png" if self.toggle_flag else "b_2.png"
+            elif kensamei == InspectionType.ACCURACY_INSPECTION:
+                if not USE_ACCURACY_INSPECTION_CAMERA:
+                    raise Exception("カメラを使わない設定になっています", kensamei)
+                np_arr = self._get_image_data(
+                    self.cam_device_seido,  self.receive_signal_seido)
+                image_file_name = "c.png" if self.toggle_flag else "c_2.png"
 
-        elif kensamei == InspectionType.ACCURACY_INSPECTION:
-            np_arr = self._get_image_data(
-                self.cam_device_seido,  self.receive_signal_seido)
-            image_file_name = "c.png" if self.toggle_flag else "c_2.png"
-
-        self.toggle_flag = not self.toggle_flag
-        write_image_path = f"/home/kuga/img/{image_file_name}"
-        if not cv2.imwrite(write_image_path, np_arr):
-            print("hosonFailed")
+            self.toggle_flag = not self.toggle_flag
+            write_image_path = f"/home/kuga/img/{image_file_name}"
+            if not cv2.imwrite(write_image_path, np_arr):
+                print("hosonFailed")
+        except Exception as e:
+            print("カメラ撮影でエラーです", e)
+            return None
 
         return write_image_path
 

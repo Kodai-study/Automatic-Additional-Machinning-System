@@ -75,7 +75,6 @@ class Integration:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
             self.guiDesigner = GUIDesigner()
-        self.process_data_list = process_data_loader.get_process_datas()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_monitor_mode = False
