@@ -36,10 +36,14 @@ def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=
         result_image = cv2.imread(image_path)
         for i in circles[0, :]:
             center = (i[0], i[1])
-            cv2.circle(result_image, center, i[2], (0, 255, 0), 2)  # 円を描画
+            radius = i[2]
+            cv2.circle(result_image, center, radius, (0, 255, 0), 2)  # 円を描画
+            
+            # 座標と直径を表示
+            text = f"({center[0]}, {center[1]}, {radius})"
+            cv2.putText(result_image, text, (i[0] + radius, i[1] - radius), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-        cv2.imshow('Detected Circles', result_image)
-        cv2.imwrite("circle.png",result_image)
+        cv2.imwrite('circle.png', result_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     else:
