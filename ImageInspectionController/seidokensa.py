@@ -1,21 +1,24 @@
 import cv2
 import numpy as np
 
-def preprocess_image(image_path):
+def preprocess_image(image_path, threshold_value=127):
     # 画像の読み込み
     image = cv2.imread(image_path)
     
     # グレースケール変換
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
-    # 画像の平滑化
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    # 2値化
+    _, binary = cv2.threshold(gray, threshold_value, 255, cv2.THRESH_BINARY)
     
+    # 画像の平滑化
+    blurred = cv2.GaussianBlur(binary, (5, 5), 0)
+    cv2.imwrite("result_gray.png",blurred)
     return blurred
 
-def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=30):
+def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=30, threshold_value=127,Tolerance=340,realvalue=10):
     # 画像の前処理
-    preprocessed_image = preprocess_image(image_path)
+    preprocessed_image = preprocess_image(image_path, threshold_value)
     
     # ハフ変換を用いて円を検出
     circles = cv2.HoughCircles(
@@ -38,16 +41,35 @@ def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=
             center = (i[0], i[1])
             radius = i[2]
             cv2.circle(result_image, center, radius, (0, 255, 0), 2)  # 円を描画
+            #合否結果判定
+            Tolerancemin=Tolerance-0.05
+            Tolerancemax=Tolerance+0.05
+            #pxをmmに変換する
+            realvalue_radius=radius*realvalue #1px何mmなのかを調べる
+            if realvalue_radius < Tolerancemax and realvalue_radius > Tolerancemin:
+                gouhi="o"
+            else:
+                gouhi="x"
             
             # 座標と直径を表示
-            text = f"({center[0]}, {center[1]}, {radius})"
+            text = f"(x_{center[0]}px, y_{center[1]}px, center{radius}px,center{realvalue_radius}mm, {gouhi})"
             cv2.putText(result_image, text, (i[0] + radius, i[1] - radius), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-        cv2.imwrite('circle.png', result_image)
+        # 輪郭を検出
+        contours, _ = cv2.findContours(preprocessed_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        # 小さい座標値の直角を検出
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            if x < center[0] and y < center[1]:
+                cv2.rectangle(result_image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+        cv2.imwrite('result_image.png', result_image)
+        #cv2.imshow('Detected Circles', result_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     else:
         print("円が検出されませんでした。")
 
 # 使用例
-detect_circles('seido.png', min_radius=10, max_radius=100, param1=50, param2=30)
+detect_circles('seido.png', min_radius=10, max_radius=100, param1=50, param2=30, threshold_value=240)
