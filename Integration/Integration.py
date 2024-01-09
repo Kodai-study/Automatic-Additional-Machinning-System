@@ -65,7 +65,7 @@ class Integration:
         }
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
-        self.process_data_loader = ProcessDataManager(self.database_accesser)
+        self.process_data_manager = ProcessDataManager(self.database_accesser)
 
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
