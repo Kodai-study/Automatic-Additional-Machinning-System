@@ -7,8 +7,7 @@ from ImageInspectionController.ImageInspectionController import ImageInspectionC
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.Integration import Integration
-from Integration.WorkManager import WorkManager
-from Integration.process_number import Processes
+from Integration.ProcessDataManager import ProcessDataManager
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 from common_data_type import CameraType, LightingType, WorkPieceShape
 
@@ -91,6 +90,26 @@ def test_dbAccessHandler():
     current_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
     print(dbAccess_handler.fetch_data_from_database(
         "SELECT * FROM t_sensor_tracking WHERE sensor_date_time = %s", current_time))
+
+
+def test_process_data_manager():
+    process_data_manager = ProcessDataManager(DBAccessHandler())
+    process_data_list = process_data_manager.refresh_process_data()
+    process_data_list[0]["regist_process_count"] = 1
+    process_data_list[2]["regist_process_count"] = 2
+    process_data_list[5]["regist_process_count"] = 7
+    process_data_manager.register_process_number()
+    m = process_data_manager.get_next_process_data()
+    is_process_end = process_data_manager.processing_finished(True)
+    if is_process_end:
+        m = process_data_manager.get_next_process_data()
+    while not process_data_manager.processing_finished(True):
+        pass
+    m = process_data_manager.get_next_process_data()
+    while not process_data_manager.processing_finished(True):
+        pass
+    m = process_data_manager.get_next_process_data()
+    print(m)
 
 
 def work_manager_test():
