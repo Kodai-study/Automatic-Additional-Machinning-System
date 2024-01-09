@@ -128,17 +128,19 @@ class Integration:
         for stock_number in range(1, 9):
             if TEST_CFD_CONNECTION_LOCAL:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 1,CW"})
+                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 0,R,1"})
                 condition = self._regist_wait_command(
-                    TransmissionTarget.TEST_TARGET_2, "DR_STK_TURNED")
+                    TransmissionTarget.TEST_TARGET_2, "STM 0,TURNED")
                 with condition:
                     condition.wait()
 
             else:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.CFD, "message": "STM 1,CW"})
+                    {"target": TransmissionTarget.CFD, "message": "STM 0,R,1"})
                 self._regist_wait_command(
-                    TransmissionTarget.CFD, "DR_STK_TURNED")
+                    TransmissionTarget.CFD, "STM 0,TURNED")
+                with condition:
+                    condition.wait()
 
             result = self.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
