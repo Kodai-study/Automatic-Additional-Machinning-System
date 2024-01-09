@@ -43,11 +43,19 @@ class ProcessDataManager:
         self.database_accesser = database_accesser
         self.process_data_list = []
 
-    def refresh_process_data(self):
+    def refresh_process_data(self) -> list:
+        """DBから加工データのリストを(再)取得する
+
+        Returns:
+            list: 加工データのリスト
+        """
         self.process_data_list = self._get_process_datas()
         return self.process_data_list
 
     def register_process_number(self):
+        """加工数を登録したことを通知する
+        process_data_listのregist_process_count  を変更した後に呼び出す
+        """
         self.process_data_list = [
             item for item in self.process_data_list if item["regist_process_count"] != 0]
         for item in self.process_data_list:
@@ -56,11 +64,23 @@ class ProcessDataManager:
             item["hole_informations"] = json_data
 
     def get_next_process_data(self):
+        """次の加工データを取得する
+        全ての加工データが終了した場合はNoneを返す
+        """
+
         if len(self.process_data_list) == 0:
             return None
         return self.process_data_list[0]["hole_informations"]
 
     def processing_finished(self, is_good: bool) -> bool:
+        """加工が終了したことを通知する
+
+        Args:
+            is_good (bool): 良品であればTrue, 不良品であればFalse
+
+        Returns:
+            bool: 今加工している型番の加工が終了した場合はTrue, まだ終了していない場合はFalse
+        """
         if is_good:
             self.process_data_list[0]["good_count"] += 1
         else:
