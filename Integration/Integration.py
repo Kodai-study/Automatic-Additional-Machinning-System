@@ -74,7 +74,6 @@ class Integration:
         self.process_data_list = process_data_loader.get_process_datas()
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
-        self.is_monitor_mode = False
         self.is_processing_mode = False
         self.tool_stock_position = 1
         self.work_stock_number = -1
