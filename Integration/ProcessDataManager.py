@@ -4,12 +4,12 @@ from GUIDesigner.ProcessingData import ProcessingData
 from common_data_type import WorkPieceShape
 
 
-class ProcessDataLoader:
+class ProcessDataManager:
     def __init__(self, database_accesser: DBAccessHandler):
         self.database_accesser = database_accesser
 
     def get_process_datas(self) -> list:
-        return ProcessDataLoader._test_create_process_data()
+        return ProcessDataManager._test_create_process_data()
 
     @staticmethod
     def _test_create_process_data():

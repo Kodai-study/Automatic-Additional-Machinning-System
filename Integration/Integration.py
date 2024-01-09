@@ -6,7 +6,7 @@ from ImageInspectionController.ImageInspectionController import ImageInspectionC
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
-from Integration.ProcessDataLoader import ProcessDataLoader
+from Integration.ProcessDataManager import ProcessDataManager
 from Integration.handlers_gui_responce import GuiResponceHandler
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
@@ -65,8 +65,8 @@ class Integration:
         }
         self.image_inspection_controller = ImageInspectionController()
         self.database_accesser = DBAccessHandler()
-        self.process_data_loader = ProcessDataLoader(self.database_accesser)
-        
+        self.process_data_loader = ProcessDataManager(self.database_accesser)
+
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
