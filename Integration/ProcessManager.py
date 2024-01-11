@@ -6,6 +6,7 @@ class ProcessManager:
     def __init__(self, tool_stock_informations):
         self.tool_stock_informations = tool_stock_informations
         self.tool_position_number = 1
+        self.current_tool_type = None
         self.initial_valiables()
 
     def initial_valiables(self):
@@ -18,7 +19,6 @@ class ProcessManager:
         self.switching_process = False
         self.drill_positions = []
         self.current_process = 1
-        self.current_tool_type = None
 
     def start_process(self, process_data):
         self.initial_valiables()
@@ -100,6 +100,7 @@ class ProcessManager:
             if self.tool_stock_informations[i].tool_type == tool_type:
                 steps = i - self.tool_position_number
                 self.tool_position_number = i
+                self.current_tool_type = tool_type
                 if steps < 0:
                     steps += 8
                 return steps
