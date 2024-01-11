@@ -57,10 +57,11 @@ class ManageRobotReceive:
             return self._special_command_handlers[command]
         instruction, dev_num, detail = self._split_command(command)
 
-        process_number = get_process_number(instruction, dev_num, detail)
-        if process_number:
-            self.work_manager.regist_new_process(
-                process_number, datetime.datetime.now())
+        if self._integration_instance.is_processing_mode:
+            process_number = get_process_number(instruction, dev_num, detail)
+            if process_number:
+                self.work_manager.regist_new_process(
+                    process_number, datetime.datetime.now())
 
         handle_selector = self._handl_selectors_with_instruction.get(
             instruction)
@@ -97,8 +98,12 @@ class ManageRobotReceive:
         """
         WRK命令のハンドラを選択する
         """
-        if dev_num == 0 and detail == "TAP_FIN":
+        if dev_num != 0:
+            return lambda: self._undefine(command)
+        if detail == "TAP_FIN":
             return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
+        if detail == "DRL_READY":
+            print("ドリルが準備完了しました")
 
     def _select_handler_ejector(self, dev_num: int, detail: str, command: str, target: TransmissionTarget):
         if detail == "ST":
@@ -128,6 +133,9 @@ class ManageRobotReceive:
 
         is_on = detail == "ON"
         sensor_time = datetime.datetime.now()
+
+        if not self._integration_instance.is_processing_mode:
+            return lambda: self._change_robot_status("sensor", dev_num, is_on)
 
         def _common_sensor_handler():
             _send_message_to_ur(

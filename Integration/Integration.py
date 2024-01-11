@@ -6,7 +6,7 @@ from ImageInspectionController.ImageInspectionController import ImageInspectionC
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
-from Integration.ProcessDataManager import ProcessDataManager
+from Integration.ProcessManager import ProcessManager
 from Integration.handlers_gui_responce import GuiResponceHandler
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2_RECEIV, TEST_PORT2_SEND, RobotCommunicationHandler
@@ -15,7 +15,7 @@ from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_FEATURE_DB, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
 from common_data_type import TransmissionTarget
-
+from Integration.ProcessDataManager import ProcessDataManager
 if TEST_FEATURE_GUI:
     from GUIDesigner.GUIDesigner import GUIDesigner
     from GUIDesigner.GUIRequestType import GUIRequestType
@@ -35,8 +35,6 @@ class Integration:
         self.comm_receiv_queue = Queue()  # 通信ソフトが受信したデータの受け取りを行うキュー
         self.gui_request_queue = Queue()  # GUIからの要求を受け取るキュー
         self.gui_responce_queue = Queue()  # GUIからの要求に対する応答を返すキュー
-        self.wait_cmd_flag = None
-        self.wait_message = None
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
         if TEST_FEATURE_CONNECTION:
             if TEST_UR_CONNECTION_LOCAL:
@@ -62,7 +60,10 @@ class Integration:
                 0: False, 1: False, 2: False, 3: False
             }
         }
-        self.image_inspection_controller = ImageInspectionController()
+        self.tool_stock_informations = [None] * 9
+        self.tool_stock_informations[0] = "Do not use!!"
+        self.image_inspection_controller = ImageInspectionController(
+            self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
 
         if TEST_FEATURE_DB:
@@ -77,12 +78,10 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
-        self.is_monitor_mode = False
         self.is_processing_mode = False
-        self.tool_stock_position = 1
-        self.work_stock_number = -1
         self.gui_responce_handler = GuiResponceHandler(
             self, self.send_request_queue, self.gui_request_queue)
+        self.process_manager = ProcessManager(self.tool_stock_informations)
         self.message_wait_conditions = {}
 
     def _watching_guiResponce_queue(self):
@@ -133,17 +132,19 @@ class Integration:
         for stock_number in range(1, 9):
             if TEST_CFD_CONNECTION_LOCAL:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 1,CW"})
+                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 0,R,1"})
                 condition = self._regist_wait_command(
-                    TransmissionTarget.TEST_TARGET_2, "DR_STK_TURNED")
+                    TransmissionTarget.TEST_TARGET_2, "STM 0,TURNED")
                 with condition:
                     condition.wait()
 
             else:
                 self.send_request_queue.put(
-                    {"target": TransmissionTarget.CFD, "message": "STM 1,CW"})
+                    {"target": TransmissionTarget.CFD, "message": "STM 0,R,1"})
                 self._regist_wait_command(
-                    TransmissionTarget.CFD, "DR_STK_TURNED")
+                    TransmissionTarget.CFD, "STM 0,TURNED")
+                with condition:
+                    condition.wait()
 
             result = self.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))

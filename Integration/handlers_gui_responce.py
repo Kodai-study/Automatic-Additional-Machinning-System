@@ -80,7 +80,7 @@ class GuiResponceHandler:
             if camera_result.is_success:
                 update_camera_list.append(
                     (camera_result.camera_type, camera_result.image_path))
-
+        
         self.gui_request_queue.put((
             GUIRequestType.CAMERA_FEED_REQUEST, update_camera_list))
 
