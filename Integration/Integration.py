@@ -62,6 +62,7 @@ class Integration:
         }
         self.tool_stock_informations = [None] * 9
         self.tool_stock_informations[0] = "Do not use!!"
+        self.process_list = []
         self.image_inspection_controller = ImageInspectionController(
             self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
@@ -83,6 +84,7 @@ class Integration:
             self, self.send_request_queue, self.gui_request_queue)
         self.process_manager = ProcessManager(self.tool_stock_informations)
         self.message_wait_conditions = {}
+
 
     def _watching_guiResponce_queue(self):
         """
@@ -128,35 +130,6 @@ class Integration:
         while not (self.is_ur_connected and self.is_cfd_connected):
             time.sleep(0.5)
 
-    def _start_process(self):
-        for stock_number in range(1, 9):
-            if TEST_CFD_CONNECTION_LOCAL:
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 0,R,1"})
-                condition = self._regist_wait_command(
-                    TransmissionTarget.TEST_TARGET_2, "STM 0,TURNED")
-                with condition:
-                    condition.wait()
-
-            else:
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.CFD, "message": "STM 0,R,1"})
-                self._regist_wait_command(
-                    TransmissionTarget.CFD, "STM 0,TURNED")
-                with condition:
-                    condition.wait()
-
-            result = self.image_inspection_controller.perform_image_operation(
-                OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
-            print(f"工具{stock_number}個めの検査 : 結果 {result}")
-            if not result.result:
-                self.gui_request_queue.put(
-                    GUISignalCategory.CANNOT_CONTINUE_PROCESSING, f"{stock_number}個の工具がエラーです")
-                return
-
-        # TODO ワークの個数を取得する
-        self._regist_wait_command(
-            TransmissionTarget.TEST_TARGET_1, "SIG 0,ATT_IMP_READY")
 
     def _test_camera_request(self, request_list: list):
         global toggle_flag
