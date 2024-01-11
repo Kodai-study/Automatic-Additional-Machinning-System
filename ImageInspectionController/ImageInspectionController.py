@@ -5,10 +5,10 @@ if TEST_FEATURE_IMAGE_PROCESSING:
     from ImageInspectionController.pre_processing_inspection import process_qr_code
     from ImageInspectionController.Taking import Taking
 from ImageInspectionController.OperationType import OperationType
-from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
+from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType, InspectionType
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
-from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
-from common_data_type import CameraType, LightingType,ToolType
+from ImageInspectionController.InspectionResults import AccuracyInspectionResult, CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
+from common_data_type import CameraType, LightingType, Point, ToolType
 from typing import Tuple, Union, List
 
 camera_type_dict = {
@@ -32,10 +32,12 @@ def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
 
 class ImageInspectionController:
 
-    def __init__(self):
+    def __init__(self, tool_informations):
         if TEST_FEATURE_IMAGE_PROCESSING:
             self.taking = Taking()
             self.lighting = Light()
+
+        self.tool_informations = tool_informations
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
@@ -88,10 +90,9 @@ class ImageInspectionController:
             kekka = (img_pass)
 
         return kekka
-    
-    
-    def _test_return_inspection_result(self,operation_type: OperationType, inspection_data):
-        
+
+    def _test_return_inspection_result(self, operation_type: OperationType, inspection_data):
+
         if (operation_type == OperationType.PRE_PROCESSING_INSPECTION):
             return self._test_pass_preprocessing()
 
@@ -114,7 +115,11 @@ class ImageInspectionController:
         return PreProcessingInspectionResult(result=False, error_items=["ワークの大きさが一致していません", "QRコードの読み取りに失敗しました"], serial_number=None, dimensions=28.0)
 
     def _test_pass_TOOL_INSPECTION(self, inspection_data: ToolInspectionData = None, return_tool_type: ToolType = ToolType.M3_DRILL, tool_length: float = 10.0, drill_diameter: float = 3.0):
-        return ToolInspectionResult(result=True, error_items=None, tool_type=return_tool_type, tool_length=tool_length, drill_diameter=drill_diameter)
+        result = ToolInspectionResult(result=True, error_items=None, tool_type=return_tool_type,
+                                      tool_length=tool_length, drill_diameter=drill_diameter)
+        if inspection_data.is_initial_phase:
+            self.tool_informations[inspection_data.tool_position_number] = result
+        return result
 
     def _test_fail_TOOL_INSPECTION(self, inspection_data: ToolInspectionData = None, return_tool_type: ToolType = ToolType.M3_DRILL, tool_length: float = 10.0, drill_diameter: float = 3.0):
         return ToolInspectionResult(result=False, error_items=["工具の種類が一致していません", "工具の長さが一致していません"], tool_type=return_tool_type, tool_length=tool_length, drill_diameter=drill_diameter)
@@ -146,4 +151,3 @@ class ImageInspectionController:
 
     def _test_fail_take_inspection_snapshot(self, camera_type: CameraType = CameraType.ACCURACY_CAMERA):
         return CameraControlResult(result=False, camera_type=camera_type, image_path=None)
-

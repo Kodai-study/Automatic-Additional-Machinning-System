@@ -7,6 +7,7 @@ from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessDataLoader import ProcessDataLoader
+from Integration.ProcessManager import ProcessManager
 from Integration.handlers_gui_responce import GuiResponceHandler
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2, RobotCommunicationHandler
@@ -34,8 +35,6 @@ class Integration:
         self.comm_receiv_queue = Queue()  # 通信ソフトが受信したデータの受け取りを行うキュー
         self.gui_request_queue = Queue()  # GUIからの要求を受け取るキュー
         self.gui_responce_queue = Queue()  # GUIからの要求に対する応答を返すキュー
-        self.wait_cmd_flag = None
-        self.wait_message = None
         # 通信相手のURが立ち上がっていなかった場合、localhostで通信相手を立ち上げる
         if TEST_FEATURE_CONNECTION:
             if TEST_UR_CONNECTION_LOCAL:
@@ -62,7 +61,10 @@ class Integration:
             }
         }
         self.process_data_list = []
-        self.image_inspection_controller = ImageInspectionController()
+        self.tool_stock_informations = [None] * 9
+        self.tool_stock_informations[0] = "Do not use!!"
+        self.image_inspection_controller = ImageInspectionController(
+            self.tool_stock_informations)
         if TEST_FEATURE_DB:
             self.database_accesser = DBAccessHandler()
             process_data_loader = ProcessDataLoader(self.database_accesser)
@@ -75,10 +77,9 @@ class Integration:
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_processing_mode = False
-        self.tool_stock_position = 1
-        self.work_stock_number = -1
         self.gui_responce_handler = GuiResponceHandler(
             self, self.send_request_queue, self.gui_request_queue)
+        self.process_manager = ProcessManager(self.tool_stock_informations)
         self.message_wait_conditions = {}
 
     def _watching_guiResponce_queue(self):
