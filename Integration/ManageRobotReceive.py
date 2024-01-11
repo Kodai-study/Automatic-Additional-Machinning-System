@@ -8,6 +8,7 @@ from Integration.handlers_robot_action import reservation_process
 from Integration.process_number import get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
+from .handlers_robot_action import _start_process
 
 
 class ManageRobotReceive:
@@ -30,7 +31,7 @@ class ManageRobotReceive:
             "ISRESERVED": reservation_process,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
             "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}"),
-            "TEST_START": lambda: self._integration_instance._start_process(),
+            "TEST_START": lambda: _start_process(self._integration_instance),
         }
         self._handl_selectors_with_instruction = {
             "SIG": self._select_handler_ur_sig,

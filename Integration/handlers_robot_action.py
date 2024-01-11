@@ -1,6 +1,7 @@
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
+from Integration.Integration import Integration
 from common_data_type import TransmissionTarget
 from test_flags import TEST_CFD_CONNECTION_LOCAL,TEST_UR_CONNECTION_LOCAL
 
@@ -23,7 +24,7 @@ def _test_regist_process_count(integration_instance):
     integration_instance.process_data_manager.register_process_number()
 
 
-def _start_process(integration_instance):
+def _start_process(integration_instance:Integration):
     for stock_number in range(1, 9):
         if TEST_CFD_CONNECTION_LOCAL:
             integration_instance.send_request_queue.put(
@@ -48,6 +49,7 @@ def _start_process(integration_instance):
             return
     # TODO ワークの個数を取得する
     _test_regist_process_count(integration_instance)
+    m = integration_instance.process_data_manager.get_next_process_data()
     integration_instance._regist_wait_command(
         TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR, "SIZE 0,ST")
     
