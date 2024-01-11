@@ -1,8 +1,10 @@
+import random
 import datetime
 import json
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.ProcessingData import ProcessingData
 from common_data_type import WorkPieceShape
+from test_flags import TEST_FEATURE_DB
 
 FETCH_PROCESS_DATA_SQL = """\
 SELECT 
@@ -124,6 +126,20 @@ class ProcessDataManager:
         )
 
     def _get_process_datas(self) -> list:
+        if not TEST_FEATURE_DB:
+            li = []
+            for i in range(10):
+                process_info = {
+                    "regist_process_count": 0,
+                    "process_time": datetime.timedelta(seconds=0),
+                    "good_count": 0,
+                    "data_file_path": f"test/test{i%10 + 1}.json",
+                    "remaining_count": 0,
+                    "average_time": datetime.timedelta(seconds=random.randint(1, 1000))
+                }
+                li.append(process_info)
+            return li
+        
         processing_datas_database = self.database_accesser.fetch_data_from_database(
             FETCH_PROCESS_DATA_SQL)
         processing_data_list = []
