@@ -16,6 +16,21 @@ class WorkPieceShape(Enum):
     ワークの形:円
     """
 
+    @staticmethod
+    def get_work_shape_from_str(work_shape_str: str) -> "WorkPieceShape":
+        """
+        文字列からワークの形を取得する
+        :param work_shape_str: 文字列
+        :return: ワークの形
+        """
+        if work_shape_str == "SQUARE":
+            return WorkPieceShape.SQUARE
+        elif work_shape_str == "CIRCLE":
+            return WorkPieceShape.CIRCLE
+        else:
+            print("ワークの形が不正です")
+            return None
+
 
 @dataclass
 class Point:

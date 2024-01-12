@@ -44,7 +44,10 @@ class ProcessManager:
         return self._get_rotation_degree(tool_type)
 
     def get_grip_position(self) -> Tuple[int, int]:
-        return self.process_data["gripPoint"]["x"], self.process_data["gripPoint"]["y"]
+        return self.process_data["gridPoint"]["x"], self.process_data["gridPoint"]["y"]
+
+    def get_work_size(self):
+        return self.process_data["workSize"]
 
     def get_next_position(self):
         if self.current_size_index >= len(self.sorted_sizes):

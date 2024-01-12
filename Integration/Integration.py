@@ -3,8 +3,7 @@ import threading
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectDatas import ToolInspectionData
-from ImageInspectionController.OperationType import OperationType
+from ImageInspectionController.InspectionResults import ToolInspectionResult
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessManager import ProcessManager
 from Integration.handlers_gui_responce import GuiResponceHandler
@@ -14,7 +13,7 @@ from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_FEATURE_DB, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
-from common_data_type import TransmissionTarget
+from common_data_type import ToolType, TransmissionTarget
 from Integration.ProcessDataManager import ProcessDataManager
 if TEST_FEATURE_GUI:
     from GUIDesigner.GUIDesigner import GUIDesigner
@@ -62,16 +61,35 @@ class Integration:
         }
         self.tool_stock_informations = [None] * 9
         self.tool_stock_informations[0] = "Do not use!!"
+        self.tool_stock_informations = [
+            None,
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M3_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M2_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M3_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M4_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M4_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M5_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M2_DRILL, tool_length=10.0, drill_diameter=3.0),
+        ]
         self.process_list = []
         self.image_inspection_controller = ImageInspectionController(
             self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
+        self.process_data_manager = ProcessDataManager(self.database_accesser)
 
         if TEST_FEATURE_DB:
-            process_data_manager = ProcessDataManager(self.database_accesser)
-            self.process_data_list = process_data_manager.refresh_process_data()
+            self.process_data_list = self.process_data_manager.refresh_process_data()
         else:
-            self.process_data_list = ProcessDataManager._test_create_process_data()
+            self.process_data_list = self.process_data_manager.refresh_process_data()
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
@@ -84,7 +102,6 @@ class Integration:
             self, self.send_request_queue, self.gui_request_queue)
         self.process_manager = ProcessManager(self.tool_stock_informations)
         self.message_wait_conditions = {}
-
 
     def _watching_guiResponce_queue(self):
         """
@@ -129,7 +146,6 @@ class Integration:
         # 通信が確立するまで待機
         while not (self.is_ur_connected and self.is_cfd_connected):
             time.sleep(0.5)
-
 
     def _test_camera_request(self, request_list: list):
         global toggle_flag
