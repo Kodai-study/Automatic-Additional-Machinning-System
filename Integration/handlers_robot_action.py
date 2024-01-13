@@ -10,6 +10,8 @@ from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
 TEST_WAIT_COMMAND = False
+CYLINDRE_WAIT_TIME = 0
+
 
 def reservation_process():
     print("加工の予約が行われました")
@@ -18,7 +20,7 @@ def reservation_process():
 def _test_regist_process_count(integration_instance):
     integration_instance.process_list = integration_instance.process_data_manager.refresh_process_data()
     integration_instance.process_list[0]["regist_process_count"] = 1
-    integration_instance.process_list[2]["regist_process_count"] = 2
+    integration_instance.process_list[1]["regist_process_count"] = 2
     integration_instance.process_list[5]["regist_process_count"] = 7
     integration_instance.process_data_manager.register_process_number()
 
@@ -29,7 +31,9 @@ def start_process(integration_instance):
     # TODO ワークの個数を取得する
     _test_regist_process_count(integration_instance)
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
-    work_process(integration_instance, process_data_manager)
+
+    while not work_process(integration_instance, process_data_manager):
+        pass
 
 
 def initial_tool_inspection(integration_instance):
@@ -48,16 +52,22 @@ def initial_tool_inspection(integration_instance):
 
 def work_process(integration_instance, process_data_manager):
     m = process_data_manager.get_next_process_data()
+    if m is None:
+        return True
     integration_instance.process_manager.start_process(m)
+    if not integration_instance.process_manager.check_tool_ok():
+        print("工具が足りません")
+        return True
+    
     wait_command(integration_instance, "UR", "SIZE 0,ST")
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
     wait_command(integration_instance, "UR", "START_PROCESS")
     send_to_CFD(integration_instance, "CYL 0,PUSH")
-    time.sleep(2)
+    time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 0,PULL")
     # TODO 加工前検査
-    time.sleep(2)
+    time.sleep(CYLINDRE_WAIT_TIME)
     print("加工前検査をします")
     workShape = WorkPieceShape.get_work_shape_from_str(m["workShape"])
 
@@ -70,9 +80,9 @@ def work_process(integration_instance, process_data_manager):
     send_to_CFD(integration_instance, "CYL 0,PUSH")
     tool_degrees = integration_instance.process_manager.get_first_tool_degrees()
     rotato_tool_stock(integration_instance, tool_degrees)
-    
+
     drill_process(integration_instance)
-    
+
     send_to_CFD(integration_instance, "CYL 0,PULL")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
     grip_position = integration_instance.process_manager.get_grip_position()
@@ -81,6 +91,8 @@ def work_process(integration_instance, process_data_manager):
     wait_command(integration_instance, "UR", "INSPECTION")
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
+    process_data_manager.processing_finished(
+        preprocess_inspection_result.result)
 
 
 def create_inspection_information(json_data):
@@ -113,10 +125,11 @@ def drill_process(integration_instance):
                 print("工具検査に失敗しました")
                 return
             rotato_tool_stock(integration_instance, tool_degree)
-            print(f"工具ストッカを{tool_degree}個分回転させた")
-        send_to_CFD(integration_instance, f"DRL 0,{x_position},{y_position},{drill_speed}")
+        send_to_CFD(integration_instance,
+                    f"DRL 0,{x_position},{y_position},{drill_speed}")
         print(f"{x_position} , {y_position}にM{drill_speed}の穴をあけた")
         wait_command(integration_instance, "CFD", "DRILL_END")
+    send_to_CFD(integration_instance, "WRK 0,0,0,8")
 
 
 def send_to_CFD(integration_instance, message):
@@ -134,12 +147,13 @@ def send_to_UR(integration_instance, message):
 def rotato_tool_stock(integration_instance, degress_number):
     send_to_CFD(integration_instance, f"STM 0,R,{degress_number}")
     wait_command(integration_instance, "CFD", "STM 0,TURNED")
+    print(f"工具ストッカを{degress_number}個分回転させた")
 
 
 def wait_command(integration, robot, command):
     if not TEST_WAIT_COMMAND:
         return
-    
+
     if robot == "CFD":
         target = TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD
     elif robot == "UR":
