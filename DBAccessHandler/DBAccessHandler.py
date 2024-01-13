@@ -1,10 +1,9 @@
 # coding: utf-8
-
 from common_data_type import *
 from typing import List, Tuple
-from mysql.connector import pooling
-
 from test_flags import TEST_FEATURE_DB
+if TEST_FEATURE_DB:
+    from mysql.connector import pooling
 
 
 class DBAccessHandler:
