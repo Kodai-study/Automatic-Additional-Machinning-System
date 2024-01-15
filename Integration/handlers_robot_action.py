@@ -150,7 +150,8 @@ def send_to_UR(integration_instance, message):
 
 def rotato_tool_stock(integration_instance, degress_number):
     send_to_CFD(integration_instance, f"STM 0,R,{degress_number}")
-    wait_command(integration_instance, "CFD", "STM 0,TURNED")
+    time.sleep(3)
+    # wait_command(integration_instance, "CFD", "STM 0,TURNED")
     print(f"工具ストッカを{degress_number}個分回転させた")
 
 
