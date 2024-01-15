@@ -12,6 +12,8 @@ def _send_message_to_cfd(message: str, send_request_queue: Queue):
     Args:
         message (str): 送信するコマンド文字列
     """
+    if not message.endswith("\n") and not message.endswith("\r"):
+        message += "\n"
     send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD,
             "message": message})
@@ -24,6 +26,8 @@ def _send_message_to_ur(message: str, send_request_queue: Queue):
     Args:
         message (str): 送信するコマンド文字列
     """
+    if not message.endswith("\n") and not message.endswith("\r"):
+        message += "\n"
     send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
             "message": message})

@@ -1,14 +1,14 @@
-TEST_UR_CONNECTION_LOCAL = True
+TEST_UR_CONNECTION_LOCAL = False
 """
 URとの接続をローカル別スレッドでテストする場合はTrue
 """
 
-TEST_CFD_CONNECTION_LOCAL = True
+TEST_CFD_CONNECTION_LOCAL = False
 """
 CFDとの接続をローカル別スレッドでテストする場合はTrue
 """
 
-TEST_FEATURE_GUI = False
+TEST_FEATURE_GUI = True
 """
 GUIの機能をONにする場合はTrue
 リモートデスクトップ以外の接続で動かす場合はFalseにしないと動かない

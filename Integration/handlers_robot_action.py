@@ -9,7 +9,7 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = False
+TEST_WAIT_COMMAND = True
 CYLINDRE_WAIT_TIME = 0
 
 
@@ -58,11 +58,11 @@ def work_process(integration_instance, process_data_manager):
     if not integration_instance.process_manager.check_tool_ok():
         print("工具が足りません")
         return True
-    
-    wait_command(integration_instance, "UR", "SIZE 0,ST")
+
+    wait_command(integration_instance, "UR", "SIZE 0,ST\n")
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
-    wait_command(integration_instance, "UR", "START_PROCESS")
+    wait_command(integration_instance, "UR", "CYL 0,PUSH\n")
     send_to_CFD(integration_instance, "CYL 0,PUSH")
     time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 0,PULL")
@@ -135,13 +135,13 @@ def drill_process(integration_instance):
 def send_to_CFD(integration_instance, message):
     integration_instance.send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD,
-         "message": message})
+         "message": message+"\n"})
 
 
 def send_to_UR(integration_instance, message):
     integration_instance.send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
-         "message": message})
+         "message": message+"\n"})
 
 
 def rotato_tool_stock(integration_instance, degress_number):

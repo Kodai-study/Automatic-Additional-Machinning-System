@@ -97,7 +97,7 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
-        self.is_processing_mode = False
+        self.is_processing_mode = True
         self.gui_responce_handler = GuiResponceHandler(
             self, self.send_request_queue, self.gui_request_queue)
         self.process_manager = ProcessManager(self.tool_stock_informations)

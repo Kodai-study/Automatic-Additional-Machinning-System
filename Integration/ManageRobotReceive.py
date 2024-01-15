@@ -55,13 +55,13 @@ class ManageRobotReceive:
         """
         if command in self._special_command_handlers:
             return self._special_command_handlers[command]
-        instruction, dev_num, detail = self._split_command(command)
+        instruction, dev_num, detail = self._split_command(command[:])
 
-        if self._integration_instance.is_processing_mode:
-            process_number = get_process_number(instruction, dev_num, detail)
-            if process_number:
-                self.work_manager.regist_new_process(
-                    process_number, datetime.datetime.now())
+        # if self._integration_instance.is_processing_mode:
+        #     process_number = get_process_number(instruction, dev_num, detail)
+        #     if process_number:
+        #         self.work_manager.regist_new_process(
+        #             process_number, datetime.datetime.now())
 
         handle_selector = self._handl_selectors_with_instruction.get(
             instruction)
@@ -77,6 +77,9 @@ class ManageRobotReceive:
         if dev_num != 0:
             return self._undefine
 
+        if detail == "ATT_IMP_READY":
+            _send_message_to_cfd(
+                "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
         sensor_time = datetime.datetime.now()
 
         return self._undefine
@@ -101,7 +104,10 @@ class ManageRobotReceive:
         if dev_num != 0:
             return lambda: self._undefine(command)
         if detail == "TAP_FIN":
-            return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
+            def handl():
+                 _send_message_to_ur(command, self._integration_instance.send_request_queue)
+                 start_process(self._integration_instance)
+            return handl
         if detail == "DRL_READY":
             print("ドリルが準備完了しました")
 
@@ -178,7 +184,7 @@ class ManageRobotReceive:
         # 終端文字を削除
         command = command.replace("\n", "")
         command = command.replace("\r", "")
-        command_copy = command
+        command_copy = command[:]
         _split_list = command_copy.split(" ")
         instruction = _split_list[0]
         if len(_split_list) == 2:
