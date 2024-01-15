@@ -53,8 +53,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.MONITORING 
-        self.data_list = []
+        self.current_screen = Frames.CREATE_SELECTION 
         self.robot_status = {}
         self._initial_variables()
         self.protocol("WM_DELETE_WINDOW", lambda: self.destroy())
@@ -67,8 +66,6 @@ class GUIDesigner(tk.Tk):
         self.data_list = []
         self.robot_status = {}
         self._initial_variables()
-
-    def _initial_variables(self):
         self.image_resources["red_lamp"] = tk.PhotoImage(
             file="./resource/images/red_lamp.png")
         # 画像ファイルの読み込み
@@ -82,7 +79,7 @@ class GUIDesigner(tk.Tk):
             self, self.get_request_queue)
         self.screens[Frames.LOGIN] = Login(self, self.send_message_queue)
         self.screens[Frames.CREATE_SELECTION] = CreateSelection(
-            self, self.data_list)
+            self)
         self.screens[Frames.CHECK_SELECTION] = CheckSelection(
             self, self.data_list, self.image_resources)
         self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
