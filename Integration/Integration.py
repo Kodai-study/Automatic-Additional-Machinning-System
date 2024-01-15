@@ -65,12 +65,8 @@ class Integration:
         self.image_inspection_controller = ImageInspectionController(
             self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
+        self.process_data_manager = ProcessDataManager(self.database_accesser)
 
-        if TEST_FEATURE_DB:
-            process_data_manager = ProcessDataManager(self.database_accesser)
-            self.process_data_list = process_data_manager.refresh_process_data()
-        else:
-            self.process_data_list = ProcessDataManager._test_create_process_data()
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
@@ -168,6 +164,12 @@ class Integration:
                 camera_type, "resource/images/title.png" if toggle_flag else "resource/images/test.png"))
         self.gui_request_queue.put(
             (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
+
+    def regist_process_datas(self):
+        if TEST_FEATURE_DB:
+            self.process_data_list = self.process_data_manager.refresh_process_data()
+        else:
+            self.process_data_list = ProcessDataManager._test_create_process_data()
 
     def main(self):
 
