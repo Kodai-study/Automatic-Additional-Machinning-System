@@ -52,7 +52,7 @@ class GuiResponceHandler:
                 self.integration.image_inspection_controller, self.integration.robot_status, send_data[1][0], send_data[1][1])
 
         elif send_data[0] == GUIRequestType.REQUEST_PROCESSING_DATA_LIST:
-            pass
+            self._get_process_data_list()
 
     def _login(self, id: str, password: str, database_accesser: DBAccessHandler):
         sql = f"""
@@ -80,7 +80,7 @@ class GuiResponceHandler:
             if camera_result.is_success:
                 update_camera_list.append(
                     (camera_result.camera_type, camera_result.image_path))
-        
+
         self.gui_request_queue.put((
             GUIRequestType.CAMERA_FEED_REQUEST, update_camera_list))
 
@@ -125,3 +125,8 @@ class GuiResponceHandler:
                 robot_status["lighting"][key] = False
         self.gui_request_queue.put(
             (GUISignalCategory.SENSOR_STATUS_UPDATE, None))
+
+    def _get_process_data_list(self):
+        self.integration.regist_process_datas()
+        self.gui_request_queue.put(
+            (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, self.integration.process_data_list))
