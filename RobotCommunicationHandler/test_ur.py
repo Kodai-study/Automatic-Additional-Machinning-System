@@ -90,4 +90,6 @@ class _test_ur:
         print(f"Connected by {self.port}")
 
     def send_message(self, message):
+        if not message.endswith("\n"):
+            message += "\n"
         self.com_to_pc_socket.sendall(message.encode())

@@ -59,10 +59,10 @@ def work_process(integration_instance, process_data_manager):
         print("工具が足りません")
         return True
 
-    wait_command(integration_instance, "UR", "SIZE 0,ST\n")
+    wait_command(integration_instance, "UR", "SIZE 0,ST")
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
-    wait_command(integration_instance, "UR", "CYL 0,PUSH\n")
+    wait_command(integration_instance, "UR", "CYL 0,PUSH")
     send_to_CFD(integration_instance, "CYL 0,PUSH")
     time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 0,PULL")
@@ -133,15 +133,19 @@ def drill_process(integration_instance):
 
 
 def send_to_CFD(integration_instance, message):
+    if not message.endswith("\n") and not message.endswith("\r"):
+        message += "\n"
     integration_instance.send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD,
-         "message": message+"\n"})
+         "message": message})
 
 
 def send_to_UR(integration_instance, message):
+    if not message.endswith("\n") and not message.endswith("\r"):
+        message += "\n"
     integration_instance.send_request_queue.put(
         {"target": TransmissionTarget.TEST_TARGET_1 if TEST_UR_CONNECTION_LOCAL else TransmissionTarget.UR,
-         "message": message+"\n"})
+         "message": message})
 
 
 def rotato_tool_stock(integration_instance, degress_number):
@@ -153,7 +157,11 @@ def rotato_tool_stock(integration_instance, degress_number):
 def wait_command(integration, robot, command):
     if not TEST_WAIT_COMMAND:
         return
-
+    
+    print(f"次のコマンドを待機中…    {robot}からのコマンド : {command}")
+    if not command.endswith("\n"):
+        command += "\n"
+        
     if robot == "CFD":
         target = TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD
     elif robot == "UR":

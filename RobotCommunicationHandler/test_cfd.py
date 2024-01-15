@@ -115,4 +115,6 @@ class _test_cfd:
         print("CFDとの接続が完了しました")
 
     def send_message(self, message):
+        if not message.endswith("\n"):
+            message += "\n"
         self.send_cmd_socket.sendall(message.encode())
