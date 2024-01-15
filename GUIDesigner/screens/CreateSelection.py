@@ -1,3 +1,4 @@
+from queue import Queue
 from tkinter import filedialog, ttk
 from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
@@ -8,27 +9,29 @@ import tkinter as tk
 
 
 class CreateSelection(ScreenBase):
-    def __init__(self, parent):
+    def __init__(self, parent, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.number_pad = None
         self.data_list = []
         self._create_widgets()
+        self.send_to_integration_queue = send_to_integration_queue
 
     def create_frame(self):
         self.send_to_integration_queue.put(
             (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, ))
+        self.data_list = []
         self.tkraise()
 
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
         if request_type == GUIRequestType.REQUEST_PROCESSING_DATA_LIST:
-            if not request_data[1]:
+            if not request_data:
                 self.after(500, lambda: self.send_to_integration_queue.put(
                     (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, )))
                 return
 
-            self.data_list = request_data[1]
-            
+            self.data_list = request_data
+
     def _create_widgets(self, selected_items=None):
 
         self.table = ttk.Treeview(self, columns=(
