@@ -85,7 +85,9 @@ class CreateSelection(ScreenBase):
         self.number_pad = NumberPad(self)
         self.number_pad.attributes("-topmost", True)
         self.wait_window(self.number_pad)
-        quantity = int(self.number_pad.result.get())
+        quantity = self.number_pad.input_number
+        if quantity is None or quantity == 0:
+            return
         del self.number_pad
         target_process_data["regist_process_count"] = quantity
         self.table.insert("", "end", values=(
