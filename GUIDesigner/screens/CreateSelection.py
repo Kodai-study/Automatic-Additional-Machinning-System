@@ -74,7 +74,7 @@ class CreateSelection(ScreenBase):
         large_font = Font(family="Helvetica", size=14)
 
         # Add dropdown box
-        self.dropdown = ttk.Combobox(self, font=large_font)
+        self.dropdown = ttk.Combobox(self, font=large_font, state="readonly")
         self.dropdown.place(relx=0.8, rely=0.9, anchor="center")
         self.dropdown.config(width=15)
 
@@ -89,24 +89,17 @@ class CreateSelection(ScreenBase):
             quantity = int(self.number_pad.result.get())
             del self.number_pad
             self.data_list.append((file_name, quantity))
-
-            print("Current content of self.data_list:", self.data_list)
-
             self._update_selection_table()
 
     # 選択されたアイテムを削除する新しい関数
     def _remove_selected_items(self):
         selected_items = self.table.selection()
 
-        print("Current content of self.data_list before removal:", self.data_list)
-
         for item in selected_items:
             item_values = self.table.item(item, 'values')
             if item_values:
                 data, quantity = item_values[0], int(
                     item_values[1])  # 数量を整数に変換
-
-                print(f"Trying to remove: {data}, {quantity}")
 
                 # data_list から削除する対象を見つけて削除
                 for i, (existing_data, existing_quantity) in enumerate(self.data_list):
@@ -116,8 +109,6 @@ class CreateSelection(ScreenBase):
                         break  # 見つかったらループを抜ける
                 else:
                     print("Not found in the list.")
-
-        print("Current content of self.data_list after removal:", self.data_list)
 
         self._update_selection_table()
 
