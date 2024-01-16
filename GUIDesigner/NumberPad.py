@@ -9,6 +9,7 @@ class NumberPad(tk.Toplevel):
 
         self.result = tk.StringVar()
         self.result.set("0")
+        self.input_number = None
 
         entry = tk.Entry(self, textvariable=self.result,
                          font=("Helvetica", 24), justify="right")
@@ -33,10 +34,21 @@ class NumberPad(tk.Toplevel):
             if col > 2:
                 col = 0
                 row += 1
+                
+        self.protocol("WM_DELETE_WINDOW", self.on_close)  # 「×」ボタンの処理を追加
+
+    def on_close(self):
+        # 「×」ボタンが押されたときに呼ばれる
+        self.result.set(None)
+        self.input_number = None
+        self.destroy()
 
     def on_button_click(self, button_text):
         current_value = self.result.get()
-
+        if button_text == "OK":
+            self.destroy()
+            return
+        
         if button_text.isdigit():
             if current_value == "0":
                 self.result.set(button_text)
@@ -44,5 +56,4 @@ class NumberPad(tk.Toplevel):
                 self.result.set(current_value + button_text)
         elif button_text == "C":
             self.result.set("0")
-        elif button_text == "OK":
-            self.destroy()
+        self.input_number = int(self.result.get())
