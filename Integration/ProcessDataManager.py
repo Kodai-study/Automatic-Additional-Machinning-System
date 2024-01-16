@@ -97,7 +97,6 @@ class ProcessDataManager:
         """
         with open(json_file_path) as f:
             json_data = json.load(f)
-        # OKだったら返す
             return json_data
 
     def _create_processData_from_db(self, data_from_db):
@@ -110,15 +109,13 @@ class ProcessDataManager:
             work_shape = WorkPieceShape.SQUARE
 
         workpiece_dimension = process_data_file["workSize"]
-        # WorkPieceShapeとworkpiece_dimensionの値はダミーです
 
         return ProcessingData(
-            # model_numberをmodel_idとして使用
             model_id=data_from_db['model_number'],
             model_number=data_from_db['model_name'],
             average_processing_time=data_from_db['average_time_diff'],
-            work_shape=work_shape,  # 仮の値
-            workpiece_dimension=workpiece_dimension,  # 仮の値
+            work_shape=work_shape,
+            workpiece_dimension=workpiece_dimension,
             created_by=data_from_db['create_user'],
             creation_timestamp=data_from_db['create_date'],
         )
@@ -139,24 +136,29 @@ class ProcessDataManager:
             process_info["process_data"] = self._create_processData_from_db(
                 data)
             processing_data_list.append(process_info)
-
-        print(processing_data_list)
         return processing_data_list
 
     @staticmethod
     def _test_create_process_data():
         return [
             {"process_data": ProcessingData(1, "加工データ(型番)1", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.CIRCLE, 10.0, "加工者1", datetime.datetime.now()),
-             "regist_process_count": 10,
+             "regist_process_count": 0,
              "process_time": datetime.timedelta(minutes=12, seconds=34),
-             "good_count": 7,
+             "good_count": 0,
              "data_file_path": "/test/test.json",
-             "bad_count": 2},
+             "bad_count": 0},
             {"process_data": ProcessingData(2, "加工データ(型番)2", datetime.timedelta(minutes=2, seconds=34), WorkPieceShape.SQUARE, 10.0, "加工者2", datetime.datetime.now()),
              "average_time": datetime.timedelta(minutes=2, seconds=34),
-             "regist_process_count": 20,
+             "regist_process_count": 0,
              "process_time": datetime.timedelta(minutes=23, seconds=45),
-             "good_count": 8,
+             "good_count": 0,
              "data_file_path": "/test/test.json",
-             "bad_count": 10}
+             "bad_count": 0},
+            {"process_data": ProcessingData(3, "加工データ(型番)3", datetime.timedelta(minutes=5, seconds=43), WorkPieceShape.SQUARE, 10.0, "加工者3", datetime.datetime.now()),
+             "average_time": datetime.timedelta(minutes=5, seconds=43),
+             "regist_process_count": 0,
+             "process_time": datetime.timedelta(minutes=23, seconds=45),
+             "good_count": 0,
+             "data_file_path": "/test/test.json",
+             "bad_count": 0}
         ]
