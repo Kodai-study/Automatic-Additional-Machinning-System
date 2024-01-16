@@ -34,7 +34,7 @@ class CreateSelection(ScreenBase):
             self.data_list = request_data
             combobox_options = [d["process_data"].model_number
                                 for d in self.data_list if 'process_data' in d]
-            self.dropdown["values"] = combobox_options
+            self.model_select_combobox["values"] = combobox_options
 
     def _create_widgets(self, selected_items=None):
 
@@ -54,7 +54,7 @@ class CreateSelection(ScreenBase):
 
         go_monitor_button = tk.Button(self, text="モニタ画面",
                                       command=lambda: self.change_frame(Frames.MONITORING), font=("AR丸ゴシック体M", 18), width=22)
-        add_data_button = tk.Button(self, text="ファイル参照",
+        add_data_button = tk.Button(self, text="加工データ追加",
                                     command=self._add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
         remove_button = tk.Button(self, text="削除", command=self._remove_selected_items,
                                   font=("AR丸ゴシック体M", 18), width=22)
@@ -71,27 +71,28 @@ class CreateSelection(ScreenBase):
         add_data_button.place(rely=0.2, x=1530, y=200)
         remove_button.place(rely=0.2, x=1530, y=400)
         go_monitor_button.place(rely=0.75, relx=0.1)
-        large_font = Font(family="Helvetica", size=14)
-
+        
+        conbobox_font = Font(family="Helvetica", size=30)
         # Add dropdown box
-        self.dropdown = ttk.Combobox(self, font=large_font, state="readonly")
-        self.dropdown.place(relx=0.8, rely=0.9, anchor="center")
-        self.dropdown.config(width=15)
+        self.model_select_combobox = ttk.Combobox(
+            self, font=conbobox_font, state="readonly")
+        self.model_select_combobox.place(relx=0.8, rely=0.9, anchor="center")
+        self.model_select_combobox.config(width=15)
 
     def _add_data_from_file(self):
-        file_path = filedialog.askopenfilename(
-            title="ファイルを選択してください", filetypes=(("すべてのファイル", "*.*"), ("テキストファイル", "*.txt")))
-        if file_path:
-            file_name = file_path.split("/")[-1]
-            self.number_pad = NumberPad(self)
-            self.number_pad.attributes("-topmost", True)
-            self.wait_window(self.number_pad)
-            quantity = int(self.number_pad.result.get())
-            del self.number_pad
-            self.data_list.append((file_name, quantity))
-            self._update_selection_table()
+        target_index = self.model_select_combobox.current()
+        target_process_data = self.data_list[target_index]
+        self.number_pad = NumberPad(self)
+        self.number_pad.attributes("-topmost", True)
+        self.wait_window(self.number_pad)
+        quantity = int(self.number_pad.result.get())
+        del self.number_pad
+        target_process_data["regist_process_count"] = quantity
+        self.table.insert("", "end", values=(
+            target_process_data["process_data"].model_number, quantity))
 
     # 選択されたアイテムを削除する新しい関数
+
     def _remove_selected_items(self):
         selected_items = self.table.selection()
 
