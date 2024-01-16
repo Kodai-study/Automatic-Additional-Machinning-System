@@ -1,5 +1,6 @@
 from queue import Queue
 from tkinter import filedialog, ttk
+from tkinter.font import Font
 from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
@@ -31,6 +32,9 @@ class CreateSelection(ScreenBase):
                 return
 
             self.data_list = request_data
+            combobox_options = [d["process_data"].model_number
+                                for d in self.data_list if 'process_data' in d]
+            self.dropdown["values"] = combobox_options
 
     def _create_widgets(self, selected_items=None):
 
@@ -57,7 +61,7 @@ class CreateSelection(ScreenBase):
 
         go_check_button = tk.Button(self, text="確認画面", command=lambda: self.change_frame(
             Frames.CHECK_SELECTION), font=("AR丸ゴシック体M", 18), width=22)
-        go_check_button.place(rely=0.85, relx=0.75)
+        go_check_button.place(rely=0.85, relx=0.1)
         if selected_items:
             for data, quantity in selected_items:
                 self.table.insert("", "end", values=(data, quantity))
@@ -66,7 +70,13 @@ class CreateSelection(ScreenBase):
         scrollbar.place(relheight=0.6, x=1464, y=70)
         add_data_button.place(rely=0.2, x=1530, y=200)
         remove_button.place(rely=0.2, x=1530, y=400)
-        go_monitor_button.place(rely=0.85, relx=0.1)
+        go_monitor_button.place(rely=0.75, relx=0.1)
+        large_font = Font(family="Helvetica", size=14)
+
+        # Add dropdown box
+        self.dropdown = ttk.Combobox(self, font=large_font)
+        self.dropdown.place(relx=0.8, rely=0.9, anchor="center")
+        self.dropdown.config(width=15)
 
     def _add_data_from_file(self):
         file_path = filedialog.askopenfilename(
@@ -114,5 +124,6 @@ class CreateSelection(ScreenBase):
     # 削除後に選択テーブルを更新する新しい関数
     def _update_selection_table(self):
         self.table.delete(*self.table.get_children())
-        for data, quantity in self.data_list:
-            self.table.insert("", "end", values=(data, quantity))
+        for process_data in self.data_list:
+            self.table.insert("", "end", values=(
+                process_data["data_file_path"], process_data["regist_process_count"]))
