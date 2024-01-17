@@ -35,7 +35,7 @@ class CreateSelection(ScreenBase):
             self.combobox_options = [d["process_data"].model_number
                                      for d in self.data_list if 'process_data' in d]
 
-# OptionMenuの選択肢を更新
+            OptionMenuの選択肢を更新
             menu = self.model_select_combobox["menu"]
             menu.delete(0, 'end')  # 現在のメニュー項目をすべて削除
 
@@ -73,7 +73,13 @@ class CreateSelection(ScreenBase):
 
         selected_value = tk.StringVar(self)
         # OptionMenuの作成
-        model_select_optionmenu = tk.OptionMenu(self, selected_value, "hoge")
+
+        def view_process_data_detail(value):
+            print("value", value)
+            self.process_detail_text_view.config(text=self._search_data_with_name(
+                value)["process_data"].to_string())
+        model_select_optionmenu = tk.OptionMenu(
+            self, selected_value, "hoge", command=view_process_data_detail)
         model_select_optionmenu.config(font=COMBO_BOX_FONT)  # フォントサイズ設定
         # ドロップダウンメニューのフォントサイズも変更
         menu = model_select_optionmenu["menu"]
