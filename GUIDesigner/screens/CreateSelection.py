@@ -18,10 +18,10 @@ class CreateSelection(ScreenBase):
         self.send_to_integration_queue = send_to_integration_queue
 
     def create_frame(self):
+        self.tkraise()
+        self.data_list = []
         self.send_to_integration_queue.put(
             (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, ))
-        self.data_list = []
-        self.tkraise()
 
     def handle_queued_request(self, request_type: GUISignalCategory, request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
@@ -51,16 +51,28 @@ class CreateSelection(ScreenBase):
             Frames.CHECK_SELECTION)), font=("AR丸ゴシック体M", 18), width=22)
 
         go_monitor_button.place(rely=0.75, relx=0.1)
-        add_data_button.place(rely=0.8, relx=0.8)
-        remove_button.place(rely=0.9, relx=0.8)
+        add_data_button.place(rely=0.8, relx=0.5)
+        remove_button.place(rely=0.9, relx=0.5)
         go_check_button.place(rely=0.85, relx=0.1)  # テキストビューの配置
 
     def _create_data_select_combobox(self):
         COMBO_BOX_FONT = Font(family="Helvetica", size=30)
+        style = ttk.Style()
+        large_font = Font(family="Helvetica", size=30)
+        text_view_x = 130 + (self.winfo_screenwidth() * 0.7)  # テーブルの幅の終わりの位置
+        text_view_y = 70  # テーブルと同じy座標
+
+        text_view_width = 1.0 - 0.7  # 残りの幅
+        text_view_height = 0.6  # テーブルと同じ高さ
+
+        style.configure("Large.TCombobox", font=large_font)
         model_select_combobox = ttk.Combobox(
             self, font=COMBO_BOX_FONT, state="readonly")
-        model_select_combobox.place(relx=0.8, rely=0.9, anchor="center")
-        model_select_combobox.config(width=15)
+        # model_select_combobox.place(relx=0.85, rely=0.9, anchor="center")
+        # model_select_combobox.config(width=15)
+        model_select_combobox.place(
+            relwidth=text_view_width, x=text_view_x, y=text_view_y)
+        return model_select_combobox
 
     def _create_registerd_table_list(self):
         processed_data_treeview = ttk.Treeview(self, columns=(
@@ -92,7 +104,7 @@ class CreateSelection(ScreenBase):
         text_view_width = 1.0 - 0.7  # 残りの幅
         text_view_height = 0.6  # テーブルと同じ高さ
         text_view.place(relheight=text_view_height,
-                        relwidth=text_view_width, x=text_view_x, y=text_view_y)
+                        relwidth=text_view_width, x=text_view_x, y=text_view_y+100)
         return text_view
 
     def _add_process_data(self):
