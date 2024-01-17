@@ -136,13 +136,7 @@ class Monitoring(ScreenBase):
         UR_label = tk.Label(
             self, text="UR吸着", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         dlc0_label = tk.Label(
-            self, text="ドアロック1", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        dlc1_label = tk.Label(
-            self, text="ドアロック2", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        dlc2_label = tk.Label(
-            self, text="ドアロック3", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        dlc3_label = tk.Label(
-            self, text="ドアロック4", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="ドアロック", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         svm_label = tk.Label(
             self, text="サーボモータ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         conv_label = tk.Label(
@@ -204,10 +198,8 @@ class Monitoring(ScreenBase):
         push_buttons: List[tk.Button] = []
         stop_buttons: List[tk.Button] = []
 
-        on_commands = ["EJCT 0,ATTACH\n", "DLC 0,LOCK\n",
-                       "DLC 1,LOCK\n", "DLC 2,LOCK\n", "DLC 3,LOCK\n"]
-        off_commands = ["EJCT 0,DETACH\n", "DLC 0,UNLOCK\n",
-                        "DLC 1,UNLOCK\n", "DLC 2,UNLOCK\n", "DLC 3,UNLOCK\n"]
+        on_commands = ["EJCT 0,ATTACH\n", "DLC 0,LOCK\n"]
+        off_commands = ["EJCT 0,DETACH\n", "DLC 0,UNLOCK\n"]
         forward_commands = ["SVM 0,CW,1\n", "CONV 0,CW\n"]
         reverse_commands = ["SVM 0,BREAK,0\n", "CONV 0,OFF\n"]
         pull_commands = ["CYL 0,PULL\n", "CYL 3,PULL\n", "CYL 2,PULL\n",
@@ -239,13 +231,19 @@ class Monitoring(ScreenBase):
             push_buttons.append(push_button)
             pull_buttons.append(pull_button)
         # URドアロックボタン
-        for i in range(5):
-            on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                  command=lambda i=i: (self.robot_oprration_request(on_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
-            off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                   command=lambda i=i: (self.robot_oprration_request(off_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
+        for i in range(len(on_commands)):
+            on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87", font=(
+                "MSゴシック", BUTTON_FONT_SIZE, "bold"))
+            off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="#de9687", font=(
+                "MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
+            on_button["command"] = command = lambda i=i: (self.robot_oprration_request(
+                on_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i]))
+            off_button["command"] = command = lambda i=i: (self.robot_oprration_request(
+                off_commands[i]), self.toggle_button(off_buttons[i], on_buttons[i]))
             on_buttons.append(on_button)
             off_buttons.append(off_button)
+
         # サーボモータベルトコンベアボタン
         for i in range(2):
             forward_button = tk.Button(self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
@@ -263,10 +261,10 @@ class Monitoring(ScreenBase):
         back_button = tk.Button(self, text="戻る", command=lambda: self.change_frame(Frames.CREATE_SELECTION),
                                 font=("AR丸ゴシック体M", 18), width=22)
 
-        # ボタン配置
-        for i in range(5):
-            on_buttons[i].grid(row=i + 4, column=2)
-            off_buttons[i].grid(row=i + 4, column=3)
+        for i, (on_button, off_button) in enumerate(zip(on_buttons, off_buttons)):
+            # ボタン配置
+            on_button.grid(row=i + 4, column=2)
+            off_button.grid(row=i + 4, column=3)
 
         for i in range(2):
             forward_buttons[i].grid(row=i + 9, column=2)
@@ -285,9 +283,6 @@ class Monitoring(ScreenBase):
         ringlight_label.grid(row=3, column=1, pady=10)
         UR_label.grid(row=4, column=1, pady=10)
         dlc0_label.grid(row=5, column=1, pady=10)
-        dlc1_label.grid(row=6, column=1, pady=10)
-        dlc2_label.grid(row=7, column=1, pady=10)
-        dlc3_label.grid(row=8, column=1, pady=10)
         svm_label.grid(row=9, column=1, pady=10)
         conv_label.grid(row=10, column=1, pady=10)
         cyl_000_label.grid(row=11, column=1, pady=10)
