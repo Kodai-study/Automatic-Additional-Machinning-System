@@ -240,14 +240,20 @@ class Monitoring(ScreenBase):
             on_buttons.append(on_button)
             off_buttons.append(off_button)
 
+        svm_speed_up_button = tk.Button(self, text="速度＋", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
+                                        command=lambda: svm_speed_controller(+1))
+        svm_speed_down_button = tk.Button(self, text="速度－", state="normal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
+                                          command=lambda: svm_speed_controller(-1))
+
         def svm_speed_controller(change_number):
             self.servo_motor_speed += change_number
-            if self.servo_motor_speed > 7:
-                self.servo_motor_speed = 7
-                return
-            elif self.servo_motor_speed < -7:
-                self.servo_motor_speed = -7
-                return
+            if self.servo_motor_speed >= 7:
+                svm_speed_up_button["state"] = "disabled"
+            elif self.servo_motor_speed <= -7:
+                svm_speed_down_button["state"] = "disabled"
+            else:
+                svm_speed_up_button["state"] = "normal"
+                svm_speed_down_button["state"] = "normal"
 
             if self.servo_motor_speed == 0:
                 self.robot_oprration_request("SVM N,0")
@@ -257,12 +263,8 @@ class Monitoring(ScreenBase):
             else:
                 speed = self.servo_motor_speed * -1
                 self.robot_oprration_request("SVM CCW,"+str(speed))
-
-        svm_speed_up_button = tk.Button(self, text="速度＋", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                        command=lambda: svm_speed_controller(+1))
-        svm_speed_down_button = tk.Button(self, text="速度－", state="normal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                          command=lambda: svm_speed_controller(-1))
-
+                
+                
         def enable_conveyor_button(button_kind_list):
 
             self.robot_oprration_request("CONV 0,N")
