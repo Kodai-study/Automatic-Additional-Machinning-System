@@ -10,9 +10,6 @@ import tkinter as tk
 
 
 class CreateSelection(ScreenBase):
-
-    COMBO_BOX_FONT = Font(family="Helvetica", size=30)
-
     def __init__(self, parent, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.number_pad = None
@@ -40,22 +37,9 @@ class CreateSelection(ScreenBase):
             self.model_select_combobox["values"] = combobox_options
 
     def _create_widgets(self):
-        self.processed_data_treeview = ttk.Treeview(self, columns=(
-            "Data", "Quantity"), show="headings")
-        self.processed_data_treeview.column("#0", width=0, stretch=tk.NO)
-        self.processed_data_treeview.heading("#0", text="")
-        self.processed_data_treeview.heading(
-            "Data", text="加工データ", anchor='center')
-        self.processed_data_treeview.heading(
-            "Quantity", text="個数", anchor='center')
-        self.processed_data_treeview.heading("#0", text=" ", anchor='center')
-
-        self.processed_data_treeview.column('Data', anchor='center')
-        self.processed_data_treeview.column('Quantity', anchor='center')
-
-        scrollbar = ttk.Scrollbar(
-            self, orient=tk.VERTICAL, command=self.processed_data_treeview.yview)
-        self.processed_data_treeview.configure(yscroll=scrollbar.set)
+        self.processed_data_treeview = self._create_registerd_table_list()
+        self.process_detail_text_view = self._create_detail_view()
+        self.model_select_combobox = self._create_data_select_combobox()
 
         go_monitor_button = tk.Button(self, text="モニタ画面",
                                       command=lambda: self.change_frame(Frames.MONITORING), font=("AR丸ゴシック体M", 18), width=22)
@@ -63,23 +47,53 @@ class CreateSelection(ScreenBase):
                                     command=self._add_process_data, font=("AR丸ゴシック体M", 18), width=22)
         remove_button = tk.Button(self, text="削除", command=self._remove_selected_items,
                                   font=("AR丸ゴシック体M", 18), width=22)
-
         go_check_button = tk.Button(self, text="確認画面", command=lambda: (self._regist_processing_order(), self.change_frame(
             Frames.CHECK_SELECTION)), font=("AR丸ゴシック体M", 18), width=22)
-        go_check_button.place(rely=0.85, relx=0.1)
 
-        self.processed_data_treeview.place(
-            relheight=0.6, relwidth=0.7, x=130, y=70)
-        scrollbar.place(relheight=0.6, x=1464, y=70)
+        go_monitor_button.place(rely=0.75, relx=0.1)
         add_data_button.place(rely=0.8, relx=0.8)
         remove_button.place(rely=0.9, relx=0.8)
-        go_monitor_button.place(rely=0.75, relx=0.1)
+        go_check_button.place(rely=0.85, relx=0.1)  # テキストビューの配置
 
-        # Add dropdown box
-        self.model_select_combobox = ttk.Combobox(
-            self, font=self.COMBO_BOX_FONT, state="readonly")
-        self.model_select_combobox.place(relx=0.8, rely=0.9, anchor="center")
-        self.model_select_combobox.config(width=15)
+    def _create_data_select_combobox(self):
+        COMBO_BOX_FONT = Font(family="Helvetica", size=30)
+        model_select_combobox = ttk.Combobox(
+            self, font=COMBO_BOX_FONT, state="readonly")
+        model_select_combobox.place(relx=0.8, rely=0.9, anchor="center")
+        model_select_combobox.config(width=15)
+
+    def _create_registerd_table_list(self):
+        processed_data_treeview = ttk.Treeview(self, columns=(
+            "Data", "Quantity"), show="headings")
+        processed_data_treeview.column("#0", width=0, stretch=tk.NO)
+        processed_data_treeview.heading("#0", text="")
+        processed_data_treeview.heading(
+            "Data", text="加工データ", anchor='center')
+        processed_data_treeview.heading(
+            "Quantity", text="個数", anchor='center')
+        processed_data_treeview.heading("#0", text=" ", anchor='center')
+
+        processed_data_treeview.column('Data', anchor='center')
+        processed_data_treeview.column('Quantity', anchor='center')
+
+        scrollbar = ttk.Scrollbar(
+            self, orient=tk.VERTICAL, command=processed_data_treeview.yview)
+        scrollbar.place(relheight=0.6, x=1464, y=70)
+        processed_data_treeview.configure(yscroll=scrollbar.set)
+        processed_data_treeview.place(
+            relheight=0.6, relwidth=0.7, x=130, y=70)
+        return processed_data_treeview
+
+    def _create_detail_view(self):
+        text_view = tk.Label(self, font=(
+            "AR丸ゴシック体M", 18), width=22, text="fda", anchor='nw', justify=tk.LEFT)
+        text_view_x = 130 + (self.winfo_screenwidth() * 0.7)  # テーブルの幅の終わりの位置
+        text_view_y = 70  # テーブルと同じy座標
+        text_view_width = 1.0 - 0.7  # 残りの幅
+        text_view_height = 0.6  # テーブルと同じ高さ
+        text_view.place(relheight=text_view_height,
+                        relwidth=text_view_width, x=text_view_x, y=text_view_y)
+        return text_view
 
     def _add_process_data(self):
         target_index = self.model_select_combobox.current()
@@ -98,8 +112,6 @@ class CreateSelection(ScreenBase):
         self.processed_data_treeview.insert("", "end", iid=target_process_data["process_data"].model_id, values=(
             target_process_data["process_data"].model_number, quantity))
 
-    # 選択されたアイテムを削除する新しい関数
-
     def _remove_selected_items(self):
         selected_items = self.processed_data_treeview.selection()
         for item in selected_items:
@@ -107,7 +119,6 @@ class CreateSelection(ScreenBase):
                 if search_data["process_data"].model_id == int(item):
                     search_data["regist_process_count"] = 0
                     break
-
         self._update_selection_table()
 
     # 削除後に選択テーブルを更新する新しい関数
