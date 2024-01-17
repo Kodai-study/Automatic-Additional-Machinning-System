@@ -12,12 +12,14 @@ CAMERA_IMAGE_UPDATE_RATE = 1000
 LABEL_FONT_SIZE = 22
 BUTTON_FONT_SIZE = 14
 
+
 class Monitoring(ScreenBase):
     def __init__(self, parent, robot_status: dict, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.robot_status = robot_status
         self.send_to_integration_queue = send_to_integration_queue
         self._create_widgets()
+        self.is_currentScreen = lambda: parent.current_screen == Frames.MONITORING
 
         # TODO この画面にいるときだけリクエストするように変更
         self._request_inspection_camera_update()
@@ -33,11 +35,13 @@ class Monitoring(ScreenBase):
     def _request_inspection_camera_update(self):
         self.send_to_integration_queue.put((GUIRequestType.CAMERA_FEED_REQUEST, [
             CameraType.TOOL_CAMERA, CameraType.PRE_PROCESSING_CAMERA, CameraType.ACCURACY_CAMERA]))
-        self.after(CAMERA_IMAGE_UPDATE_RATE,
-                   self._request_inspection_camera_update)
+        if self.is_currentScreen():
+            self.after(CAMERA_IMAGE_UPDATE_RATE,
+                       self._request_inspection_camera_update)
 
     def create_frame(self):
         self.tkraise()
+        self._request_inspection_camera_update()
 
     def _update_image_from_path(self, canvas_datas: Tuple[tk.Canvas, int], img_path: str):
         target_canvas = canvas_datas[0]
@@ -122,7 +126,7 @@ class Monitoring(ScreenBase):
 
         self._initial_camera_view_canvases()
 
-        #ラベル作成
+        # ラベル作成
         backlight_label = tk.Label(
             self, text="工具検査用のリング照明", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         barlight_label = tk.Label(
@@ -173,42 +177,42 @@ class Monitoring(ScreenBase):
             self, text="工具8 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         kara_label1 = tk.Label(
             self, text="", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        
+
         tool1_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
         tool2_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
         tool3_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
         tool4_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
         tool5_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
         tool6_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
         tool7_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
         tool8_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE),width=10)
-        
+            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+
         # ボタンのコマンドリスト作成
-        on_buttons: List[tk.Button] = []  
-        off_buttons: List[tk.Button] = []  
-        forward_buttons: List[tk.Button] = [] 
-        reverse_buttons: List[tk.Button] = []  
-        pull_buttons: List[tk.Button] = []  
-        push_buttons: List[tk.Button] = []  
+        on_buttons: List[tk.Button] = []
+        off_buttons: List[tk.Button] = []
+        forward_buttons: List[tk.Button] = []
+        reverse_buttons: List[tk.Button] = []
+        pull_buttons: List[tk.Button] = []
+        push_buttons: List[tk.Button] = []
         stop_buttons: List[tk.Button] = []
-        
+
         on_commands = ["EJCT 0,ATTACH\n", "DLC 0,LOCK\n",
                        "DLC 1,LOCK\n", "DLC 2,LOCK\n", "DLC 3,LOCK\n"]
         off_commands = ["EJCT 0,DETACH\n", "DLC 0,UNLOCK\n",
                         "DLC 1,UNLOCK\n", "DLC 2,UNLOCK\n", "DLC 3,UNLOCK\n"]
         forward_commands = ["SVM 0,CW,1\n", "CONV 0,CW\n"]
         reverse_commands = ["SVM 0,BREAK,0\n", "CONV 0,OFF\n"]
-        pull_commands = ["CYL 0,PULL\n","CYL 3,PULL\n", "CYL 2,PULL\n", 
+        pull_commands = ["CYL 0,PULL\n", "CYL 3,PULL\n", "CYL 2,PULL\n",
                          "CYL 4,PULL\n", "CYL 1,PULL\n"]
-        push_commands = ["CYL 0,PUSH\n","CYL 3,PUSH\n", "CYL 2,PUSH\n", 
+        push_commands = ["CYL 0,PUSH\n", "CYL 3,PUSH\n", "CYL 2,PUSH\n",
                          "CYL 4,PUSH\n", "CYL 1,PUSH\n"]
         stop_command = ["CONV 0,N\n", "CONV 0,N\n", "CONV 0,N\n"]
 
@@ -225,16 +229,16 @@ class Monitoring(ScreenBase):
                                                   command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, True)))
         self.accuracy_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#de9687",
                                                    command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, False)))
-        
-        #シリンダボタン
+
+        # シリンダボタン
         for i in range(5):
             push_button = tk.Button(self, text="PUSH", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                  command=lambda i=i: (self.robot_oprration_request(push_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
+                                    command=lambda i=i: (self.robot_oprration_request(push_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
             pull_button = tk.Button(self, text="PULL", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                   command=lambda i=i: (self.robot_oprration_request(pull_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
+                                    command=lambda i=i: (self.robot_oprration_request(pull_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
             push_buttons.append(push_button)
             pull_buttons.append(pull_button)
-        #URドアロックボタン
+        # URドアロックボタン
         for i in range(5):
             on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
                                   command=lambda i=i: (self.robot_oprration_request(on_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
@@ -242,24 +246,24 @@ class Monitoring(ScreenBase):
                                    command=lambda i=i: (self.robot_oprration_request(off_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i])))
             on_buttons.append(on_button)
             off_buttons.append(off_button)
-        #サーボモータベルトコンベアボタン
-        for i in range(2): 
+        # サーボモータベルトコンベアボタン
+        for i in range(2):
             forward_button = tk.Button(self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
                                        command=lambda i=i: (self.robot_oprration_request(forward_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
             reverse_button = tk.Button(self, text="後転", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
                                        command=lambda i=i: (self.robot_oprration_request(reverse_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
             forward_buttons.append(forward_button)
             reverse_buttons.append(reverse_button)
-        #停止ボタン
+        # 停止ボタン
         for i in range(2):
             stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
                                     command=lambda: (self.robot_oprration_request(stop_command[i])))
             stop_buttons.append(stop_button)
-        #戻るボタン
+        # 戻るボタン
         back_button = tk.Button(self, text="戻る", command=lambda: self.change_frame(Frames.CREATE_SELECTION),
                                 font=("AR丸ゴシック体M", 18), width=22)
 
-        #ボタン配置
+        # ボタン配置
         for i in range(5):
             on_buttons[i].grid(row=i + 4, column=2)
             off_buttons[i].grid(row=i + 4, column=3)
@@ -276,21 +280,21 @@ class Monitoring(ScreenBase):
             stop_buttons[i].grid(row=i + 9, column=4)
 
         kara_label1.grid(row=0, column=0)
-        backlight_label.grid(row=1, column=1,pady=10)
-        barlight_label.grid(row=2, column=1,pady=10)
-        ringlight_label.grid(row=3, column=1,pady=10)
-        UR_label.grid(row=4, column=1,pady=10)
-        dlc0_label.grid(row=5, column=1,pady=10)
-        dlc1_label.grid(row=6, column=1,pady=10)
-        dlc2_label.grid(row=7, column=1,pady=10)
-        dlc3_label.grid(row=8, column=1,pady=10)
-        svm_label.grid(row=9, column=1,pady=10)
-        conv_label.grid(row=10, column=1,pady=10)
-        cyl_000_label.grid(row=11, column=1,pady=10)
-        cyl_001_label.grid(row=12, column=1,pady=10)
-        cyl_002_label.grid(row=13, column=1,pady=10)
-        cyl_003_label.grid(row=BUTTON_FONT_SIZE, column=1,pady=10)
-        cyl_004_label.grid(row=15, column=1,pady=10)
+        backlight_label.grid(row=1, column=1, pady=10)
+        barlight_label.grid(row=2, column=1, pady=10)
+        ringlight_label.grid(row=3, column=1, pady=10)
+        UR_label.grid(row=4, column=1, pady=10)
+        dlc0_label.grid(row=5, column=1, pady=10)
+        dlc1_label.grid(row=6, column=1, pady=10)
+        dlc2_label.grid(row=7, column=1, pady=10)
+        dlc3_label.grid(row=8, column=1, pady=10)
+        svm_label.grid(row=9, column=1, pady=10)
+        conv_label.grid(row=10, column=1, pady=10)
+        cyl_000_label.grid(row=11, column=1, pady=10)
+        cyl_001_label.grid(row=12, column=1, pady=10)
+        cyl_002_label.grid(row=13, column=1, pady=10)
+        cyl_003_label.grid(row=BUTTON_FONT_SIZE, column=1, pady=10)
+        cyl_004_label.grid(row=15, column=1, pady=10)
         tool_label.grid(row=1, column=5, columnspan=2)
         tool1_label.grid(row=2, column=5)
         tool2_label.grid(row=2, column=7)
