@@ -86,6 +86,8 @@ class CreateSelection(ScreenBase):
         if quantity is None or quantity == 0:
             return
         del self.number_pad
+        if target_process_data["regist_process_count"] != 0:
+            self.table.delete(target_process_data["process_data"].model_id)
         target_process_data["regist_process_count"] = quantity
         self.table.insert("", "end", iid=target_process_data["process_data"].model_id, values=(
             target_process_data["process_data"].model_number, quantity))
@@ -107,5 +109,5 @@ class CreateSelection(ScreenBase):
         self.table.delete(*self.table.get_children())
         for process_data in self.data_list:
             if process_data["regist_process_count"]:
-                self.table.insert("", "end",  iid=process_data["process_data"].model_id,values=(
+                self.table.insert("", "end",  iid=process_data["process_data"].model_id, values=(
                     process_data["process_data"].model_number, process_data["regist_process_count"]))
