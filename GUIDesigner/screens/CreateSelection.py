@@ -37,7 +37,6 @@ class CreateSelection(ScreenBase):
             self.model_select_combobox["values"] = combobox_options
 
     def _create_widgets(self, selected_items=None):
-
         self.table = ttk.Treeview(self, columns=(
             "Data", "Quantity"), show="headings")
         self.table.heading("#0", text=" ")
@@ -68,10 +67,10 @@ class CreateSelection(ScreenBase):
 
         self.table.place(relheight=0.6, relwidth=0.7, x=130, y=70)
         scrollbar.place(relheight=0.6, x=1464, y=70)
-        add_data_button.place(rely=0.2, x=1530, y=200)
-        remove_button.place(rely=0.2, x=1530, y=400)
+        add_data_button.place(rely=0.8, relx=0.8)
+        remove_button.place(rely=0.9, relx=0.8)
         go_monitor_button.place(rely=0.75, relx=0.1)
-        
+
         conbobox_font = Font(family="Helvetica", size=30)
         # Add dropdown box
         self.model_select_combobox = ttk.Combobox(
@@ -97,7 +96,7 @@ class CreateSelection(ScreenBase):
 
     def _remove_selected_items(self):
         selected_items = self.table.selection()
-
+        
         for item in selected_items:
             item_values = self.table.item(item, 'values')
             if item_values:
@@ -119,5 +118,6 @@ class CreateSelection(ScreenBase):
     def _update_selection_table(self):
         self.table.delete(*self.table.get_children())
         for process_data in self.data_list:
-            self.table.insert("", "end", values=(
-                process_data["data_file_path"], process_data["regist_process_count"]))
+            if process_data["regist_process_count"]:
+                self.table.insert("", "end", values=(
+                    process_data["process_data"].model_number, process_data["regist_process_count"]))
