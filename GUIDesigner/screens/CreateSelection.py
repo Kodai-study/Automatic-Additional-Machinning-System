@@ -59,8 +59,8 @@ class CreateSelection(ScreenBase):
         remove_button = tk.Button(self, text="削除", command=self._remove_selected_items,
                                   font=("AR丸ゴシック体M", 18), width=22)
 
-        go_check_button = tk.Button(self, text="確認画面", command=lambda: self.change_frame(
-            Frames.CHECK_SELECTION), font=("AR丸ゴシック体M", 18), width=22)
+        go_check_button = tk.Button(self, text="確認画面", command=lambda: (self._regist_processing_order(), self.change_frame(
+            Frames.CHECK_SELECTION)), font=("AR丸ゴシック体M", 18), width=22)
         go_check_button.place(rely=0.85, relx=0.1)
 
         self.table.place(relheight=0.6, relwidth=0.7, x=130, y=70)
@@ -111,3 +111,14 @@ class CreateSelection(ScreenBase):
             if process_data["regist_process_count"]:
                 self.table.insert("", "end",  iid=process_data["process_data"].model_id, values=(
                     process_data["process_data"].model_number, process_data["regist_process_count"]))
+
+    def _regist_processing_order(self):
+        order_number = 0
+        for search_data in self.data_list:
+            search_data["order_number"] = 0
+
+        for id in self.table.get_children():
+            for search_data in self.data_list:
+                if search_data["process_data"].model_id == int(id):
+                    search_data["order_number"] = order_number
+                    order_number += 1
