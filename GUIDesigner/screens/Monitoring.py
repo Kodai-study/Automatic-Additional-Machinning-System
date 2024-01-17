@@ -290,16 +290,16 @@ class Monitoring(ScreenBase):
         conveyor_rotato_good_button = tk.Button(
             self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-        conveyor_rotato_bad_button = tk.Button(self, text="後転", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                               command=lambda i=i: (self.robot_oprration_request(reverse_commands[i]), ))
+        conveyor_rotato_bad_button = tk.Button(
+            self, text="後転", state="nomal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
         conveyor_stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=(
             "MSゴシック", BUTTON_FONT_SIZE, "bold"))
+        
         conveyor_rotato_good_button["command"] = lambda: (self.robot_oprration_request("CONV 0,GOOD"),
                                                           enable_conveyor_button(["STOP"]))
         conveyor_rotato_bad_button["command"] = lambda: (self.robot_oprration_request("CONV 0,BAD"),
                                                          enable_conveyor_button(["STOP"]))
-
         conveyor_stop_button["command"] = lambda: (self.robot_oprration_request("CONV 0,N"),
                                                    enable_conveyor_button(["GOOD", "BAD"]))
         # 停止ボタン
