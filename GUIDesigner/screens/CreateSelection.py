@@ -36,10 +36,11 @@ class CreateSelection(ScreenBase):
                                 for d in self.data_list if 'process_data' in d]
             self.model_select_combobox["values"] = combobox_options
 
-    def _create_widgets(self, selected_items=None):
+    def _create_widgets(self):
         self.table = ttk.Treeview(self, columns=(
             "Data", "Quantity"), show="headings")
-        self.table.heading("#0", text=" ")
+        self.table.column("#0", width=0, stretch=tk.NO)
+        self.table.heading("#0", text="")
         self.table.heading("Data", text="加工データ", anchor='center')
         self.table.heading("Quantity", text="個数", anchor='center')
         self.table.heading("#0", text=" ", anchor='center')
@@ -61,9 +62,6 @@ class CreateSelection(ScreenBase):
         go_check_button = tk.Button(self, text="確認画面", command=lambda: self.change_frame(
             Frames.CHECK_SELECTION), font=("AR丸ゴシック体M", 18), width=22)
         go_check_button.place(rely=0.85, relx=0.1)
-        if selected_items:
-            for data, quantity in selected_items:
-                self.table.insert("", "end", values=(data, quantity))
 
         self.table.place(relheight=0.6, relwidth=0.7, x=130, y=70)
         scrollbar.place(relheight=0.6, x=1464, y=70)
@@ -89,28 +87,18 @@ class CreateSelection(ScreenBase):
             return
         del self.number_pad
         target_process_data["regist_process_count"] = quantity
-        self.table.insert("", "end", values=(
+        self.table.insert("", "end", iid=target_process_data["process_data"].model_id, values=(
             target_process_data["process_data"].model_number, quantity))
 
     # 選択されたアイテムを削除する新しい関数
 
     def _remove_selected_items(self):
         selected_items = self.table.selection()
-        
         for item in selected_items:
-            item_values = self.table.item(item, 'values')
-            if item_values:
-                data, quantity = item_values[0], int(
-                    item_values[1])  # 数量を整数に変換
-
-                # data_list から削除する対象を見つけて削除
-                for i, (existing_data, existing_quantity) in enumerate(self.data_list):
-                    if (data, quantity) == (existing_data, existing_quantity):
-                        print("Found in the list. Removing.")
-                        del self.data_list[i]
-                        break  # 見つかったらループを抜ける
-                else:
-                    print("Not found in the list.")
+            for search_data in self.data_list:
+                if search_data["process_data"].model_id == int(item):
+                    search_data["regist_process_count"] = 0
+                    break
 
         self._update_selection_table()
 
@@ -119,5 +107,5 @@ class CreateSelection(ScreenBase):
         self.table.delete(*self.table.get_children())
         for process_data in self.data_list:
             if process_data["regist_process_count"]:
-                self.table.insert("", "end", values=(
+                self.table.insert("", "end",  iid=process_data["process_data"].model_id,values=(
                     process_data["process_data"].model_number, process_data["regist_process_count"]))
