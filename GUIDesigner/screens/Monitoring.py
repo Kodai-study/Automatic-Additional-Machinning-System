@@ -20,10 +20,10 @@ class Monitoring(ScreenBase):
         self.send_to_integration_queue = send_to_integration_queue
         self._create_widgets()
         self.is_currentScreen = lambda: parent.current_screen == Frames.MONITORING
+        self.servo_motor_speed = 0
 
         # TODO この画面にいるときだけリクエストするように変更
         self._request_inspection_camera_update()
-
 
     def _request_inspection_camera_update(self):
         self.send_to_integration_queue.put((GUIRequestType.CAMERA_FEED_REQUEST, [
@@ -240,14 +240,58 @@ class Monitoring(ScreenBase):
             on_buttons.append(on_button)
             off_buttons.append(off_button)
 
+        def svm_speed_controller(change_number):
+            self.servo_motor_speed += change_number
+            if self.servo_motor_speed > 7:
+                self.servo_motor_speed = 7
+                return
+            elif self.servo_motor_speed < -7:
+                self.servo_motor_speed = -7
+                return
+
+            if self.servo_motor_speed == 0:
+                self.robot_oprration_request("SVM N,0")
+            elif self.servo_motor_speed > 0:
+                self.robot_oprration_request(
+                    "SVM CW,"+str(self.servo_motor_speed))
+            else:
+                speed = self.servo_motor_speed * -1
+                self.robot_oprration_request("SVM CCW,"+str(speed))
+
+        svm_speed_up_button = tk.Button(self, text="速度＋", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
+                                        command=lambda: svm_speed_controller(+1))
+        svm_speed_down_button = tk.Button(self, text="速度－", state="normal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
+                                          command=lambda: svm_speed_controller(-1))
+
+        def enable_conveyor_button(button_kind_list):
+
+            self.robot_oprration_request("CONV 0,N")
+            conveyor_rotato_good_button["state"] = "disabled"
+            conveyor_rotato_bad_button["state"] = "disabled"
+            conveyor_stop_button["state"] = "disabled"
+            for button_kind in button_kind_list:
+                if button_kind == "GOOD":
+                    conveyor_rotato_good_button["state"] = "normal"
+                elif button_kind == "BAD":
+                    conveyor_rotato_bad_button["state"] = "normal"
+                elif button_kind == "STOP":
+                    conveyor_stop_button["state"] = "normal"
         # サーボモータベルトコンベアボタン
-        for i in range(2):
-            forward_button = tk.Button(self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                       command=lambda i=i: (self.robot_oprration_request(forward_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
-            reverse_button = tk.Button(self, text="後転", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                       command=lambda i=i: (self.robot_oprration_request(reverse_commands[i]), self.toggle_button(forward_buttons[i], reverse_buttons[i])))
-            forward_buttons.append(forward_button)
-            reverse_buttons.append(reverse_button)
+        conveyor_rotato_good_button = tk.Button(
+            self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
+        conveyor_rotato_bad_button = tk.Button(self, text="後転", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
+                                               command=lambda i=i: (self.robot_oprration_request(reverse_commands[i]), ))
+
+        conveyor_stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=(
+            "MSゴシック", BUTTON_FONT_SIZE, "bold"))
+        conveyor_rotato_good_button["command"] = lambda: (self.robot_oprration_request("CONV 0,GOOD"),
+                                                          enable_conveyor_button(["STOP"]))
+        conveyor_rotato_bad_button["command"] = lambda: (self.robot_oprration_request("CONV 0,BAD"),
+                                                         enable_conveyor_button(["STOP"]))
+
+        conveyor_stop_button["command"] = lambda: (self.robot_oprration_request("CONV 0,N"),
+                                                   enable_conveyor_button(["GOOD", "BAD"]))
         # 停止ボタン
         for i in range(2):
             stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
@@ -262,16 +306,19 @@ class Monitoring(ScreenBase):
             on_button.grid(row=i + 4, column=2)
             off_button.grid(row=i + 4, column=3)
 
-        for i in range(2):
-            forward_buttons[i].grid(row=i + 9, column=2)
-            reverse_buttons[i].grid(row=i + 9, column=3)
+        svm_speed_up_button.grid(row=9, column=2)
+        svm_speed_down_button.grid(row=9, column=3)
+
+        conveyor_rotato_good_button.grid(row=10, column=2)
+        conveyor_rotato_bad_button.grid(row=10, column=3)
+        conveyor_stop_button.grid(row=10, column=4)
 
         for i in range(5):
             push_buttons[i].grid(row=i + 11, column=2)
             pull_buttons[i].grid(row=i + 11, column=3)
 
-        for i in range(2):
-            stop_buttons[i].grid(row=i + 9, column=4)
+        # for i in range(2):
+        #     stop_buttons[i].grid(row=i + 9, column=4)
 
         kara_label1.grid(row=0, column=0)
         backlight_label.grid(row=1, column=1, pady=10)
