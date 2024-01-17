@@ -245,6 +245,15 @@ class Monitoring(ScreenBase):
         svm_speed_down_button = tk.Button(self, text="速度－", state="normal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
                                           command=lambda: svm_speed_controller(-1))
 
+        def on_svm_stop():
+            self.servo_motor_speed = 0
+            self.robot_oprration_request("SVM N,0")
+            svm_speed_up_button["state"] = "normal"
+            svm_speed_down_button["state"] = "normal"
+
+        svm_stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
+                                    command=on_svm_stop)
+
         def svm_speed_controller(change_number):
             self.servo_motor_speed += change_number
             if self.servo_motor_speed >= 7:
@@ -263,8 +272,7 @@ class Monitoring(ScreenBase):
             else:
                 speed = self.servo_motor_speed * -1
                 self.robot_oprration_request("SVM CCW,"+str(speed))
-                
-                
+
         def enable_conveyor_button(button_kind_list):
 
             self.robot_oprration_request("CONV 0,N")
@@ -310,6 +318,7 @@ class Monitoring(ScreenBase):
 
         svm_speed_up_button.grid(row=9, column=2)
         svm_speed_down_button.grid(row=9, column=3)
+        svm_stop_button.grid(row=9, column=4)
 
         conveyor_rotato_good_button.grid(row=10, column=2)
         conveyor_rotato_bad_button.grid(row=10, column=3)
