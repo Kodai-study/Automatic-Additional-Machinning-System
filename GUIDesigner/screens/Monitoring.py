@@ -152,7 +152,7 @@ class Monitoring(ScreenBase):
         cyl_004_label = tk.Label(
             self, text="加工部テーブルシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool_label = tk.Label(
-            self, text="工具交換回数", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="工具使用回数", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool1_label = tk.Label(
             self, text="工具1 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         tool2_label = tk.Label(
@@ -173,21 +173,21 @@ class Monitoring(ScreenBase):
             self, text="", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
 
         tool1_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
         tool2_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
         tool3_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
         tool4_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
         tool5_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
         tool6_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
         tool7_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
         tool8_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10)
+            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
 
         # ボタンのコマンドリスト作成
         on_buttons: List[tk.Button] = []
