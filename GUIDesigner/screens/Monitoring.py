@@ -24,13 +24,6 @@ class Monitoring(ScreenBase):
         # TODO この画面にいるときだけリクエストするように変更
         self._request_inspection_camera_update()
 
-    def _test_camera_views_update(self):
-        self.after(1000, lambda: self._update_image_from_path(
-            self.accuracy_camera_views, "./test/c.png"))
-        self.after(2000, lambda: self._update_image_from_path(
-            self.tool_camera_views, "./test/a.png"))
-        self.after(3000, lambda: self._update_image_from_path(
-            self.processing_camera_views, "./test/b.png"))
 
     def _request_inspection_camera_update(self):
         self.send_to_integration_queue.put((GUIRequestType.CAMERA_FEED_REQUEST, [
@@ -95,6 +88,9 @@ class Monitoring(ScreenBase):
                     self.accuracy_light_on_button, self.accuracy_light_off_button)
 
     def robot_oprration_request(self, command):
+        # 改行で終わっていなかった場合、改行を追加する
+        if command[-1] != "\n":
+            command += "\n"
         self.send_to_integration_queue.put(
             (GUIRequestType.ROBOT_OPERATION_REQUEST, command))
 
@@ -198,15 +194,15 @@ class Monitoring(ScreenBase):
         push_buttons: List[tk.Button] = []
         stop_buttons: List[tk.Button] = []
 
-        on_commands = ["EJCT 0,ATTACH\n", "DLC 0,LOCK\n"]
-        off_commands = ["EJCT 0,DETACH\n", "DLC 0,UNLOCK\n"]
-        forward_commands = ["SVM 0,CW,1\n", "CONV 0,CW\n"]
-        reverse_commands = ["SVM 0,BREAK,0\n", "CONV 0,OFF\n"]
-        pull_commands = ["CYL 0,PULL\n", "CYL 3,PULL\n", "CYL 2,PULL\n",
-                         "CYL 4,PULL\n", "CYL 1,PULL\n"]
-        push_commands = ["CYL 0,PUSH\n", "CYL 3,PUSH\n", "CYL 2,PUSH\n",
-                         "CYL 4,PUSH\n", "CYL 1,PUSH\n"]
-        stop_command = ["CONV 0,N\n", "CONV 0,N\n", "CONV 0,N\n"]
+        on_commands = ["EJCT 0,ATTACH", "DLC 0,LOCK"]
+        off_commands = ["EJCT 0,DETACH", "DLC 0,UNLOCK"]
+        forward_commands = ["SVM 0,CW,1", "CONV 0,CW"]
+        reverse_commands = ["SVM 0,BREAK,0", "CONV 0,OFF"]
+        pull_commands = ["CYL 0,PULL", "CYL 3,PULL", "CYL 2,PULL",
+                         "CYL 4,PULL", "CYL 1,PULL"]
+        push_commands = ["CYL 0,PUSH", "CYL 3,PUSH", "CYL 2,PUSH",
+                         "CYL 4,PUSH", "CYL 1,PUSH"]
+        stop_command = ["CONV 0,N", "CONV 0,N", "CONV 0,N"]
 
         # 照明ボタン作成
         self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
