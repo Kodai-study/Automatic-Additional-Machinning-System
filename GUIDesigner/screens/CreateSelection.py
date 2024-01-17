@@ -10,6 +10,9 @@ import tkinter as tk
 
 
 class CreateSelection(ScreenBase):
+
+    COMBO_BOX_FONT = Font(family="Helvetica", size=30)
+
     def __init__(self, parent, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.number_pad = None
@@ -37,25 +40,27 @@ class CreateSelection(ScreenBase):
             self.model_select_combobox["values"] = combobox_options
 
     def _create_widgets(self):
-        self.table = ttk.Treeview(self, columns=(
+        self.processed_data_treeview = ttk.Treeview(self, columns=(
             "Data", "Quantity"), show="headings")
-        self.table.column("#0", width=0, stretch=tk.NO)
-        self.table.heading("#0", text="")
-        self.table.heading("Data", text="加工データ", anchor='center')
-        self.table.heading("Quantity", text="個数", anchor='center')
-        self.table.heading("#0", text=" ", anchor='center')
+        self.processed_data_treeview.column("#0", width=0, stretch=tk.NO)
+        self.processed_data_treeview.heading("#0", text="")
+        self.processed_data_treeview.heading(
+            "Data", text="加工データ", anchor='center')
+        self.processed_data_treeview.heading(
+            "Quantity", text="個数", anchor='center')
+        self.processed_data_treeview.heading("#0", text=" ", anchor='center')
 
-        self.table.column('Data', anchor='center')
-        self.table.column('Quantity', anchor='center')
+        self.processed_data_treeview.column('Data', anchor='center')
+        self.processed_data_treeview.column('Quantity', anchor='center')
 
         scrollbar = ttk.Scrollbar(
-            self, orient=tk.VERTICAL, command=self.table.yview)
-        self.table.configure(yscroll=scrollbar.set)
+            self, orient=tk.VERTICAL, command=self.processed_data_treeview.yview)
+        self.processed_data_treeview.configure(yscroll=scrollbar.set)
 
         go_monitor_button = tk.Button(self, text="モニタ画面",
                                       command=lambda: self.change_frame(Frames.MONITORING), font=("AR丸ゴシック体M", 18), width=22)
         add_data_button = tk.Button(self, text="加工データ追加",
-                                    command=self._add_data_from_file, font=("AR丸ゴシック体M", 18), width=22)
+                                    command=self._add_process_data, font=("AR丸ゴシック体M", 18), width=22)
         remove_button = tk.Button(self, text="削除", command=self._remove_selected_items,
                                   font=("AR丸ゴシック体M", 18), width=22)
 
@@ -63,20 +68,20 @@ class CreateSelection(ScreenBase):
             Frames.CHECK_SELECTION)), font=("AR丸ゴシック体M", 18), width=22)
         go_check_button.place(rely=0.85, relx=0.1)
 
-        self.table.place(relheight=0.6, relwidth=0.7, x=130, y=70)
+        self.processed_data_treeview.place(
+            relheight=0.6, relwidth=0.7, x=130, y=70)
         scrollbar.place(relheight=0.6, x=1464, y=70)
         add_data_button.place(rely=0.8, relx=0.8)
         remove_button.place(rely=0.9, relx=0.8)
         go_monitor_button.place(rely=0.75, relx=0.1)
 
-        conbobox_font = Font(family="Helvetica", size=30)
         # Add dropdown box
         self.model_select_combobox = ttk.Combobox(
-            self, font=conbobox_font, state="readonly")
+            self, font=self.COMBO_BOX_FONT, state="readonly")
         self.model_select_combobox.place(relx=0.8, rely=0.9, anchor="center")
         self.model_select_combobox.config(width=15)
 
-    def _add_data_from_file(self):
+    def _add_process_data(self):
         target_index = self.model_select_combobox.current()
         target_process_data = self.data_list[target_index]
         self.number_pad = NumberPad(self)
@@ -87,15 +92,16 @@ class CreateSelection(ScreenBase):
             return
         del self.number_pad
         if target_process_data["regist_process_count"] != 0:
-            self.table.delete(target_process_data["process_data"].model_id)
+            self.processed_data_treeview.delete(
+                target_process_data["process_data"].model_id)
         target_process_data["regist_process_count"] = quantity
-        self.table.insert("", "end", iid=target_process_data["process_data"].model_id, values=(
+        self.processed_data_treeview.insert("", "end", iid=target_process_data["process_data"].model_id, values=(
             target_process_data["process_data"].model_number, quantity))
 
     # 選択されたアイテムを削除する新しい関数
 
     def _remove_selected_items(self):
-        selected_items = self.table.selection()
+        selected_items = self.processed_data_treeview.selection()
         for item in selected_items:
             for search_data in self.data_list:
                 if search_data["process_data"].model_id == int(item):
@@ -106,10 +112,11 @@ class CreateSelection(ScreenBase):
 
     # 削除後に選択テーブルを更新する新しい関数
     def _update_selection_table(self):
-        self.table.delete(*self.table.get_children())
+        self.processed_data_treeview.delete(
+            *self.processed_data_treeview.get_children())
         for process_data in self.data_list:
             if process_data["regist_process_count"]:
-                self.table.insert("", "end",  iid=process_data["process_data"].model_id, values=(
+                self.processed_data_treeview.insert("", "end",  iid=process_data["process_data"].model_id, values=(
                     process_data["process_data"].model_number, process_data["regist_process_count"]))
 
     def _regist_processing_order(self):
@@ -117,7 +124,7 @@ class CreateSelection(ScreenBase):
         for search_data in self.data_list:
             search_data["order_number"] = 0
 
-        for id in self.table.get_children():
+        for id in self.processed_data_treeview.get_children():
             for search_data in self.data_list:
                 if search_data["process_data"].model_id == int(id):
                     search_data["order_number"] = order_number
