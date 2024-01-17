@@ -32,14 +32,21 @@ class CreateSelection(ScreenBase):
                 return
 
             self.data_list = request_data
-            combobox_options = [d["process_data"].model_number
-                                for d in self.data_list if 'process_data' in d]
-            self.model_select_combobox["values"] = combobox_options
+            self.combobox_options = [d["process_data"].model_number
+                                     for d in self.data_list if 'process_data' in d]
+
+# OptionMenuの選択肢を更新
+            menu = self.model_select_combobox["menu"]
+            menu.delete(0, 'end')  # 現在のメニュー項目をすべて削除
+
+            for option in self.combobox_options:
+                menu.add_command(
+                    label=option, command=lambda value=option: self.model_var.set(value))
 
     def _create_widgets(self):
         self.processed_data_treeview = self._create_registerd_table_list()
         self.process_detail_text_view = self._create_detail_view()
-        self.model_select_combobox = self._create_data_select_combobox()
+        self.model_select_combobox, self.model_var = self._create_data_select_combobox()
 
         go_monitor_button = tk.Button(self, text="モニタ画面",
                                       command=lambda: self.change_frame(Frames.MONITORING), font=("AR丸ゴシック体M", 18), width=22)
@@ -61,18 +68,19 @@ class CreateSelection(ScreenBase):
         large_font = Font(family="Helvetica", size=30)
         text_view_x = 130 + (self.winfo_screenwidth() * 0.7)  # テーブルの幅の終わりの位置
         text_view_y = 70  # テーブルと同じy座標
-
-        text_view_width = 1.0 - 0.7  # 残りの幅
+        text_view_width = 1.0 - 0.8  # 残りの幅
         text_view_height = 0.6  # テーブルと同じ高さ
 
-        style.configure("Large.TCombobox", font=large_font)
-        model_select_combobox = ttk.Combobox(
-            self, font=COMBO_BOX_FONT, state="readonly")
-        # model_select_combobox.place(relx=0.85, rely=0.9, anchor="center")
-        # model_select_combobox.config(width=15)
-        model_select_combobox.place(
+        selected_value = tk.StringVar(self)
+        # OptionMenuの作成
+        model_select_optionmenu = tk.OptionMenu(self, selected_value, "hoge")
+        model_select_optionmenu.config(font=COMBO_BOX_FONT)  # フォントサイズ設定
+        # ドロップダウンメニューのフォントサイズも変更
+        menu = model_select_optionmenu["menu"]
+        menu.config(font=COMBO_BOX_FONT)
+        model_select_optionmenu.place(
             relwidth=text_view_width, x=text_view_x, y=text_view_y)
-        return model_select_combobox
+        return model_select_optionmenu, selected_value
 
     def _create_registerd_table_list(self):
         processed_data_treeview = ttk.Treeview(self, columns=(
@@ -108,8 +116,7 @@ class CreateSelection(ScreenBase):
         return text_view
 
     def _add_process_data(self):
-        target_index = self.model_select_combobox.current()
-        target_process_data = self.data_list[target_index]
+        target_process_data = self._search_data_with_name(self.model_var.get())
         self.number_pad = NumberPad(self)
         self.number_pad.attributes("-topmost", True)
         self.wait_window(self.number_pad)
@@ -152,3 +159,9 @@ class CreateSelection(ScreenBase):
                 if search_data["process_data"].model_id == int(id):
                     search_data["order_number"] = order_number
                     order_number += 1
+
+    def _search_data_with_name(self, name):
+        for search_data in self.data_list:
+            if search_data["process_data"].model_number == name:
+                return search_data
+        return None
