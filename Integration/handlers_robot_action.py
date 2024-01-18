@@ -58,7 +58,7 @@ def work_process(integration_instance, process_data_manager):
     if not integration_instance.process_manager.check_tool_ok():
         print("工具が足りません")
         return True
-
+    
     wait_command(integration_instance, "UR", "SIZE 0,ST")
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
@@ -83,17 +83,21 @@ def work_process(integration_instance, process_data_manager):
 
     drill_process(integration_instance)
 
+    # send_to_CFD(integration_instance, "DRL 0,0,0,8")
+    wait_command(integration_instance, "CFD", "DRL 0,DETACHED")
     send_to_CFD(integration_instance, "CYL 0,PULL")
+    send_to_UR(integration_instance, "WRK 0,TAP_FIN")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
     grip_position = integration_instance.process_manager.get_grip_position()
     send_to_UR(integration_instance,
                f"WRK 0,{grip_position[0]},{grip_position[1]}")
-    wait_command(integration_instance, "UR", "INSPECTION")
+    wait_command(integration_instance, "UR", "CYL 4,PUSH")
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
-
+    send_to_CFD(integration_instance, f"INSPCT 0,{"OK" if preprocess_inspection_result.result else "NG"}")
+    
 
 def create_inspection_information(json_data):
     hole_information_data = json_data["holes"]
@@ -117,7 +121,7 @@ def drill_process(integration_instance):
          drill_speed), tool_degree = next_process_data
 
         if tool_degree:
-            send_to_CFD(integration_instance, "WRK 0,0,0,8")
+            send_to_CFD(integration_instance, "DRL 0,0,0,8")
             wait_command(integration_instance, "CFD", "DRL 0,DETACHED")
             preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.current_tool_type))
@@ -128,8 +132,8 @@ def drill_process(integration_instance):
         send_to_CFD(integration_instance,
                     f"DRL 0,{x_position},{y_position},{drill_speed}")
         print(f"{x_position} , {y_position}にM{drill_speed}の穴をあけた")
-        wait_command(integration_instance, "CFD", "DRILL_END")
-    send_to_CFD(integration_instance, "WRK 0,0,0,8")
+        wait_command(integration_instance, "CFD", "WRK 0,XYT_IS_SETTED")
+    send_to_CFD(integration_instance, "DRL 0,0,0,8")
 
 
 def send_to_CFD(integration_instance, message):
@@ -158,11 +162,11 @@ def rotato_tool_stock(integration_instance, degress_number):
 def wait_command(integration, robot, command):
     if not TEST_WAIT_COMMAND:
         return
-    
+
     print(f"次のコマンドを待機中…    {robot}からのコマンド : {command}")
     if not command.endswith("\n"):
         command += "\n"
-        
+
     if robot == "CFD":
         target = TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD
     elif robot == "UR":
