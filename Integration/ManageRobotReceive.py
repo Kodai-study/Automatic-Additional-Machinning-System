@@ -53,6 +53,8 @@ class ManageRobotReceive:
         Returns:
             function: ハンドラ
         """
+        if command[-1] == "\n":
+            command = command[:-1]
         if command in self._special_command_handlers:
             return self._special_command_handlers[command]
         instruction, dev_num, detail = self._split_command(command[:])
@@ -105,8 +107,9 @@ class ManageRobotReceive:
             return lambda: self._undefine(command)
         if detail == "TAP_FIN":
             def handl():
-                 _send_message_to_ur(command, self._integration_instance.send_request_queue)
-                 start_process(self._integration_instance)
+                _send_message_to_ur(
+                    command, self._integration_instance.send_request_queue)
+                start_process(self._integration_instance)
             return handl
         if detail == "DRL_READY":
             print("ドリルが準備完了しました")
