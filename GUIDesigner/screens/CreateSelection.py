@@ -1,4 +1,7 @@
+from collections import defaultdict
+import json
 from queue import Queue
+import textwrap
 from tkinter import filedialog, ttk
 from tkinter.font import Font
 from GUIDesigner.Frames import Frames
@@ -73,8 +76,9 @@ class CreateSelection(ScreenBase):
 
         def view_process_data_detail(*args):
             print("value", selected_value.get())
-            self.process_detail_text_view.config(text=self._search_data_with_name(
-                selected_value.get())["process_data"])
+            process_info = self._create_process_detail_str(self._search_data_with_name(
+                selected_value.get()))
+            self.process_detail_text_view.config(text=process_info)
 
         selected_value.trace("w", view_process_data_detail)
         model_select_optionmenu = tk.OptionMenu(
@@ -170,3 +174,32 @@ class CreateSelection(ScreenBase):
             if search_data["process_data"].model_number == name:
                 return search_data
         return None
+
+    def _create_process_detail_str(self, process_data):
+        process_info = process_data["process_data"]
+        with open(process_data["data_file_path"][1:], "r", encoding="utf-8") as f:
+            hole_info = json.load(f)
+        # 'size' ごとに辞書をまとめる
+        grouped_by_size = defaultdict(list)
+        for item in hole_info["holes"]:
+            size = item['size']
+            grouped_by_size[size].append(item)
+            
+        holes_info = ""
+        for grouped_by_size in grouped_by_size.values():
+            holes_info += f"""
+            穴サイズ : {grouped_by_size[0]['size']}
+                穴の数 : {len(grouped_by_size)}
+            """
+            
+        info_str = f"""
+            加工データ名 : {process_info.model_number}
+            ワークの形状 : {process_info.work_shape}
+            ワークのサイズ : {process_info.workpiece_dimension}
+            平均加工時間 : {process_info.average_processing_time}
+            {'-'*20}
+            加工データ
+            {holes_info}
+            """
+
+        return textwrap.dedent(info_str)
