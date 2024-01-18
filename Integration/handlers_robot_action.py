@@ -9,7 +9,7 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = True
+TEST_WAIT_COMMAND = False
 CYLINDRE_WAIT_TIME = 0
 
 
@@ -96,7 +96,7 @@ def work_process(integration_instance, process_data_manager):
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
-    send_to_CFD(integration_instance, f"INSPCT 0,{"OK" if preprocess_inspection_result.result else "NG"}")
+    send_to_CFD(integration_instance, f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
     
 
 def create_inspection_information(json_data):
