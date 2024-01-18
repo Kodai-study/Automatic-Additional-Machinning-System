@@ -7,16 +7,13 @@ def preprocess_image(image_path, threshold_value=127):
     
     # グレースケール変換
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # 2値化
-    _, binary = cv2.threshold(gray, threshold_value, 255, cv2.THRESH_BINARY)
-    
+
     # 画像の平滑化
-    blurred = cv2.GaussianBlur(binary, (5, 5), 0)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     cv2.imwrite("result_gray.png",blurred)
     return blurred
 
-def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=30, threshold_value=127,Tolerance=340,realvalue=10):
+def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=30, threshold_value=127,Tolerance=1.7,realvalue=0.05):
     # 画像の前処理
     preprocessed_image = preprocess_image(image_path, threshold_value)
     
@@ -45,24 +42,15 @@ def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=
             Tolerancemin=Tolerance-0.05
             Tolerancemax=Tolerance+0.05
             #pxをmmに変換する
-            realvalue_radius=radius*realvalue #1px何mmなのかを調べる
+            realvalue_radius=radius*2*0.05 #実際の寸法＝直径(半径×2)×1pxの長さ
             if realvalue_radius < Tolerancemax and realvalue_radius > Tolerancemin:
                 gouhi="o"
             else:
                 gouhi="x"
             
             # 座標と直径を表示
-            text = f"(x_{center[0]}px, y_{center[1]}px, center{radius}px,center{realvalue_radius}mm, {gouhi})"
-            cv2.putText(result_image, text, (i[0] + radius, i[1] - radius), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-
-        # 輪郭を検出
-        contours, _ = cv2.findContours(preprocessed_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        # 小さい座標値の直角を検出
-        for contour in contours:
-            x, y, w, h = cv2.boundingRect(contour)
-            if x < center[0] and y < center[1]:
-                cv2.rectangle(result_image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            text = f"(x_{center[0]}px, y_{center[1]}px, center{Tolerance}+-0.05mm,center{realvalue_radius}mm, {gouhi})"
+            cv2.putText(result_image, text, (i[0] - 9*radius, i[1] - radius), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
         cv2.imwrite('result_image.png', result_image)
         #cv2.imshow('Detected Circles', result_image)
@@ -72,4 +60,4 @@ def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=
         print("円が検出されませんでした。")
 
 # 使用例
-detect_circles('seido.png', min_radius=10, max_radius=100, param1=50, param2=30, threshold_value=240)
+detect_circles('exptime1000.png', min_radius=10, max_radius=100, param1=50, param2=30, threshold_value=240,realvalue=0.05)
