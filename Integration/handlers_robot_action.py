@@ -1,3 +1,4 @@
+from threading import Thread
 import time
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
@@ -50,16 +51,22 @@ def initial_tool_inspection(integration_instance):
             return
 
 
+skip_wait_size = False
+
+
 def work_process(integration_instance, process_data_manager):
-    m = process_data_manager.get_next_process_data()
+    is_last_work, m = process_data_manager.get_next_process_data()
     if m is None:
         return True
     integration_instance.process_manager.start_process(m)
     if not integration_instance.process_manager.check_tool_ok():
         print("工具が足りません")
         return True
-    
-    wait_command(integration_instance, "UR", "SIZE 0,ST")
+
+    if not skip_wait_size:
+        wait_command(integration_instance, "UR", "SIZE 0,ST")
+    else:
+        skip_wait_size = False
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
     wait_command(integration_instance, "UR", "CYL 0,PUSH")
@@ -92,12 +99,30 @@ def work_process(integration_instance, process_data_manager):
     send_to_UR(integration_instance,
                f"WRK 0,{grip_position[0]},{grip_position[1]}")
     wait_command(integration_instance, "UR", "CYL 4,PUSH")
+
+    if is_last_work:
+        is_switch_model = inspect_and_carry_out(
+            integration_instance, process_data_manager, m)
+        wait_command(integration_instance, "UR", "SIZE 0,ST")
+        if is_switch_model:
+            print("ワークの交換を行います")
+            send_to_UR(integration_instance, "SIZE 0,0")
+        else:
+            skip_wait_size = True
+    else:
+        inspect_and_carry_out(
+            integration_instance, process_data_manager, m)
+
+
+def inspect_and_carry_out(integration_instance, process_data_manager, m):
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
-    send_to_CFD(integration_instance, f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
-    
+    send_to_CFD(integration_instance,
+                f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
+    return preprocess_inspection_result.result
+
 
 def create_inspection_information(json_data):
     hole_information_data = json_data["holes"]
