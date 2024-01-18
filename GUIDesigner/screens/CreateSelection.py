@@ -30,18 +30,17 @@ class CreateSelection(ScreenBase):
                 self.after(500, lambda: self.send_to_integration_queue.put(
                     (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, )))
                 return
+            self.update_option_menu(request_data)
 
-            self.data_list = request_data
-            self.combobox_options = [d["process_data"].model_number
-                                     for d in self.data_list if 'process_data' in d]
-
-            OptionMenuの選択肢を更新
-            menu = self.model_select_combobox["menu"]
-            menu.delete(0, 'end')  # 現在のメニュー項目をすべて削除
-
-            for option in self.combobox_options:
-                menu.add_command(
-                    label=option, command=lambda value=option: self.model_var.set(value))
+    def update_option_menu(self, request_data):
+        self.data_list = request_data
+        self.combobox_options = [d["process_data"].model_number
+                                 for d in self.data_list if 'process_data' in d]
+        menu = self.model_select_combobox["menu"]
+        menu.delete(0, 'end')  # 現在のメニュー項目をすべて削除
+        for option in self.combobox_options:
+            menu.add_command(
+                label=option, command=lambda value=option: self.model_var.set(value))
 
     def _create_widgets(self):
         self.processed_data_treeview = self._create_registerd_table_list()
@@ -70,16 +69,16 @@ class CreateSelection(ScreenBase):
         text_view_y = 70  # テーブルと同じy座標
         text_view_width = 1.0 - 0.8  # 残りの幅
         text_view_height = 0.6  # テーブルと同じ高さ
-
         selected_value = tk.StringVar(self)
-        # OptionMenuの作成
 
-        def view_process_data_detail(value):
-            print("value", value)
+        def view_process_data_detail(*args):
+            print("value", selected_value.get())
             self.process_detail_text_view.config(text=self._search_data_with_name(
-                value)["process_data"].to_string())
+                selected_value.get())["process_data"])
+
+        selected_value.trace("w", view_process_data_detail)
         model_select_optionmenu = tk.OptionMenu(
-            self, selected_value, "hoge", command=view_process_data_detail)
+            self, selected_value, "hoge")
         model_select_optionmenu.config(font=COMBO_BOX_FONT)  # フォントサイズ設定
         # ドロップダウンメニューのフォントサイズも変更
         menu = model_select_optionmenu["menu"]
