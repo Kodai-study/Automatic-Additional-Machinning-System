@@ -110,7 +110,7 @@ class CreateSelection(ScreenBase):
         scrollbar.place(relheight=0.6, x=1464, y=70)
         processed_data_treeview.configure(yscroll=scrollbar.set)
         processed_data_treeview.place(
-            relheight=0.6, relwidth=0.7, x=130, y=70)
+            relheight=0.6, relwidth=0.5, x=130, y=70)
         return processed_data_treeview
 
     def _create_detail_view(self):
@@ -184,14 +184,14 @@ class CreateSelection(ScreenBase):
         for item in hole_info["holes"]:
             size = item['size']
             grouped_by_size[size].append(item)
-            
+
         holes_info = ""
         for grouped_by_size in grouped_by_size.values():
             holes_info += f"""
             穴サイズ : {grouped_by_size[0]['size']}
                 穴の数 : {len(grouped_by_size)}
             """
-            
+
         info_str = f"""
             加工データ名 : {process_info.model_number}
             ワークの形状 : {process_info.work_shape}
