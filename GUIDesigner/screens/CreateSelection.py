@@ -177,7 +177,7 @@ class CreateSelection(ScreenBase):
 
     def _create_process_detail_str(self, process_data):
         process_info = process_data["process_data"]
-        with open(process_data["data_file_path"][1:], "r", encoding="utf-8") as f:
+        with open(process_data["data_file_path"], "r", encoding="utf-8") as f:
             hole_info = json.load(f)
         # 'size' ごとに辞書をまとめる
         grouped_by_size = defaultdict(list)
