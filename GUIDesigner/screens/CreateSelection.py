@@ -187,9 +187,14 @@ class CreateSelection(ScreenBase):
 
         holes_info = ""
         for grouped_by_size in grouped_by_size.values():
+            hole_positions = ""
+            for hole in grouped_by_size:
+                hole_positions += f"""\
+                    (x:{hole["position"]['x']}, y:{hole["position"]['y']})\n"""
             holes_info += f"""
             穴サイズ : {grouped_by_size[0]['size']}
                 穴の数 : {len(grouped_by_size)}
+                座標 : \n{hole_positions}
             """
 
         info_str = f"""
@@ -201,5 +206,4 @@ class CreateSelection(ScreenBase):
             加工データ
             {holes_info}
             """
-
         return textwrap.dedent(info_str)
