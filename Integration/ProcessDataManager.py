@@ -152,13 +152,13 @@ class ProcessDataManager:
              "regist_process_count": 0,
              "process_time": datetime.timedelta(minutes=23, seconds=45),
              "good_count": 0,
-             "data_file_path": "/test/test.json",
+             "data_file_path": "/test/test2.json",
              "bad_count": 0},
             {"process_data": ProcessingData(3, "加工データ(型番)3", datetime.timedelta(minutes=5, seconds=43), WorkPieceShape.SQUARE, 10.0, "加工者3", datetime.datetime.now()),
              "average_time": datetime.timedelta(minutes=5, seconds=43),
              "regist_process_count": 0,
              "process_time": datetime.timedelta(minutes=23, seconds=45),
              "good_count": 0,
-             "data_file_path": "/test/test.json",
+             "data_file_path": "/test/test3.json",
              "bad_count": 0}
         ]
