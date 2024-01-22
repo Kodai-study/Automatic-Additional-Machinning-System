@@ -39,10 +39,10 @@ def mark_90_degree_intersection(image_path, threshold_value):
             cv2.drawMarker(image, (int(x), int(y)), (0, 255, 0), markerType=cv2.MARKER_CROSS, markerSize=10)
 
     # 結果の表示
-    cv2.imwrite("ImageInspectionController/test/gray.png",binary_image)
-    plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    plt.title('Marked 90 Degree Intersections')
-    plt.show()
+    # cv2.imwrite("ImageInspectionController/test/gray.png",binary_image)
+    # plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    # plt.title('Marked 90 Degree Intersections')
+    # plt.show()
 
 def calculate_intersection(line1, line2):
     x1, y1, x2, y2 = line1
