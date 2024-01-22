@@ -52,13 +52,12 @@ def read_qr_code(image_path):
         print("QRコードが見つかりませんでした。")
 
     # 画像の表示
-    cv2.imshow('QR Code Reader', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.imwrite('ImageInspectionController/test/qr_result.png', image)
+
 
 if __name__ == "__main__":
     # 画像ファイルのパスを指定
-    image_path = 'ImageInspectionController/QR.png'
+    image_path = 'ImageInspectionController/test/qr.png'
 
     # QRコードを読み取り、内容を表示
     read_qr_code(image_path)
