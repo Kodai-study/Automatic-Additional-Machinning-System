@@ -55,6 +55,7 @@ skip_wait_size = False
 
 
 def work_process(integration_instance, process_data_manager):
+    global skip_wait_size
     is_last_work, m = process_data_manager.get_next_process_data()
     if m is None:
         return True
@@ -137,6 +138,8 @@ def create_inspection_information(json_data):
 
 
 def drill_process(integration_instance):
+    previous_x_position = 0
+    previous_y_position = 0
     while True:
         next_process_data = integration_instance.process_manager.get_next_position()
         if next_process_data is None:
@@ -154,8 +157,13 @@ def drill_process(integration_instance):
                 print("工具検査に失敗しました")
                 return
             rotato_tool_stock(integration_instance, tool_degree)
+            previous_x_position = 0
+            previous_y_position = 0
+
         send_to_CFD(integration_instance,
-                    f"DRL 0,{x_position},{y_position},{drill_speed}")
+                    f"DRL 0,{x_position-previous_x_position},{y_position-previous_y_position},{drill_speed}")
+        previous_x_position = x_position
+        previous_y_position = y_position
         print(f"{x_position} , {y_position}にM{drill_speed}の穴をあけた")
         wait_command(integration_instance, "CFD", "WRK 0,XYT_IS_SETTED")
     send_to_CFD(integration_instance, "DRL 0,0,0,8")
