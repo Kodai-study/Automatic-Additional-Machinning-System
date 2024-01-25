@@ -64,21 +64,21 @@ class Integration:
         self.tool_stock_informations = [
             None,
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M2_DRILL, tool_length=10.0, drill_diameter=3.0),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M2_TAP, tool_length=10.0, drill_diameter=3.0),
-            ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M3_DRILL, tool_length=10.0, drill_diameter=3.0),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M3_TAP, tool_length=10.0, drill_diameter=3.0),
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M4_DRILL, tool_length=10.0, drill_diameter=3.0),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M4_TAP, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M3_TAP, tool_length=10.0, drill_diameter=3.0),
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M5_DRILL, tool_length=10.0, drill_diameter=3.0),
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M5_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M4_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M6_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
         ]
         self.process_list = []
         self.image_inspection_controller = ImageInspectionController(

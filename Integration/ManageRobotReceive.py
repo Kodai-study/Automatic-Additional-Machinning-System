@@ -31,6 +31,7 @@ class ManageRobotReceive:
             "ISRESERVED": reservation_process,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
             "TEST_START": lambda: start_process(self._integration_instance),
+
         }
         self._handl_selectors_with_instruction = {
             "SIG": self._select_handler_ur_sig,
@@ -80,8 +81,12 @@ class ManageRobotReceive:
             return self._undefine
 
         if detail == "ATT_IMP_READY":
-            _send_message_to_cfd(
+            return lambda: _send_message_to_cfd(
                 "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
+        elif detail == "ATT_DRL_READY":
+            return lambda: _send_message_to_cfd(
+                "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
+
         sensor_time = datetime.datetime.now()
 
         return self._undefine

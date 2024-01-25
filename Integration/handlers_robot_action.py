@@ -10,8 +10,8 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = False
-CYLINDRE_WAIT_TIME = 0
+TEST_WAIT_COMMAND = True
+CYLINDRE_WAIT_TIME = 2
 
 
 def reservation_process():
@@ -30,6 +30,8 @@ def start_process(integration_instance):
     send_to_CFD(integration_instance, "STM 0,SEARCH")
     # initial_tool_inspection(integration_instance)
     # TODO ワークの個数を取得する
+    time.sleep(1)
+    send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
     _test_regist_process_count(integration_instance)
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
 
@@ -92,7 +94,7 @@ def work_process(integration_instance, process_data_manager):
     drill_process(integration_instance)
 
     # send_to_CFD(integration_instance, "DRL 0,0,0,8")
-    wait_command(integration_instance, "CFD", "DRL 0,DETACHED")
+    wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
     send_to_CFD(integration_instance, "CYL 0,PULL")
     send_to_UR(integration_instance, "WRK 0,TAP_FIN")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
@@ -150,7 +152,7 @@ def drill_process(integration_instance):
 
         if tool_degree:
             send_to_CFD(integration_instance, "DRL 0,0,0,8")
-            wait_command(integration_instance, "CFD", "DRL 0,DETACHED")
+            wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
             preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.current_tool_type))
             if not preprocess_inspection_result.result:
@@ -162,10 +164,10 @@ def drill_process(integration_instance):
 
         send_to_CFD(integration_instance,
                     f"DRL 0,{x_position-previous_x_position},{y_position-previous_y_position},{drill_speed}")
+        wait_command(integration_instance, "CFD", "DRL 0,XYT_IS_SET")
         previous_x_position = x_position
         previous_y_position = y_position
         print(f"{x_position} , {y_position}にM{drill_speed}の穴をあけた")
-        wait_command(integration_instance, "CFD", "WRK 0,XYT_IS_SETTED")
     send_to_CFD(integration_instance, "DRL 0,0,0,8")
 
 
