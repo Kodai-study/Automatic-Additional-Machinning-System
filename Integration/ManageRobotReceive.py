@@ -96,7 +96,14 @@ class ManageRobotReceive:
         if dev_num != 0:
             return self._undefine(command)
         if detail == "ON" or detail == "OFF":
-            return lambda: self._change_robot_status("sensor", WORK_SENSOR_NUM, detail == "ON")
+            def handl():
+                self._change_robot_status(
+                    "sensor", WORK_SENSOR_NUM, detail == "ON")
+                _send_message_to_ur(
+                    command, self._integration_instance.send_request_queue)
+            return handl
+        elif detail == "ST":
+            return lambda :_send_message_to_cfd(command,self._integration_instance.send_request_queue)
         # detail が数字の場合
         try:
             work_count = int(detail)

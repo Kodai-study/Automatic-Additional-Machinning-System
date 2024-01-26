@@ -122,7 +122,7 @@ class ProcessManager:
         for i in range(1, len(self.tool_stock_informations)+1):
             if self.tool_stock_informations[i].tool_type == tool_type:
                 self.current_tool_type = tool_type
-                return i
+                return i - 1
         print("工具の種類が不正です")
 
     def _get_drill_speed(self, tool_type):

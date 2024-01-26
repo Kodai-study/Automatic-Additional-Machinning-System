@@ -27,11 +27,11 @@ def _test_regist_process_count(integration_instance):
 
 
 def start_process(integration_instance):
-    send_to_CFD(integration_instance, "STM 0,SEARCH")
     # initial_tool_inspection(integration_instance)
+    send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
     # TODO ワークの個数を取得する
     time.sleep(1)
-    send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
+    send_to_CFD(integration_instance, "STM 0,SEARCH")
     _test_regist_process_count(integration_instance)
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
 
@@ -65,7 +65,7 @@ def work_process(integration_instance, process_data_manager):
     if not integration_instance.process_manager.check_tool_ok():
         print("工具が足りません")
         return True
-
+    send_to_UR(integration_instance, "WRK 0,MOVE_TO_DRL")
     if not skip_wait_size:
         wait_command(integration_instance, "UR", "SIZE 0,ST")
     else:
@@ -96,13 +96,14 @@ def work_process(integration_instance, process_data_manager):
     # send_to_CFD(integration_instance, "DRL 0,0,0,8")
     wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
     send_to_CFD(integration_instance, "CYL 0,PULL")
-    send_to_UR(integration_instance, "WRK 0,TAP_FIN")
+    send_to_UR(integration_instance, "WRK 0,MOVE_TO_INSP")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
     send_to_CFD(integration_instance, "STM 0,SEARCH")
+    # wait_command(integration_instance, "CFD", "STM 0,TURNED")
     grip_position = integration_instance.process_manager.get_grip_position()
     send_to_UR(integration_instance,
                f"WRK 0,{grip_position[0]},{grip_position[1]}")
-    wait_command(integration_instance, "UR", "CYL 4,PUSH")
+    wait_command(integration_instance, "UR", "SIG 0,INSP_READY")
 
     if is_last_work:
         is_switch_model = inspect_and_carry_out(
@@ -116,9 +117,14 @@ def work_process(integration_instance, process_data_manager):
     else:
         inspect_and_carry_out(
             integration_instance, process_data_manager, m)
+        send_to_UR
 
 
 def inspect_and_carry_out(integration_instance, process_data_manager, m):
+    send_to_CFD(integration_instance, "CYL 4,PUSH")
+    time.sleep(CYLINDRE_WAIT_TIME)
+    send_to_CFD(integration_instance, "CYL 3,PUSH")
+    time.sleep(CYLINDRE_WAIT_TIME)
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
     process_data_manager.processing_finished(

@@ -1,1880 +1,150 @@
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
 
 Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
 
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+
 TransmissionTarget.CFDに送信 : EJCT 0,ST
+
+TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+
+TransmissionTarget.CFDに送信 : EJCT 0,ST
+
+TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,ST
+
+TransmissionTarget.URに送信 : EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,ST
+
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,DETACH
+
+TransmissionTarget.CFDに送信 : WRKSNS 0,ST
 
 Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
 
 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 TransmissionTarget.URに送信 : EJCT 0,DETACH
 
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 Main_Received  target = TransmissionTarget.CFD, message = DRL 0,XYT_IS_SET
 
-処理が定義されていないコマンドを受け取りました :  DRL 0,XYT_IS_SET
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
-
-ワークの枚数は 9 枚です
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  WRKSNS 0,9
-
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,ON
-
-処理が定義されていないコマンドを受け取りました :  SW 2,ON
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 2,OFF
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-処理が定義されていないコマンドを受け取りました :  SW 0,ON
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 0,OFF
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,ON
-
-処理が定義されていないコマンドを受け取りました :  SW 2,ON
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 2,OFF
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 2,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,OFF
-
-処理が定義されていないコマンドを受け取りました :  SW 2,OFF
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Connection closed by the server
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,ON
-
-処理が定義されていないコマンドを受け取りました :  SW 2,ON
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,OFF
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  SW 2,OFF
- {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-受信データ : 処理が定義されていないコマンドを受け取りました :  SW 0,OFF
- {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- SW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- SW 0,OFF
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- SW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-処理が定義されていないコマンドを受け取りました :  SW 0,OFF
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,ON
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  SW 2,ON 
-{'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 2,OFF
-
-処理が定義されていないコマンドを受け取りました :  SW 2,OFF
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}処理が定義されていないコマンドを受け取りました :  SW 0,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 0,OFF
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- SW 0,OFF
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,ON
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- SW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = SW 0,OFF
-
-処理が定義されていないコマンドを受け取りました :  SW 0,OFF
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Connection closed by the server
-ikari@T5machine:~/source/Automatic-Additional-Machinning-System$  cd /home/ikari/source/Automatic-Additional-Machinning-System ; /usr/bin/env /bin/python3 /home/ikari/.vscode/extensions/ms-python.python-2023.22.1/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 33855 -- /home/ikari/source/Automatic-Additional-Machinning-System/main.py 
-UR との接続を待機中... IPアドレス:192.168.16.101 ポート番号: 8766, 
-CFDとの接続 192.168.16.8 8765
-Connected to the server!
-Connected by 8765
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 8765, 
-CFDとの接続 192.168.16.8 5678
-CFD Connection failed. Retrying...
-Connected to the server!
-Connected by 5678
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 5678, 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-実行されるSQL文 :  受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 18:54:16
-        );
-    
-不良品ワークが排出されました
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-処理が定義されていないコマンドを受け取りました :  在荷センサON
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-{'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
-
-ワークの枚数は 9 枚です
-処理が定義されていないコマンドを受け取りました :  受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-WRKSNS 0,9
-
-Connection closed by the server
-Connection closed by the server
-ikari@T5machine:~/source/Automatic-Additional-Machinning-System$  cd /home/ikari/source/Automatic-Additional-Machinning-System ; /usr/bin/env /bin/python3 /home/ikari/.vscode/extensions/ms-python.python-2023.22.1/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 37005 -- /home/ikari/source/Automatic-Additional-Machinning-System/main.py 
-UR との接続を待機中... IPアドレス:192.168.16.101 ポート番号: 8766, 
-CFDとの接続 192.168.16.8 8765
-Connected to the server!
-Connected by 8765
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 8765, 
-CFDとの接続 192.168.16.8 5678
-CFD Connection failed. Retrying...
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-Connected to the server!
-Connected by 5678
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 5678, 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 18:58:05
-        );
-    
-不良品ワークが排出されました
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-受信データ : 処理が定義されていないコマンドを受け取りました :  在荷センサON
- {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
-
-ワークの枚数は 9 枚です
-処理が定義されていないコマンドを受け取りました :  WRKSNS 0,9
-受信データ : 
- {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Connection closed by the server
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-TransmissionTarget.CFDに送信 : CYL 0,PULL
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 18:58:27
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}実行されるSQL文 : 
- 
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 18:58:28
-        );
-    
-ikari@T5machine:~/source/Automatic-Additional-Machinning-System$  cd /home/ikari/source/Automatic-Additional-Machinning-System ; /usr/bin/env /bin/python3 /home/ikari/.vscode/extensions/ms-python.python-2023.22.1/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 53877 -- /home/ikari/source/Automatic-Additional-Machinning-System/main.py 
-UR との接続を待機中... IPアドレス:192.168.16.101 ポート番号: 8766, 
-CFDとの接続 192.168.16.8 8765
-Connected to the server!
-Connected by 8765
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 8765, 
-CFDとの接続 192.168.16.8 5678
-CFD Connection failed. Retrying...
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-Connected to the server!
-Connected by 5678
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 5678, 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 18:59:16
-        );
-    
-不良品ワークが排出されました
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  在荷センサON
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,10
-
-ワークの枚数は 10 枚です
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,10\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}処理が定義されていないコマンドを受け取りました :  
-WRKSNS 0,10
-
-Main_Received  target = TransmissionTarget.CFD, message = WRK 0,TAP_FIN
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'WRK 0,TAP_FIN\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : WRK 0,TAP_FIN
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 3,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 3,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : STM 0,SEARCH
-
-TransmissionTarget.CFDに送信 : SNS 3,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ : 実行されるSQL文 :   
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 18:59:28
-        );
-    {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-次のコマンドを待機中…    URからのコマンド : SIZE 0,ST
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 4,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 4,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : MODE 0,RESERVE_SET
-
-TransmissionTarget.CFDに送信 : SNS 4,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 4,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 4,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            4,
-            0,
-            2024-01-25 18:59:28
-        );
-    
-TransmissionTarget.URに送信 : SNS 4,OFF
-
-Main_Received  target = TransmissionTarget.UR, message = SIZE 0,ST
-
-次のコマンドを待機中…    URからのコマンド : CYL 0,PUSH
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SIZE 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  SIZE 0,ST
-TransmissionTarget.URに送信 : SIZE 0,30
-
-Main_Received  target = TransmissionTarget.UR, message = SIG 0,ATT_IMP_READY
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SIG 0,ATT_IMP_READY\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,ON
-
-処理が定義されていないコマンドを受け取りました : 受信データ :   {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-LMSW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- STM 0,TURNED
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ : 実行されるSQL文 :   {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 18:59:42
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,ON
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = CYL 0,PUSH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'CYL 0,PUSH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  CYL 0,PUSH
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 18:59:50
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 18:59:51
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,ON
-
-TransmissionTarget.CFDに送信 : CYL 0,PULL
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 18:59:52
-        );
-    
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.UR, message = FINISH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'FINISH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  FINISH
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 18:59:52
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,ON
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-加工前検査をします
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-TransmissionTarget.CFDに送信 : STM 0,R,1
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  LMSW 0,OFF
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 18:59:54
-        );
-    
-
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 18:59:54
-        );
-    
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 3,ON
-
-Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  STM 0,TURNED
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  処理が定義されていないコマンドを受け取りました :  文法が間違っています
-{'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ : 処理が定義されていないコマンドを受け取りました :  文法が間違っています
- {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-処理が定義されていないコマンドを受け取りました : 受信データ :   {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-文法が間違っています
-受信データ : 処理が定義されていないコマンドを受け取りました :  文法が間違っています
- {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました : 受信データ :   {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}文法が間違っています
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  文法が間違っています {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 18:59:55
-        );
-    
-不良品ワークが排出されました
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-受信データ : 処理が定義されていないコマンドを受け取りました :   在荷センサON
-{'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-工具ストッカを1個分回転させた
-26 , 44にM4の穴をあけた
-次のコマンドを待機中…    CFDからのコマンド : WRK 0,XYT_IS_SET
-TransmissionTarget.CFDに送信 : DRL 0,26,44,4
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = DRL 0,XYT_IS_SET
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  DRL 0,XYT_IS_SET
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
-
-ワークの枚数は 9 枚です
-受信データ : 処理が定義されていないコマンドを受け取りました :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- WRKSNS 0,9
-
-  
-
-  ]
-
-
-
-  ikari@T5machine:~/source/Automatic-Additional-Machinning-System$  /usr/bin/env /bin/python3 /home/ikari/.vscode/extensions/ms-python.python-2023.22.1/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 41793 -- /home/ikari/source/Automatic-Additional-Machinning-System/main.py 
-UR との接続を待機中... IPアドレス:192.168.16.101 ポート番号: 8766, 
-CFDとの接続 192.168.16.8 8765
-Connected to the server!
-Connected by 8765
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 8765, 
-CFDとの接続 192.168.16.8 5678
-CFD Connection failed. Retrying...
-Connected to the server!
-Connected by 5678
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 5678, 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 19:50:18
-        );
-    
-不良品ワークが排出されました
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  在荷センサON
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,10
-
-ワークの枚数は 10 枚です
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,10\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  WRKSNS 0,10
-
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-TransmissionTarget.CFDに送信 : CYL 0,PULL
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-実行されるSQL文 :  受信データ : 
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 19:50:32
-        );
-     
-{'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  実行されるSQL文 : {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>} 
-
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 19:50:32
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,ON
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-実行されるSQL文 :  受信データ : 
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 19:50:35
-        );
-     
-{'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = WRK 0,TAP_FIN
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'WRK 0,TAP_FIN\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : WRK 0,TAP_FIN
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 3,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 3,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : STM 0,SEARCH
-
-TransmissionTarget.CFDに送信 : SNS 3,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 19:50:39
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 4,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 4,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-次のコマンドを待機中…    URからのコマンド : SIZE 0,ST
-TransmissionTarget.CFDに送信 : SNS 4,ST
-
-TransmissionTarget.CFDに送信 : MODE 0,RESERVE_SET
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 4,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 4,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            4,
-            1,
-            2024-01-25 19:50:40
-        );
-    
-
-TransmissionTarget.URに送信 : SNS 4,ON
-
-Main_Received  target = TransmissionTarget.UR, message = SIZE 0,ST
-
-次のコマンドを待機中…    URからのコマンド : CYL 0,PUSH
-処理が定義されていないコマンドを受け取りました : 受信データ :   {'target': <TransmissionTarget.UR: 3>, 'message': 'SIZE 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-SIZE 0,ST
-TransmissionTarget.URに送信 : SIZE 0,30
-
-Main_Received  target = TransmissionTarget.UR, message = SIG 0,ATT_IMP_READY
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SIG 0,ATT_IMP_READY\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,ON
-
-処理が定義されていないコマンドを受け取りました :  LMSW 0,ON受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  STM 0,TURNED
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 19:50:53
-        );
-    受信データ : 
- {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 3,ON
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = CYL 0,PUSH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'CYL 0,PUSH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  CYL 0,PUSH
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 19:51:01
-        );
-    
-
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ : 実行されるSQL文 :   
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 19:51:02
-        );
-    {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-TransmissionTarget.URに送信 : SNS 3,ON
-
-TransmissionTarget.CFDに送信 : CYL 0,PULL
-
-Main_Received  target = TransmissionTarget.UR, message = FINISH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'FINISH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}処理が定義されていないコマンドを受け取りました :  FINISH
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-加工前検査をします
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-TransmissionTarget.CFDに送信 : STM 0,R,1
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,OFF
-
-処理が定義されていないコマンドを受け取りました :  LMSW 0,OFF
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 19:51:05
-        );
-    
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 19:51:06
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,ON
-
-Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-処理が定義されていないコマンドを受け取りました :  STM 0,TURNED
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-処理が定義されていないコマンドを受け取りました : 受信データ :   文法が間違っています
-{'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-受信データ : 処理が定義されていないコマンドを受け取りました :  文法が間違っています 
-{'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 19:51:06
-        );
-    
-不良品ワークが排出されました
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-処理が定義されていないコマンドを受け取りました : 受信データ :  在荷センサON
- {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-工具ストッカを1個分回転させた
-次のコマンドを待機中…    CFDからのコマンド : DRL 0,XYT_IS_SET
-TransmissionTarget.CFDに送信 : DRL 0,26,44,4
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = DRL 0,XYT_IS_SET
-
-26 , 44にM4の穴をあけた
-次のコマンドを待機中…    CFDからのコマンド : DRL 0,XYT_IS_SET
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  DRL 0,XYT_IS_SET
-TransmissionTarget.CFDに送信 : DRL 0,3,-8,4
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
-
-ワークの枚数は 9 枚です
-受信データ : 処理が定義されていないコマンドを受け取りました :  WRKSNS 0,9
- 
-{'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = DRL 0,XYT_IS_SET
-
-29 , 36にM4の穴をあけた受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-次のコマンドを待機中…    CFDからのコマンド : DRL 0,XYT_IS_SET処理が定義されていないコマンドを受け取りました :  DRL 0,XYT_IS_SET
-
-
-TransmissionTarget.CFDに送信 : DRL 0,-4,-20,4
-
-Main_Received  target = TransmissionTarget.CFD, message = DRL 0,XYT_IS_SET
-
-処理が定義されていないコマンドを受け取りました :  25 , 16にM4の穴をあけたDRL 0,XYT_IS_SET受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-
+34 , 24にM3の穴をあけた
 次のコマンドを待機中…    CFDからのコマンド : DRL 0,TOOL_DETACHED
-TransmissionTarget.CFDに送信 : DRL 0,0,0,8
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 5,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 5,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 4,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 4,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 4,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 4,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 5,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 5,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-
-
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connectedError: [Errno 107] Transport endpoint is not connected
-
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connectedError: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connected
-
-Error: [Errno 107] Transport endpoint is not connected
-Error: [Errno 107] Transport endpoint is not connectedError: [Errno 107] Transport endpoint is not connected
-
-Error: [Errno 107] Transport endpoint is not connectedError: [Errno 107] Transport endpoint is not connectedikari@T5machine:~/source/Automatic-Additional-Machinning-System$  cd /home/ikari/source/Automatic-Additional-Machinning-System ; /usr/bin/env /bin/python3 /home/ikari/.vscode/extensions/ms-python.python-2023.22.1/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 39849 -- /home/ikari/source/Automatic-Additional-Machinning-System/main.py 
-UR との接続を待機中... IPアドレス:192.168.16.101 ポート番号: 8766, 
-CFDとの接続 192.168.16.8 8765
-Connected to the server!
-Connected by 8765
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 8765, 
-CFDとの接続 192.168.16.8 5678
-CFD Connection failed. Retrying...
-Connected to the server!
-Connected by 5678
-CFD との接続を待機中... IPアドレス:192.168.16.8 ポート番号: 5678, 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'msg_type': <RobotInteractionType.SOCKET_CONNECTED: 2>}
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-受信データ : 実行されるSQL文 :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>} 
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 20:11:20
-        );
-    
-不良品ワークが排出されました
-
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-処理が定義されていないコマンドを受け取りました :  在荷センサON
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+ DRL 0,XYT_IS_SET
 TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,10
-
-ワークの枚数は 10 枚です
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,10\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  WRKSNS 0,10
-
-Main_Received  target = TransmissionTarget.CFD, message = WRK 0,TAP_FIN
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'WRK 0,TAP_FIN\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : WRK 0,TAP_FIN
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 3,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 3,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : STM 0,SEARCH
-
-TransmissionTarget.CFDに送信 : SNS 3,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 20:11:30
-        );
-    
-次のコマンドを待機中…    URからのコマンド : SIZE 0,ST
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 4,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 4,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  STM 0,TURNED
-TransmissionTarget.CFDに送信 : MODE 0,RESERVE_SET
-
-TransmissionTarget.CFDに送信 : SNS 4,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 4,ON
-
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            4,
-            1,
-            2024-01-25 20:11:31
-        );
-    
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 4,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 4,ON
-
-Main_Received  target = TransmissionTarget.UR, message = SIZE 0,ST
-
-次のコマンドを待機中…    URからのコマンド : CYL 0,PUSH
-処理が定義されていないコマンドを受け取りました :  SIZE 0,ST
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SIZE 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SIZE 0,30
-
-Main_Received  target = TransmissionTarget.UR, message = SIG 0,ATT_IMP_READY
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SIG 0,ATT_IMP_READY\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-TransmissionTarget.CFDに送信 : CYL 4,PUSH
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 8,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 8,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 9,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 9,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : CYL 4,PULL
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 20:11:44
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,ON
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 8,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 8,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 9,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 9,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : CYL 3,PUSH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-TransmissionTarget.CFDに送信 : CYL 3,PULL
-
-TransmissionTarget.CFDに送信 : CYL 3,PUSH
-
-Main_Received  target = TransmissionTarget.UR, message = CYL 0,PUSH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'CYL 0,PUSH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  CYL 0,PUSH
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 20:11:52
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 20:11:53
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,ON
-
-TransmissionTarget.CFDに送信 : CYL 0,PULL
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            0,
-            2024-01-25 20:11:54
-        );
-    
-TransmissionTarget.URに送信 : SNS 3,OFF
-
-Main_Received  target = TransmissionTarget.UR, message = FINISH
-
-受信データ :  処理が定義されていないコマンドを受け取りました : {'target': <TransmissionTarget.UR: 3>, 'message': 'FINISH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>} 
-FINISH
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            3,
-            1,
-            2024-01-25 20:11:54
-        );
-    
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 3,ON
-
-TransmissionTarget.CFDに送信 : CYL 3,PULL
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-加工前検査をします
-TransmissionTarget.CFDに送信 : CYL 0,PUSH
-
-TransmissionTarget.CFDに送信 : STM 0,R,1
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,OFF
-
-受信データ : 処理が定義されていないコマンドを受け取りました :   {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-LMSW 0,OFF
-Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
-
-処理が定義されていないコマンドを受け取りました : 受信データ :   {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-STM 0,TURNED
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-Main_Received  target = TransmissionTarget.UR, message = 文法が間違っています
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-受信データ : 処理が定義されていないコマンドを受け取りました :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>} 
-文法が間違っています
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '文法が間違っています\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  文法が間違っています
-TransmissionTarget.CFDに送信 : SNS 2,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-実行されるSQL文 :  
-        INSERT INTO t_sensor_tracking(
-            sensor_id,
-            sensor_status,
-            sensor_date_time
-        )
-        VALUES(
-            2,
-            1,
-            2024-01-25 20:11:57
-        );
-    
-不良品ワークが排出されました
-TransmissionTarget.CFDに送信 : CYL 4,PUSH
-
-TransmissionTarget.URに送信 : SNS 2,ON
-
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  在荷センサON
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 8,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 8,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-工具ストッカを1個分回転させた
-次のコマンドを待機中…    CFDからのコマンド : DRL 0,XYT_IS_SET
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 9,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 9,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : DRL 0,15,15,4
-
-TransmissionTarget.CFDに送信 : CYL 4,PULL
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 8,OFF
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 8,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 9,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 9,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : CYL 3,PUSH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-TransmissionTarget.CFDに送信 : CYL 3,PULL
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = DRL 0,XYT_IS_SET
-
-15 , 15にM4の穴をあけた
-次のコマンドを待機中…    CFDからのコマンド : DRL 0,TOOL_DETACHED
-処理が定義されていないコマンドを受け取りました : 受信データ :   DRL 0,XYT_IS_SET{'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 
 TransmissionTarget.CFDに送信 : DRL 0,0,0,8
 
+Main_Received  target = TransmissionTarget.CFD, message = WRKSNS 0,OFF
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'WRKSNS 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : WRKSNS 0,OFF
+
 Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
 
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
+
 受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+
+TransmissionTarget.CFDに送信 : EJCT 0,ST
+
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,ST
+
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,DETACH
+
+TransmissionTarget.CFDに送信 : WRKSNS 0,ST
+
+Main_Received  target = TransmissionTarget.CFD, message = WRKSNS 0,OFF
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'WRKSNS 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : WRKSNS 0,OFF
+
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
+
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
+
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+
+TransmissionTarget.CFDに送信 : EJCT 0,ST
+
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,ST
+
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,DETACH
+
+TransmissionTarget.CFDに送信 : WRKSNS 0,ST
 
 Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
 
 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 TransmissionTarget.URに送信 : EJCT 0,ATTACH
 
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.CFD, message = WRKSNS 0,OFF
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'WRKSNS 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : WRKSNS 0,OFF
+
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
+
 Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
+
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+
+TransmissionTarget.CFDに送信 : EJCT 0,ST
+
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : EJCT 0,ATTACH
 
 Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
 TransmissionTarget.CFDに送信 : EJCT 0,DETACH
 
 Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
@@ -1887,12 +157,12 @@ Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 TransmissionTarget.URに送信 : EJCT 0,DETACH
 
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
+Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,7
 
-ワークの枚数は 9 枚です
-処理が定義されていないコマンドを受け取りました :  WRKSNS 0,9
-受信データ : 
- {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+ワークの枚数は 7 枚です
+受信データ : 処理が定義されていないコマンドを受け取りました :   {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,7\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+WRKSNS 0,7
+
 Main_Received  target = TransmissionTarget.CFD, message = RDSW 5,OFF
 
 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 5,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
@@ -1907,13 +177,24 @@ Main_Received  target = TransmissionTarget.CFD, message = RDSW 5,ON
 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 5,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 Main_Received  target = TransmissionTarget.CFD, message = DRL 0,TOOL_DETACHED
 
-処理が定義されていないコマンドを受け取りました :  DRL 0,TOOL_DETACHED
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,TOOL_DETACHED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+次のコマンドを待機中…    CFDからのコマンド : STM 0,TURNED
+処理が定義されていないコマンドを受け取りました : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,TOOL_DETACHED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>} DRL 0,TOOL_DETACHED
+
+TransmissionTarget.CFDに送信 : STM 0,SEARCH
+
+Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
+
+受信データ : 処理が定義されていないコマンドを受け取りました :   STM 0,TURNED{'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+
 TransmissionTarget.CFDに送信 : STM 0,R,4
 
+Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,OFF
+
+処理が定義されていないコマンドを受け取りました :  LMSW 0,OFF
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 工具ストッカを4個分回転させた
 次のコマンドを待機中…    CFDからのコマンド : DRL 0,XYT_IS_SET
-TransmissionTarget.CFDに送信 : DRL 0,15,15,4
+TransmissionTarget.CFDに送信 : DRL 0,34,24,3
 
 Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
 
@@ -1921,12 +202,12 @@ Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
 処理が定義されていないコマンドを受け取りました :  STM 0,TURNED
 Main_Received  target = TransmissionTarget.CFD, message = DRL 0,XYT_IS_SET
 
-15 , 15にM4の穴をあけた
+34 , 24にM3の穴をあけた
 加工終了
 
 次のコマンドを待機中…    CFDからのコマンド : DRL 0,TOOL_DETACHED
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  DRL 0,XYT_IS_SET
+処理が定義されていないコマンドを受け取りました : 受信データ :   DRL 0,XYT_IS_SET{'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,XYT_IS_SET\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+
 TransmissionTarget.CFDに送信 : DRL 0,0,0,8
 
 Main_Received  target = TransmissionTarget.CFD, message = RDSW 5,OFF
@@ -1944,11 +225,11 @@ Main_Received  target = TransmissionTarget.CFD, message = RDSW 5,ON
 Main_Received  target = TransmissionTarget.CFD, message = DRL 0,TOOL_DETACHED
 
 次のコマンドを待機中…    URからのコマンド : WRK 0,ATT_POSE
-受信データ : 処理が定義されていないコマンドを受け取りました :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,TOOL_DETACHED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
- DRL 0,TOOL_DETACHED
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'DRL 0,TOOL_DETACHED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+処理が定義されていないコマンドを受け取りました :  DRL 0,TOOL_DETACHED
 TransmissionTarget.CFDに送信 : CYL 0,PULL
 
-TransmissionTarget.URに送信 : WRK 0,TAP_FIN
+TransmissionTarget.URに送信 : WRK 0,MOVE_TO_INSP
 
 Main_Received  target = TransmissionTarget.UR, message = SNS 3,ST
 
@@ -1957,6 +238,7 @@ TransmissionTarget.CFDに送信 : SNS 3,ST
 
 Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
 
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 実行されるSQL文 :  
         INSERT INTO t_sensor_tracking(
             sensor_id,
@@ -1966,10 +248,9 @@ Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
         VALUES(
             3,
             1,
-            2024-01-25 20:13:04
+            2024-01-26 20:21:00
         );
     
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 TransmissionTarget.URに送信 : SNS 3,ON
 
 Main_Received  target = TransmissionTarget.UR, message = SNS 4,ST
@@ -1977,9 +258,75 @@ Main_Received  target = TransmissionTarget.UR, message = SNS 4,ST
 受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 4,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 TransmissionTarget.CFDに送信 : SNS 4,ST
 
+Main_Received  target = TransmissionTarget.CFD, message = SNS 4,OFF
+
+受信データ : 実行されるSQL文 :   {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 4,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            4,
+            0,
+            2024-01-26 20:21:00
+        );
+    
+TransmissionTarget.URに送信 : SNS 4,OFF
+
+Main_Received  target = TransmissionTarget.UR, message = WRK 0,ATT_POSE
+
+次のコマンドを待機中…    URからのコマンド : SIG 0,INSP_READY
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRK 0,ATT_POSE\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+処理が定義されていないコマンドを受け取りました :  WRK 0,ATT_POSE
+
+TransmissionTarget.CFDに送信 : STM 0,SEARCH
+
+TransmissionTarget.URに送信 : WRK 0,20,20
+
+Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,ON
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,ON
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+処理が定義されていないコマンドを受け取りました :  LMSW 0,ON
+Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+処理が定義されていないコマンドを受け取りました :  STM 0,TURNED
+Main_Received  target = TransmissionTarget.UR, message = SIG 0,ATT_DRL_READY
+
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SIG 0,ATT_DRL_READY\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : EJCT 0,ATTACH
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 3,OFF
+
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            3,
+            0,
+            2024-01-26 20:21:33
+        );
+    
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 3,OFF
+
 Main_Received  target = TransmissionTarget.CFD, message = SNS 4,ON
 
-実行されるSQL文 : 受信データ :  
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 4,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
         INSERT INTO t_sensor_tracking(
             sensor_id,
             sensor_status,
@@ -1988,16 +335,107 @@ Main_Received  target = TransmissionTarget.CFD, message = SNS 4,ON
         VALUES(
             4,
             1,
-            2024-01-25 20:13:05
+            2024-01-26 20:21:47
         );
-     
-{'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 4,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+    
 TransmissionTarget.URに送信 : SNS 4,ON
 
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
+Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : SNS 2,ST
+受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.CFDに送信 : EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : EJCT 0,DETACH
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
+
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:21:58
+        );
+    
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,OFF
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
+
+実行されるSQL文 :  受信データ : 
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:28
+        );
+     
+不良品ワークが排出されました
+{'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,ON
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:28
+        );
+    
+TransmissionTarget.URに送信 : SNS 2,OFF
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
+
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:29
+        );
+    
+不良品ワークが排出されました
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,ON
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:30
+        );
+    
+
+TransmissionTarget.URに送信 : SNS 2,OFF
 
 Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
@@ -2011,90 +449,15 @@ Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
         VALUES(
             2,
             1,
-            2024-01-25 20:13:05
+            2024-01-26 20:22:32
         );
     
 不良品ワークが排出されました
 TransmissionTarget.URに送信 : SNS 2,ON
 
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-受信データ : 処理が定義されていないコマンドを受け取りました :   {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}在荷センサON
-
-Main_Received  target = TransmissionTarget.CFD, message = RDSW 1,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'RDSW 1,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
-
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
-
-受信データ : TransmissionTarget.CFDに送信 : EJCT 0,ST
-
- {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
-
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
-
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
-
-ワークの枚数は 9 枚です
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  WRKSNS 0,9
-
-Main_Received  target = TransmissionTarget.CFD, message = WRK 0,TAP_FIN
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'WRK 0,TAP_FIN\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : WRK 0,TAP_FIN
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 3,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 3,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : STM 0,SEARCH
-
-TransmissionTarget.CFDに送信 : SNS 3,ST
-
-Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
-
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 3,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 実行されるSQL文 :  
         INSERT INTO t_sensor_tracking(
             sensor_id,
@@ -2102,22 +465,67 @@ Main_Received  target = TransmissionTarget.CFD, message = SNS 3,ON
             sensor_date_time
         )
         VALUES(
-            3,
-            1,
-            2024-01-25 20:13:42
+            2,
+            0,
+            2024-01-26 20:22:33
         );
     
-次のコマンドを待機中…    URからのコマンド : SIZE 0,ST
-TransmissionTarget.URに送信 : SNS 3,ON
+TransmissionTarget.URに送信 : SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.UR, message = SNS 4,ST
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 4,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : MODE 0,RESERVE_SET
+受信データ : 実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:33
+        );
+     
+不良品ワークが排出されました
+{'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,ON
 
-TransmissionTarget.CFDに送信 : SNS 4,ST
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.CFD, message = SNS 4,ON
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:33
+        );
+    
+TransmissionTarget.URに送信 : SNS 2,OFF
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
+
+実行されるSQL文 : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+ 
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:34
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
 実行されるSQL文 :  
         INSERT INTO t_sensor_tracking(
@@ -2126,18 +534,13 @@ Main_Received  target = TransmissionTarget.CFD, message = SNS 4,ON
             sensor_date_time
         )
         VALUES(
-            4,
-            1,
-            2024-01-25 20:13:43
+            2,
+            0,
+            2024-01-26 20:22:35
         );
     
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 4,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : SNS 4,ON
-
-Main_Received  target = TransmissionTarget.UR, message = SNS 2,ST
-
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'SNS 2,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : SNS 2,ST
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,OFF
 
 Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
@@ -2150,78 +553,361 @@ Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
         VALUES(
             2,
             1,
-            2024-01-25 20:13:43
+            2024-01-26 20:22:40
         );
-    
-不良品ワークが排出されました受信データ : 
+    受信データ : 
+不良品ワークが排出されました
  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 TransmissionTarget.URに送信 : SNS 2,ON
 
-Main_Received  target = TransmissionTarget.UR, message = 在荷センサON
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': '在荷センサON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  在荷センサON
-Main_Received  target = TransmissionTarget.CFD, message = LMSW 0,ON
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:41
+        );
+    
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,OFF
 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'LMSW 0,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  LMSW 0,ON
-Main_Received  target = TransmissionTarget.CFD, message = STM 0,TURNED
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'STM 0,TURNED\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  STM 0,TURNED
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
+受信データ : 実行されるSQL文 :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+ 
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:43
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:44
+        );
+    受信データ : 
+ {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,OFF
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:50
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:52
+        );
+    受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
+TransmissionTarget.URに送信 : SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ATTACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ATTACH
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:52
+        );
+    
+受信データ : 不良品ワークが排出されました {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
 
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
+TransmissionTarget.URに送信 : SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,ST
+実行されるSQL文 : 受信データ :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:53
+        );
+     
+{'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.UR, message = EJCT 0,DETACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,ST\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.CFDに送信 : EJCT 0,ST
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:53
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
 
-TransmissionTarget.CFDに送信 : EJCT 0,DETACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,ATTACH
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:54
+        );
+    
+TransmissionTarget.URに送信 : SNS 2,OFF
 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,ATTACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,ATTACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
-Main_Received  target = TransmissionTarget.CFD, message = EJCT 0,DETACH
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:22:54
+        );
+    
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
 
-受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'EJCT 0,DETACH\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-TransmissionTarget.URに送信 : EJCT 0,DETACH
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
 
-Main_Received  target = TransmissionTarget.UR, message = WRKSNS 0,9
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:22:58
+        );
+    
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+TransmissionTarget.URに送信 : SNS 2,OFF
 
-ワークの枚数は 9 枚です
-受信データ :  {'target': <TransmissionTarget.UR: 3>, 'message': 'WRKSNS 0,9\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
-処理が定義されていないコマンドを受け取りました :  WRKSNS 0,9
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
 
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:23:00
+        );
+    受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:23:01
+        );
+    
+TransmissionTarget.URに送信 : SNS 2,OFF
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:23:01
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:23:02
+        );
+    
+TransmissionTarget.URに送信 : SNS 2,OFF
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:23:08
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
+
+受信データ : 実行されるSQL文 :   {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:23:20
+        );
+    
+TransmissionTarget.URに送信 : SNS 2,OFF
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
+
+実行されるSQL文 : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+ 
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:23:20
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,OFF
+
+実行されるSQL文 : 受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,OFF\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+ 
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            0,
+            2024-01-26 20:23:22
+        );
+    
+TransmissionTarget.URに送信 : SNS 2,OFF
+
+Main_Received  target = TransmissionTarget.CFD, message = SNS 2,ON
+
+受信データ :  {'target': <TransmissionTarget.CFD: 4>, 'message': 'SNS 2,ON\n', 'msg_type': <RobotInteractionType.MESSAGE_RECEIVED: 1>}
+実行されるSQL文 :  
+        INSERT INTO t_sensor_tracking(
+            sensor_id,
+            sensor_status,
+            sensor_date_time
+        )
+        VALUES(
+            2,
+            1,
+            2024-01-26 20:23:22
+        );
+    
+不良品ワークが排出されました
+TransmissionTarget.URに送信 : SNS 2,ON
+
+^A
