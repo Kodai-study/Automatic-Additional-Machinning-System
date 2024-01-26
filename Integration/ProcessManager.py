@@ -57,7 +57,7 @@ class ProcessManager:
             if not self._is_tool_in_stock(drill_tool_type) or\
                     not self._is_tool_in_stock(tap_tool_type):
                 return False
-            return True
+        return True
 
     def _is_tool_in_stock(self, tool_type):
         for tool in self.tool_stock_informations:
@@ -119,14 +119,11 @@ class ProcessManager:
             return None
 
     def _get_rotation_degree(self, tool_type) -> int:
-        for i in range(1, len(self.tool_stock_informations)):
+        for i in range(1, len(self.tool_stock_informations)+1):
             if self.tool_stock_informations[i].tool_type == tool_type:
-                steps = i - self.tool_position_number
-                self.tool_position_number = i
                 self.current_tool_type = tool_type
-                if steps < 0:
-                    steps += 8
-                return steps
+                return i
+        print("工具の種類が不正です")
 
     def _get_drill_speed(self, tool_type):
         if tool_type == ToolType.M2_DRILL or tool_type == ToolType.M2_TAP:
