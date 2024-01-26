@@ -60,7 +60,7 @@ def read_qr_code(image_path):
 
 if __name__ == "__main__":
     # 画像ファイルのパスを指定
-    image_path = 'ImageInspectionController/test/qr.png'
+    image_path = '/home/kuga/ソフトウェア/Automatic-Additional-Machinning-System/ImageInspectionController/test/qrtest.png'
 
     # QRコードを読み取り、内容を表示
     read_qr_code(image_path)
