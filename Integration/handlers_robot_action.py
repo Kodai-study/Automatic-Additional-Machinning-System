@@ -20,7 +20,7 @@ def reservation_process():
 
 def _test_regist_process_count(integration_instance):
     integration_instance.process_list = integration_instance.process_data_manager.refresh_process_data()
-    integration_instance.process_list[0]["regist_process_count"] = 1
+    integration_instance.process_list[0]["regist_process_count"] = 3
     integration_instance.process_list[1]["regist_process_count"] = 2
     integration_instance.process_list[5]["regist_process_count"] = 7
     integration_instance.process_data_manager.register_process_number()
@@ -98,6 +98,7 @@ def work_process(integration_instance, process_data_manager):
     send_to_CFD(integration_instance, "CYL 0,PULL")
     send_to_UR(integration_instance, "WRK 0,TAP_FIN")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
+    send_to_CFD(integration_instance, "STM 0,SEARCH")
     grip_position = integration_instance.process_manager.get_grip_position()
     send_to_UR(integration_instance,
                f"WRK 0,{grip_position[0]},{grip_position[1]}")
@@ -153,6 +154,8 @@ def drill_process(integration_instance):
         if tool_degree:
             send_to_CFD(integration_instance, "DRL 0,0,0,8")
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
+            send_to_CFD(integration_instance, "STM 0,SEARCH")
+            wait_command(integration_instance, "CFD", "STM 0,TURNED")
             preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.current_tool_type))
             if not preprocess_inspection_result.result:
