@@ -210,7 +210,7 @@ class RobotCommunicationHandler:
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_1):
                     target_socket = self.socket_ur
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
-                    target_socket = self.socket_cfd_sen
+                    target_socket = self.socket_cfd_send
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))
