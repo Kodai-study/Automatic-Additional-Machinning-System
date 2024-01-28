@@ -67,8 +67,8 @@ class CreateSelection(ScreenBase):
             self, text="確認画面", command=determine_process_data, font=("AR丸ゴシック体M", 18), width=22)
 
         go_monitor_button.place(rely=0.75, relx=0.1)
-        add_data_button.place(rely=0.8, relx=0.5)
-        remove_button.place(rely=0.9, relx=0.5)
+        add_data_button.place(rely=0.75, relx=0.5)
+        remove_button.place(rely=0.85, relx=0.5)
         go_check_button.place(rely=0.85, relx=0.1)  # テキストビューの配置
 
     def _create_data_select_combobox(self):
@@ -119,7 +119,7 @@ class CreateSelection(ScreenBase):
 
     def _create_detail_view(self):
         text_view = tk.Label(self, font=(
-            "AR丸ゴシック体M", 18), width=22, text="fda", anchor='nw', justify=tk.LEFT)
+            "AR丸ゴシック体M", 18), width=22, text="加工データを選択してください", anchor='nw', justify=tk.LEFT)
         text_view_x = 130 + (self.winfo_screenwidth() * 0.7)  # テーブルの幅の終わりの位置
         text_view_y = 70  # テーブルと同じy座標
         text_view_width = 1.0 - 0.7  # 残りの幅
