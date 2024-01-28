@@ -122,7 +122,12 @@ class CreateSelection(ScreenBase):
         return text_view
 
     def _add_process_data(self):
-        target_process_data = self._search_data_with_name(self.model_var.get())
+        selected_model_str = self.model_var.get()
+        if selected_model_str == "":
+            return
+        target_process_data = self._search_data_with_name(selected_model_str)
+        if target_process_data is None:
+            return
         self.number_pad = NumberPad(self)
         self.number_pad.attributes("-topmost", True)
         self.wait_window(self.number_pad)
