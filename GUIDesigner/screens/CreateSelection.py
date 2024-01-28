@@ -2,7 +2,7 @@ from collections import defaultdict
 import json
 from queue import Queue
 import textwrap
-from tkinter import filedialog, ttk
+from tkinter import ttk
 from tkinter.font import Font
 from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
@@ -66,12 +66,9 @@ class CreateSelection(ScreenBase):
 
     def _create_data_select_combobox(self):
         COMBO_BOX_FONT = Font(family="Helvetica", size=30)
-        style = ttk.Style()
-        large_font = Font(family="Helvetica", size=30)
         text_view_x = 130 + (self.winfo_screenwidth() * 0.7)  # テーブルの幅の終わりの位置
         text_view_y = 70  # テーブルと同じy座標
         text_view_width = 1.0 - 0.8  # 残りの幅
-        text_view_height = 0.6  # テーブルと同じ高さ
         selected_value = tk.StringVar(self)
 
         def view_process_data_detail(*args):
