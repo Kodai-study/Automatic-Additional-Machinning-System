@@ -26,16 +26,9 @@ class GuiResponceHandler:
                     {"target": TransmissionTarget.CFD, "message": str(send_data[1])})
 
         elif send_data[0] == GUIRequestType.UPLOAD_PROCESSING_DETAILS:
-            self.is_processing_mode = True
-            if TEST_CFD_CONNECTION_LOCAL:
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "ISRESERVED"})
-                self.integration._start_process()
-
-            else:
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.CFD, "message": "ISRESERVED"})
-                self.integration._start_process()
+            target = TransmissionTarget.TEST_TARGET_2 if send_data[1] else TransmissionTarget.CFD
+            message = "MODE 0,RESERVE_SET" if send_data[1] else "MODE 0,RESERVE_RESET"
+            self.send_request_queue.put({"target": target, "message": message})
 
         elif send_data[0] == GUIRequestType.LOGIN_REQUEST:
             self._login(send_data[1]["id"], send_data[1]["password"])
