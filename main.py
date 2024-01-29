@@ -12,6 +12,8 @@ from ImageInspectionController.OperationType import OperationType
 from Integration.Integration import Integration
 from Integration.ProcessManager import ProcessManager
 from Integration.ProcessDataManager import ProcessDataManager
+from Integration.WorkManager import WorkManager
+from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 from common_data_type import CameraType, LightingType, ToolType, WorkPieceShape
 
@@ -180,7 +182,61 @@ def test_process_manager():
     process_data = None
 
 
+test_tool_stock_data = [
+    None,
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M3_DRILL, tool_length=10.0, drill_diameter=3.0),
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M2_TAP, tool_length=10.0, drill_diameter=3.0),
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M3_TAP, tool_length=10.0, drill_diameter=3.0),
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M4_DRILL, tool_length=10.0, drill_diameter=3.0),
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M4_TAP, tool_length=10.0, drill_diameter=3.0),
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M5_DRILL, tool_length=10.0, drill_diameter=3.0),
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
+    ToolInspectionResult(result=True, error_items=None,
+                         tool_type=ToolType.M2_DRILL, tool_length=10.0, drill_diameter=3.0),
+]
+
+
+def test_load_and_process():
+    process_data_manager = ProcessDataManager(DBAccessHandler())
+    process_data_list = process_data_manager.refresh_process_data()
+    process_data_list[0]["regist_process_count"] = 1
+    process_data_list[2]["regist_process_count"] = 2
+    process_data_list[5]["regist_process_count"] = 7
+    process_data_manager.register_process_number()
+    process_manager = ProcessManager(test_tool_stock_data)
+    m = process_data_manager.get_next_process_data()
+    process_manager.start_process(m)
+    a = process_manager.get_first_tool_degrees()
+    while True:
+        process_manager.start_process(m)
+        while True:
+            next_process_data = process_manager.get_next_position()
+            if next_process_data is None:
+                print("加工終了\n")
+                break
+            (x_position, y_position,
+             drill_speed), tool_degree = next_process_data
+            if tool_degree:
+                print(f"工具ストッカを{tool_degree}個分回転させた")
+            print(f"{x_position} , {y_position}にM{drill_speed}の穴をあけた")
+        is_process_end = process_data_manager.processing_finished(True)
+        if is_process_end:
+            m = process_data_manager.get_next_process_data()
+        if not m:
+            break
+        process_manager.start_process(m)
+
+    process_manager = ProcessManager(test_tool_stock_data)
+
+
 if __name__ == "__main__":
     # # work_manager_test()
     test_integration()
-    test_process_manager()
+    # test_load_and_process()

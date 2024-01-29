@@ -1,8 +1,10 @@
+import random
 import datetime
 import json
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.ProcessingData import ProcessingData
 from common_data_type import WorkPieceShape
+from test_flags import TEST_FEATURE_DB
 
 FETCH_PROCESS_DATA_SQL = """\
 SELECT 
@@ -70,7 +72,10 @@ class ProcessDataManager:
 
         if len(self.process_data_list) == 0:
             return None
-        return self.process_data_list[0]["hole_informations"]
+        # 残りの個数
+        is_last_work = self.process_data_list[0]["regist_process_count"] - \
+            self.process_data_list[0]["good_count"] == 1
+        return is_last_work, self.process_data_list[0]["hole_informations"]
 
     def processing_finished(self, is_good: bool) -> bool:
         """加工が終了したことを通知する
@@ -121,6 +126,21 @@ class ProcessDataManager:
         )
 
     def _get_process_datas(self) -> list:
+        if not TEST_FEATURE_DB:
+            li = []
+            for i in range(10):
+                process_info = {
+                    "regist_process_count": 0,
+                    "process_time": datetime.timedelta(seconds=0),
+                    "good_count": 0,
+                    "data_file_path": f"test/test{i%10 + 1}.json",
+                    "remaining_count": 0,
+                    "bad_count": 0,
+                    "average_time": datetime.timedelta(seconds=random.randint(1, 1000))
+                }
+                li.append(process_info)
+            return li
+
         processing_datas_database = self.database_accesser.fetch_data_from_database(
             FETCH_PROCESS_DATA_SQL)
         processing_data_list = []
@@ -131,6 +151,7 @@ class ProcessDataManager:
                 "good_count": 0,
                 "data_file_path": data["file_pass"],
                 "remaining_count": 0,
+                "bad_count": 0,
                 "average_time": datetime.timedelta(seconds=data["average_time_diff"])
             }
             process_info["process_data"] = self._create_processData_from_db(

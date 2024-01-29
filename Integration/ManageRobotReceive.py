@@ -8,6 +8,7 @@ from Integration.handlers_robot_action import reservation_process
 from Integration.process_number import get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
+from .handlers_robot_action import start_process
 
 
 class ManageRobotReceive:
@@ -29,8 +30,8 @@ class ManageRobotReceive:
         self._special_command_handlers = {
             "ISRESERVED": reservation_process,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
-            "SIZE 0,ST": lambda: _send_message_to_ur(f"SIZE 0,{self._test_get_next_size()}"),
-            "TEST_START": lambda: self._integration_instance._start_process(),
+            "TEST_START": lambda: start_process(self._integration_instance),
+
         }
         self._handl_selectors_with_instruction = {
             "SIG": self._select_handler_ur_sig,
@@ -53,15 +54,17 @@ class ManageRobotReceive:
         Returns:
             function: ハンドラ
         """
+        if command[-1] == "\n":
+            command = command[:-1]
         if command in self._special_command_handlers:
             return self._special_command_handlers[command]
-        instruction, dev_num, detail = self._split_command(command)
+        instruction, dev_num, detail = self._split_command(command[:])
 
-        if self._integration_instance.is_processing_mode:
-            process_number = get_process_number(instruction, dev_num, detail)
-            if process_number:
-                self.work_manager.regist_new_process(
-                    process_number, datetime.datetime.now())
+        # if self._integration_instance.is_processing_mode:
+        #     process_number = get_process_number(instruction, dev_num, detail)
+        #     if process_number:
+        #         self.work_manager.regist_new_process(
+        #             process_number, datetime.datetime.now())
 
         handle_selector = self._handl_selectors_with_instruction.get(
             instruction)
@@ -77,6 +80,13 @@ class ManageRobotReceive:
         if dev_num != 0:
             return self._undefine
 
+        if detail == "ATT_IMP_READY":
+            return lambda: _send_message_to_cfd(
+                "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
+        elif detail == "ATT_DRL_READY":
+            return lambda: _send_message_to_cfd(
+                "EJCT 0,ATTACH", self._integration_instance.send_request_queue)
+
         sensor_time = datetime.datetime.now()
 
         return self._undefine
@@ -86,7 +96,14 @@ class ManageRobotReceive:
         if dev_num != 0:
             return self._undefine(command)
         if detail == "ON" or detail == "OFF":
-            return lambda: self._change_robot_status("sensor", WORK_SENSOR_NUM, detail == "ON")
+            def handl():
+                self._change_robot_status(
+                    "sensor", WORK_SENSOR_NUM, detail == "ON")
+                _send_message_to_ur(
+                    command, self._integration_instance.send_request_queue)
+            return handl
+        elif detail == "ST":
+            return lambda :_send_message_to_cfd(command,self._integration_instance.send_request_queue)
         # detail が数字の場合
         try:
             work_count = int(detail)
@@ -101,7 +118,11 @@ class ManageRobotReceive:
         if dev_num != 0:
             return lambda: self._undefine(command)
         if detail == "TAP_FIN":
-            return lambda: _send_message_to_ur(command, self._integration_instance.send_request_queue)
+            def handl():
+                _send_message_to_ur(
+                    command, self._integration_instance.send_request_queue)
+                start_process(self._integration_instance)
+            return handl
         if detail == "DRL_READY":
             print("ドリルが準備完了しました")
 
@@ -178,7 +199,7 @@ class ManageRobotReceive:
         # 終端文字を削除
         command = command.replace("\n", "")
         command = command.replace("\r", "")
-        command_copy = command
+        command_copy = command[:]
         _split_list = command_copy.split(" ")
         instruction = _split_list[0]
         if len(_split_list) == 2:

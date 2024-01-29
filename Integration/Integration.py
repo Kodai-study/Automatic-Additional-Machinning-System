@@ -3,8 +3,7 @@ import threading
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectDatas import ToolInspectionData
-from ImageInspectionController.OperationType import OperationType
+from ImageInspectionController.InspectionResults import ToolInspectionResult
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessManager import ProcessManager
 from Integration.handlers_gui_responce import GuiResponceHandler
@@ -14,7 +13,7 @@ from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_FEATURE_DB, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
-from common_data_type import TransmissionTarget
+from common_data_type import ToolType, TransmissionTarget
 from Integration.ProcessDataManager import ProcessDataManager
 if TEST_FEATURE_GUI:
     from GUIDesigner.GUIDesigner import GUIDesigner
@@ -62,11 +61,35 @@ class Integration:
         }
         self.tool_stock_informations = [None] * 9
         self.tool_stock_informations[0] = "Do not use!!"
+        self.tool_stock_informations = [
+            None,
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M3_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M4_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M5_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M6_DRILL, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M3_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M5_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M4_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
+        ]
+        self.process_list = []
         self.image_inspection_controller = ImageInspectionController(
             self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
         self.process_data_manager = ProcessDataManager(self.database_accesser)
 
+        if TEST_FEATURE_DB:
+            self.process_data_list = self.process_data_manager.refresh_process_data()
+        else:
+            self.process_data_list = self.process_data_manager.refresh_process_data()
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
@@ -74,7 +97,7 @@ class Integration:
         self.robot_message_handler = ManageRobotReceive(self)
 
         # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
-        self.is_processing_mode = False
+        self.is_processing_mode = True
         self.gui_responce_handler = GuiResponceHandler(
             self, self.send_request_queue, self.gui_request_queue)
         self.process_manager = ProcessManager(self.tool_stock_informations)
@@ -123,36 +146,6 @@ class Integration:
         # 通信が確立するまで待機
         while not (self.is_ur_connected and self.is_cfd_connected):
             time.sleep(0.5)
-
-    def _start_process(self):
-        for stock_number in range(1, 9):
-            if TEST_CFD_CONNECTION_LOCAL:
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.TEST_TARGET_2, "message": "STM 0,R,1"})
-                condition = self._regist_wait_command(
-                    TransmissionTarget.TEST_TARGET_2, "STM 0,TURNED")
-                with condition:
-                    condition.wait()
-
-            else:
-                self.send_request_queue.put(
-                    {"target": TransmissionTarget.CFD, "message": "STM 0,R,1"})
-                self._regist_wait_command(
-                    TransmissionTarget.CFD, "STM 0,TURNED")
-                with condition:
-                    condition.wait()
-
-            result = self.image_inspection_controller.perform_image_operation(
-                OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
-            print(f"工具{stock_number}個めの検査 : 結果 {result}")
-            if not result.result:
-                self.gui_request_queue.put(
-                    GUISignalCategory.CANNOT_CONTINUE_PROCESSING, f"{stock_number}個の工具がエラーです")
-                return
-
-        # TODO ワークの個数を取得する
-        self._regist_wait_command(
-            TransmissionTarget.TEST_TARGET_1, "SIG 0,ATT_IMP_READY")
 
     def _test_camera_request(self, request_list: list):
         global toggle_flag

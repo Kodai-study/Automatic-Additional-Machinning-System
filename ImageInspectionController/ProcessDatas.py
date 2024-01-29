@@ -15,6 +15,29 @@ class HoleType(Enum):
     M6_HOLE = auto()
     M7_HOLE = auto()
     M8_HOLE = auto()
+    
+    @staticmethod
+    def get_hole_type_from_str(str)->'HoleType':
+        """
+        文字列からHoleTypeを取得する
+        """
+        if str == "M2":
+            return HoleType.M2_HOLE
+        elif str == "M3":
+            return HoleType.M3_HOLE
+        elif str == "M4":
+            return HoleType.M4_HOLE
+        elif str == "M5":
+            return HoleType.M5_HOLE
+        elif str == "M6":
+            return HoleType.M6_HOLE
+        elif str == "M7":
+            return HoleType.M7_HOLE
+        elif str == "M8":
+            return HoleType.M8_HOLE
+        else:
+            raise ValueError("文字列が不正です")
+        
 
 
 @dataclass

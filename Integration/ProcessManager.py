@@ -1,4 +1,5 @@
 from typing import Tuple
+from ImageInspectionController.InspectionResults import ToolInspectionResult
 from common_data_type import ToolType
 
 
@@ -6,6 +7,7 @@ class ProcessManager:
     def __init__(self, tool_stock_informations):
         self.tool_stock_informations = tool_stock_informations
         self.tool_position_number = 1
+        self.current_tool_type = None
         self.initial_valiables()
 
     def initial_valiables(self):
@@ -18,7 +20,6 @@ class ProcessManager:
         self.switching_process = False
         self.drill_positions = []
         self.current_process = 1
-        self.current_tool_type = None
 
     def start_process(self, process_data):
         self.initial_valiables()
@@ -44,7 +45,27 @@ class ProcessManager:
         return self._get_rotation_degree(tool_type)
 
     def get_grip_position(self) -> Tuple[int, int]:
-        return self.process_data["gripPoint"]["x"], self.process_data["gripPoint"]["y"]
+        return self.process_data["gridPoint"]["x"], self.process_data["gridPoint"]["y"]
+
+    def get_work_size(self):
+        return self.process_data["workSize"]
+
+    def check_tool_ok(self) -> bool:
+        for tool_str in self.holes_by_size.keys():
+            drill_tool_type = self._get_tooltype_with_str(tool_str, "DRILL")
+            tap_tool_type = self._get_tooltype_with_str(tool_str, "TAP")
+            if not self._is_tool_in_stock(drill_tool_type) or\
+                    not self._is_tool_in_stock(tap_tool_type):
+                return False
+        return True
+
+    def _is_tool_in_stock(self, tool_type):
+        for tool in self.tool_stock_informations:
+            if not isinstance(tool, ToolInspectionResult):
+                continue
+            if tool.tool_type == tool_type:
+                return True
+        return False
 
     def get_next_position(self):
         if self.current_size_index >= len(self.sorted_sizes):
@@ -73,6 +94,8 @@ class ProcessManager:
             self.switching_process = False
             self.current_tool_type = self._get_tooltype_with_str(
                 hole["size"], "DRILL" if self.current_process == 1 else "TAP")
+            process_informaiton = (
+                process_informaiton[0], process_informaiton[1], self._get_drill_speed(self.current_tool_type))
             return process_informaiton, self._get_rotation_degree(self.current_tool_type)
         return process_informaiton, None
 
@@ -96,22 +119,26 @@ class ProcessManager:
             return None
 
     def _get_rotation_degree(self, tool_type) -> int:
-        for i in range(1, len(self.tool_stock_informations)):
+        for i in range(1, len(self.tool_stock_informations)+1):
             if self.tool_stock_informations[i].tool_type == tool_type:
-                steps = i - self.tool_position_number
-                self.tool_position_number = i
-                if steps < 0:
-                    steps += 8
-                return steps
+                self.current_tool_type = tool_type
+                return i - 1
+        print("工具の種類が不正です")
 
     def _get_drill_speed(self, tool_type):
-        if tool_type == ToolType.M2_DRILL or tool_type == ToolType.M2_TAP:
+        if tool_type == ToolType.M3_DRILL:
+            return 1
+        elif tool_type == ToolType.M4_DRILL:
             return 2
-        elif tool_type == ToolType.M3_DRILL or tool_type == ToolType.M3_TAP:
+        elif tool_type == ToolType.M5_DRILL:
             return 3
-        elif tool_type == ToolType.M4_DRILL or tool_type == ToolType.M4_TAP:
+        elif tool_type == ToolType.M6_DRILL:
             return 4
-        elif tool_type == ToolType.M5_DRILL or tool_type == ToolType.M5_TAP:
+        elif tool_type == ToolType.M3_TAP:
             return 5
-        elif tool_type == ToolType.M6_DRILL or tool_type == ToolType.M6_TAP:
+        elif tool_type == ToolType.M4_TAP:
             return 6
+        elif tool_type == ToolType.M5_TAP:
+            return 7
+        elif tool_type == ToolType.M6_TAP:
+            return 8

@@ -1,5 +1,6 @@
 # coding: utf-8
 from queue import Queue
+import re
 import socket
 from threading import Thread
 import socket
@@ -63,11 +64,9 @@ class RobotCommunicationHandler:
                     print("Connection closed by the server")
                     break
 
+                separate_pattern ='.+?(?:\r\n|\r|\n|$)'
                 # 改行で区切って、行の数だけ繰り返す
-                for line in data.decode('utf-8').splitlines():
-                    print(f"""Main_Received  target = {
-                        target}, message = {line}""")
-
+                for line in re.findall(separate_pattern, data.decode('utf-8')):
                     self.receive_data_queue.put(
                         {"target": target, "message": line,
                          "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
@@ -141,7 +140,7 @@ class RobotCommunicationHandler:
         try:
             if not TEST_UR_CONNECTION_LOCAL:
                 self.socket_ur = self.connect_to_ur(
-                    self.socket_ur, TEST_HOST_ADDRESS, UR_PORT_NUMBER)
+                    self.socket_ur, HOST_LINUX_ADDRESS, UR_PORT_NUMBER)
                 receive_data_queue.put({"target": TransmissionTarget.UR,
                                         "msg_type": RobotInteractionType.SOCKET_CONNECTED})
             else:
@@ -209,6 +208,7 @@ class RobotCommunicationHandler:
                     target_socket = self.socket_ur
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
                     target_socket = self.socket_cfd_send
+
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))
