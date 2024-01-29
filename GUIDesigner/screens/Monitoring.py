@@ -291,7 +291,7 @@ class Monitoring(ScreenBase):
             self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
         conveyor_rotato_bad_button = tk.Button(
-            self, text="後転", state="nomal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+            self, text="後転", state="normal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
         conveyor_stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=(
             "MSゴシック", BUTTON_FONT_SIZE, "bold"))
@@ -327,9 +327,6 @@ class Monitoring(ScreenBase):
         for i in range(5):
             push_buttons[i].grid(row=i + 11, column=2)
             pull_buttons[i].grid(row=i + 11, column=3)
-
-        # for i in range(2):
-        #     stop_buttons[i].grid(row=i + 9, column=4)
 
         kara_label1.grid(row=0, column=0)
         backlight_label.grid(row=1, column=1, pady=10)
