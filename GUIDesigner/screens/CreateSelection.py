@@ -34,7 +34,7 @@ class CreateSelection(ScreenBase):
                 self.after(500, lambda: self.send_to_integration_queue.put(
                     (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, )))
                 return
-            
+
             self.update_option_menu(request_data)
 
     def update_option_menu(self, request_data):
@@ -61,11 +61,13 @@ class CreateSelection(ScreenBase):
 
         def determine_process_data():
             self._regist_processing_order()
-            self.change_frame(Frames.CHECK_SELECTION)
             # regist_process_countが0以外の要素をフィルタリング
-            filtered_data = [item for item in self.data_list if item['regist_process_count'] > 0]
-            sorted_data = sorted(filtered_data, key=lambda item: item['order_number'])
+            filtered_data = [
+                item for item in self.data_list if item['regist_process_count'] > 0]
+            sorted_data = sorted(
+                filtered_data, key=lambda item: item['order_number'])
             self.process_data_setter(sorted_data)
+            self.change_frame(Frames.CHECK_SELECTION)
 
         go_check_button = tk.Button(
             self, text="確認画面", command=determine_process_data, font=("AR丸ゴシック体M", 18), width=22)
@@ -151,7 +153,7 @@ class CreateSelection(ScreenBase):
                 target_process_data["process_data"].model_id)
         target_process_data["regist_process_count"] = quantity
         self.processed_data_treeview.insert("", "end", iid=target_process_data["process_data"].model_id, values=(
-            target_process_data["process_data"].model_number, quantity))
+            target_process_data["process_data"].model_id, quantity))
 
     def _remove_selected_items(self):
         selected_items = self.processed_data_treeview.selection()
