@@ -1,3 +1,4 @@
+from queue import Queue
 import tkinter as tk
 from typing import Union
 from GUIDesigner.Frames import Frames
@@ -7,12 +8,13 @@ from GUIDesigner.screens.ScreenBase import ScreenBase
 
 
 class CheckSelection(ScreenBase):
-    def __init__(self, parent: tk.Tk, selected_items: list, image_resource: dict):
+    def __init__(self, parent: tk.Tk, selected_items: list, image_resource: dict, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.selected_items = selected_items
         self.image_resource = image_resource
         self.ready_lamp_img = self.image_resource["green_lamp"]
         self.preparation_lamp_img = self.image_resource["red_lamp"]
+        self.send_to_integration_queue = send_to_integration_queue
         self._create_widgets()
 
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
@@ -24,7 +26,6 @@ class CheckSelection(ScreenBase):
         self.tkraise()
 
     def _create_widgets(self):
-
         self.label = tk.Label(self, text="選択した加工データ",
                               font=("AR丸ゴシック体M", 24))
         self.decoy_label = tk.Label(
@@ -43,10 +44,14 @@ class CheckSelection(ScreenBase):
                 self.ready_button["text"] = "準備取り消し"
                 # ここでlabel_lampの画像を更新
                 self.label_lamp.config(image=self.ready_lamp_img)
+                self.send_to_integration_queue.put(
+                    (GUIRequestType.UPLOAD_PROCESSING_DETAILS, True))
             else:
                 self.ready_button["text"] = "準備完了"
                 # ここでlabel_lampの画像を更新
                 self.label_lamp.config(image=self.preparation_lamp_img)
+                self.send_to_integration_queue.put(
+                    (GUIRequestType.UPLOAD_PROCESSING_DETAILS, False))
 
         self.ready_button = tk.Button(self, text="準備完了",
                                       command=toggle_ready_state, font=("AR丸ゴシック体M", 22), width=24)

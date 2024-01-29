@@ -80,7 +80,7 @@ class GUIDesigner(tk.Tk):
         self.screens[Frames.CREATE_SELECTION] = CreateSelection(
             self, self.send_message_queue)
         self.screens[Frames.CHECK_SELECTION] = CheckSelection(
-            self, self.data_list, self.image_resources)
+            self, self.data_list, self.image_resources, self.send_message_queue)
         self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
             self, self.image_resources, self.data_list, self.robot_status)
         self.screens[Frames.WORK_RESULT_OVERVIEW] = WorkResultOverview(
