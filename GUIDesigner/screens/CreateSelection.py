@@ -60,8 +60,6 @@ class CreateSelection(ScreenBase):
         def determine_process_data():
             self._regist_processing_order()
             self.change_frame(Frames.CHECK_SELECTION)
-            self.send_to_integration_queue.put(
-                (GUIRequestType.UPLOAD_PROCESSING_DETAILS, ))
 
         go_check_button = tk.Button(
             self, text="確認画面", command=determine_process_data, font=("AR丸ゴシック体M", 18), width=22)
