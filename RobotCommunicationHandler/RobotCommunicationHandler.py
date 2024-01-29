@@ -67,9 +67,6 @@ class RobotCommunicationHandler:
                 separate_pattern ='.+?(?:\r\n|\r|\n|$)'
                 # 改行で区切って、行の数だけ繰り返す
                 for line in re.findall(separate_pattern, data.decode('utf-8')):
-                    print(f"""Main_Received  target = {
-                        target}, message = {line}""")
-
                     self.receive_data_queue.put(
                         {"target": target, "message": line,
                          "msg_type": RobotInteractionType.MESSAGE_RECEIVED})
@@ -211,6 +208,7 @@ class RobotCommunicationHandler:
                     target_socket = self.socket_ur
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
                     target_socket = self.socket_cfd_send
+
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))
