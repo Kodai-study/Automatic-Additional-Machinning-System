@@ -46,11 +46,14 @@ def detect_circles(image_path, min_radius=10, max_radius=100, param1=50, param2=
             if realvalue_radius < Tolerancemax and realvalue_radius > Tolerancemin:
                 gouhi="o"
             else:
-                gouhi="o"
+                gouhi="x"
             
+            x=round((3513-center[0])*0.05,2)
+            y=round((37-center[1])*0.05,2)
             # 座標と直径を表示
             realvalue_radius=round(realvalue_radius,2)
-            text = f"(x_{center[0]}px, y_{center[1]}px, center{Tolerance}+-0.05mm,center{realvalue_radius}mm, {gouhi})"
+            text = f"(x {x}mm, y {y}mm, center{Tolerance}+-0.05mm,center{realvalue_radius}mm, {gouhi})"
+
             cv2.putText(result_image, text, (i[0] - 9*radius, i[1] - radius), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         cv2.imwrite('result_image.png', result_image)
