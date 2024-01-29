@@ -51,8 +51,18 @@ class ProcessDataManager:
         Returns:
             list: 加工データのリスト
         """
-        self.process_data_list = self._get_process_datas()
-        return self.process_data_list
+        # 既存のリストを model_id でインデックス化
+        existing_data_index = {d["process_data"]['model_id']: d for d in self.process_data_list}
+
+        # データベースからの新しいデータを処理
+        for new_item in self._get_process_datas():
+            if new_item["process_data"]['model_id'] in existing_data_index:
+                # model_id が一致する場合、number を保持して他のデータを更新
+                existing_item = existing_data_index[new_item['model_id']]
+                existing_item.update({k: v for k, v in new_item.items() if k != 'model_id'})
+            else:
+            # model_id が存在しない場合、新しい要素を追加
+                return self.process_data_list
 
     def register_process_number(self):
         """加工数を登録したことを通知する

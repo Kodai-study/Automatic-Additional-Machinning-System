@@ -53,7 +53,7 @@ class GUIDesigner(tk.Tk):
         self.image_resources: Dict[str, tk.PhotoImage] = {}
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
-        self.current_screen = Frames.CREATE_SELECTION 
+        self.current_screen = Frames.CREATE_SELECTION
         self.robot_status = {}
         self._initial_variables()
         self.protocol("WM_DELETE_WINDOW", lambda: self.destroy())
@@ -72,7 +72,7 @@ class GUIDesigner(tk.Tk):
             file="./resource/images/green_lamp.png")
         self.image_resources["work"] = tk.PhotoImage(
             file="./resource/images/work.png")
-        
+
     def set_data_list(self, new_data_list):
         self.data_list[:] = new_data_list
 

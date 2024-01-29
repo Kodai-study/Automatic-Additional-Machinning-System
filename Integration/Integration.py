@@ -80,16 +80,12 @@ class Integration:
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
         ]
-        self.process_list = []
+        self.process_data_list = []
         self.image_inspection_controller = ImageInspectionController(
             self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
         self.process_data_manager = ProcessDataManager(self.database_accesser)
 
-        if TEST_FEATURE_DB:
-            self.process_data_list = self.process_data_manager.refresh_process_data()
-        else:
-            self.process_data_list = self.process_data_manager.refresh_process_data()
         if TEST_FEATURE_CONNECTION:
             self.communicationHandler = RobotCommunicationHandler()
         if TEST_FEATURE_GUI:
@@ -162,7 +158,8 @@ class Integration:
         if TEST_FEATURE_DB:
             self.process_data_list = self.process_data_manager.refresh_process_data()
         else:
-            self.process_data_list = ProcessDataManager._test_create_process_data()
+            if not self.process_data_list:
+                self.process_data_list = ProcessDataManager._test_create_process_data()
 
     def main(self):
 
