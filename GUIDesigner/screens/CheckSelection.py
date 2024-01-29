@@ -21,8 +21,9 @@ class CheckSelection(ScreenBase):
         self.handle_pause_and_emergency(request_type, request_data)
 
     def create_frame(self):
+        self.listbox.delete(0, tk.END)
         for item in self.selected_items:
-            self.listbox.insert(tk.END, f"{item[0]} - 個数: {item[1]}")
+            self.listbox.insert(tk.END, f"{item['process_data'].model_number} - 個数: {item['regist_process_count']}")
         self.tkraise()
 
     def _create_widgets(self):
