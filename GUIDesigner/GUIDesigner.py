@@ -72,13 +72,16 @@ class GUIDesigner(tk.Tk):
             file="./resource/images/green_lamp.png")
         self.image_resources["work"] = tk.PhotoImage(
             file="./resource/images/work.png")
+        
+    def set_data_list(self, new_data_list):
+        self.data_list[:] = new_data_list
 
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
             self, self.get_request_queue)
         self.screens[Frames.LOGIN] = Login(self, self.send_message_queue)
         self.screens[Frames.CREATE_SELECTION] = CreateSelection(
-            self, self.send_message_queue)
+            self, self.send_message_queue, self.set_data_list)
         self.screens[Frames.CHECK_SELECTION] = CheckSelection(
             self, self.data_list, self.image_resources, self.send_message_queue)
         self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
@@ -120,7 +123,6 @@ class GUIDesigner(tk.Tk):
         self.send_message_queue = send_message_queue
         self.robot_status = robot_status
         self._initial_screens()
-        # 画面作成のクラスのインスタンス化のテスト
         self.screens[self.current_screen].create_frame()
         self._check_queue()
         self.mainloop()

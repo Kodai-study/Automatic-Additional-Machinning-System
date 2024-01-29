@@ -13,10 +13,11 @@ import tkinter as tk
 
 
 class CreateSelection(ScreenBase):
-    def __init__(self, parent, send_to_integration_queue: Queue):
+    def __init__(self, parent, send_to_integration_queue: Queue, process_data_setter):
         super().__init__(parent)
         self.number_pad = None
         self.data_list = []
+        self.process_data_setter = process_data_setter
         self._create_widgets()
         self.send_to_integration_queue = send_to_integration_queue
 
@@ -33,6 +34,7 @@ class CreateSelection(ScreenBase):
                 self.after(500, lambda: self.send_to_integration_queue.put(
                     (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, )))
                 return
+            
             self.update_option_menu(request_data)
 
     def update_option_menu(self, request_data):
@@ -60,6 +62,10 @@ class CreateSelection(ScreenBase):
         def determine_process_data():
             self._regist_processing_order()
             self.change_frame(Frames.CHECK_SELECTION)
+            # regist_process_countが0以外の要素をフィルタリング
+            filtered_data = [item for item in self.data_list if item['regist_process_count'] > 0]
+            sorted_data = sorted(filtered_data, key=lambda item: item['order_number'])
+            self.process_data_setter(sorted_data)
 
         go_check_button = tk.Button(
             self, text="確認画面", command=determine_process_data, font=("AR丸ゴシック体M", 18), width=22)
