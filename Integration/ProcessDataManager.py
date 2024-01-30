@@ -45,7 +45,7 @@ class ProcessDataManager:
         self.database_accesser = database_accesser
         self.process_data_list = []
 
-    def refresh_process_data(self) -> list:
+    def     refresh_process_data(self) -> list:
         """DBから加工データのリストを(再)取得する
 
         Returns:
@@ -58,8 +58,8 @@ class ProcessDataManager:
         for new_item in self._get_process_datas():
             if new_item["process_data"].model_id in existing_data_index:
                 # model_id が一致する場合、number を保持して他のデータを更新
-                existing_item = existing_data_index[new_item['model_id']]
-                existing_item.update({k: v for k, v in new_item.items() if k != 'model_id'})
+                existing_item = existing_data_index[new_item["process_data"].model_id]
+                existing_item.update({k: v for k, v in new_item.items() if k != 'regist_process_count'})
             else:
             # model_id が存在しない場合、新しい要素を追加
                 self.process_data_list.append(new_item)
