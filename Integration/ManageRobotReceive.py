@@ -1,5 +1,6 @@
 import datetime
 from threading import Thread
+from GUIDesigner.GUIRequestType import GUIRequestType
 from Integration.WorkManager import WorkManager
 from Integration.handlers_communication import _handle_connection_success, _notice_finish_process, notice_change_status, _send_message_to_cfd, _send_message_to_ur
 from Integration.handlers_database import insert_sns_update
@@ -27,11 +28,15 @@ class ManageRobotReceive:
         self._integration_instance = integration_instance
         self.work_manager = WorkManager(
             self._integration_instance.database_accesser)
+        
+        def _start_process():
+            self._integration_instance.gui_request_queue.put((GUIRequestType.UPLOAD_PROCESSING_DETAILS,True))
+            start_process(self._integration_instance)
+
         self._special_command_handlers = {
             "ISRESERVED": reservation_process,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
-            "TEST_START": lambda: start_process(self._integration_instance),
-
+            "TEST_START": _start_process
         }
         self._handl_selectors_with_instruction = {
             "SIG": self._select_handler_ur_sig,
@@ -59,12 +64,6 @@ class ManageRobotReceive:
         if command in self._special_command_handlers:
             return self._special_command_handlers[command]
         instruction, dev_num, detail = self._split_command(command[:])
-
-        # if self._integration_instance.is_processing_mode:
-        #     process_number = get_process_number(instruction, dev_num, detail)
-        #     if process_number:
-        #         self.work_manager.regist_new_process(
-        #             process_number, datetime.datetime.now())
 
         handle_selector = self._handl_selectors_with_instruction.get(
             instruction)

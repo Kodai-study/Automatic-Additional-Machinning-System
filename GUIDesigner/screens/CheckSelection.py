@@ -19,6 +19,8 @@ class CheckSelection(ScreenBase):
 
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
+        if request_type == GUIRequestType.UPLOAD_PROCESSING_DETAILS and self.ready_button["text"] == "準備取り消し":
+            self.change_frame(Frames.PROCESSING_PROGRESS)
 
     def create_frame(self):
         self.listbox.delete(0, tk.END)
