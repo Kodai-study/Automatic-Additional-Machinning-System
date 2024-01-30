@@ -153,7 +153,7 @@ class CreateSelection(ScreenBase):
                 target_process_data["process_data"].model_id)
         target_process_data["regist_process_count"] = quantity
         self.processed_data_treeview.insert("", "end", iid=target_process_data["process_data"].model_id, values=(
-            target_process_data["process_data"].model_id, quantity))
+            target_process_data["process_data"].model_number, quantity))
 
     def _remove_selected_items(self):
         selected_items = self.processed_data_treeview.selection()
