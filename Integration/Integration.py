@@ -6,7 +6,7 @@ from ImageInspectionController.ImageInspectionController import ImageInspectionC
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessManager import ProcessManager
-from Integration.handlers_gui_responce import GuiResponceHandler
+from Integration.GuiResponceHandler import GuiResponceHandler
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2_RECEIV, TEST_PORT2_SEND, RobotCommunicationHandler
 from threading import Thread
