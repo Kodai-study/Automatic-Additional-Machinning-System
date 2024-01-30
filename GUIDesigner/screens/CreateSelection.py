@@ -23,7 +23,6 @@ class CreateSelection(ScreenBase):
 
     def create_frame(self):
         self.tkraise()
-        self.data_list = []
         self.send_to_integration_queue.put(
             (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, ))
 
@@ -36,6 +35,7 @@ class CreateSelection(ScreenBase):
                 return
 
             self.update_option_menu(request_data)
+            self._update_selection_table()
 
     def update_option_menu(self, request_data):
         self.data_list = request_data
