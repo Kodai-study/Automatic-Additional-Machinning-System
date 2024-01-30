@@ -1,8 +1,6 @@
-from threading import Thread
 import time
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
-from ImageInspectionController.InspectionResults import PreProcessingInspectionResult
 from ImageInspectionController.OperationType import OperationType
 from Integration.ProcessDataManager import ProcessDataManager
 from common_data_type import TransmissionTarget, WorkPieceShape
@@ -23,7 +21,6 @@ def _test_regist_process_count(integration_instance):
     integration_instance.process_list[0]["regist_process_count"] = 3
     integration_instance.process_list[1]["regist_process_count"] = 2
     integration_instance.process_list[5]["regist_process_count"] = 7
-    integration_instance.process_data_manager.register_process_number()
 
 
 def start_process(integration_instance):
@@ -32,7 +29,7 @@ def start_process(integration_instance):
     # TODO ワークの個数を取得する
     time.sleep(1)
     send_to_CFD(integration_instance, "STM 0,SEARCH")
-    _test_regist_process_count(integration_instance)
+    integration_instance.process_data_manager.register_process_number()
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
 
     while not work_process(integration_instance, process_data_manager):
