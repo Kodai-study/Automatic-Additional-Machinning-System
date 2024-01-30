@@ -92,7 +92,6 @@ class Integration:
             self.guiDesigner = GUIDesigner()
         self.robot_message_handler = ManageRobotReceive(self)
 
-        # TODO 現在の画面がモニタ画面かどうかのフラグをGUIと共有する
         self.is_processing_mode = True
         self.gui_responce_handler = GuiResponceHandler(
             self, self.send_request_queue, self.gui_request_queue)
@@ -155,14 +154,9 @@ class Integration:
             (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
 
     def regist_process_datas(self):
-        if TEST_FEATURE_DB:
-            self.process_data_list = self.process_data_manager.refresh_process_data()
-        else:
-            if not self.process_data_list:
-                self.process_data_list = ProcessDataManager._test_create_process_data()
+        self.process_data_list = self.process_data_manager.refresh_process_data()
 
     def main(self):
-
         # 通信スレッドを立ち上げる
         if TEST_FEATURE_CONNECTION:
             # 通信相手のURがいない場合、localhostで通信相手をスレッドで立ち上げる
