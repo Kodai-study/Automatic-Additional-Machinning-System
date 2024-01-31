@@ -125,6 +125,10 @@ class ProcessingProgress(ScreenBase):
 
     def _update_progress_state(self):
         self._update_current_data_label()
+        self.progress_percent.update_progress(value=50)
+        self.good_rate.update_progress(value=50)
+        self.remaining_time.update_progress(value=50)
+        self.remaining_count.update_progress(value=50)
 
     def _update_current_data_label(self):
         current_data_name = self.process_data_manager.process_data_list[0]["process_data"].model_number
@@ -141,23 +145,17 @@ class ProcessingProgress(ScreenBase):
         self.label_frame.columnconfigure(self.rabel_col_num, weight=1)
         self.rabel_col_num += 1
 
+
     def _create_widgets(self):
         # 進捗フレームを作成
-        label_strings = ["加工進捗", "良品率", "残り時間", "残り枚数"]
-        progress_bar_frame = tk.Frame(self)
-        progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.progress_percent = ProgressBar(progress_bar_frame,"加工進捗",1)
-        for i, label_text in enumerate(label_strings):
-            ProgressBar(progress_bar_frame, label_text, i+1)
+        progress_bar_frame = self._create_progress_bars()
 
         # ラベル用のフレーム
         self.label_frame = tk.Frame(self)
         self.label_frame.pack(side=tk.TOP, fill=tk.BOTH,
                               expand=True, padx=FRAME_PADDING_X, pady=FRAME_PADDING_Y)
-
         LabelUnit.initial_variables(
             self.label_frame, self.on_image, self.off_image)
-
         self.label_status_dict["sensor"] = self._create_sensor_status_labels()
         self.label_status_dict["reed_switch"] = self._create_cylinder_status_labels(
         )
@@ -167,7 +165,19 @@ class ProcessingProgress(ScreenBase):
         )
 
         self.current_data_label = tk.Label(progress_bar_frame)
-        self.current_data_label.grid(row=0, column=0, columnspan=2, padx=40, pady=40)  # ２列にまたがる
+        self.current_data_label.grid(row=0, column=0, columnspan=2, padx=40, pady=40) 
+
+    def _create_progress_bars(self):
+        def _test_update_progress(value):
+            return value, f"{value:.1f}%"
+        
+        progress_bar_frame = tk.Frame(self)
+        progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.progress_percent = ProgressBar(progress_bar_frame,"加工進捗",1,_test_update_progress)
+        self.good_rate = ProgressBar(progress_bar_frame,"良品率",2,_test_update_progress)
+        self.remaining_time = ProgressBar(progress_bar_frame,"残り時間",3,_test_update_progress)
+        self.remaining_count = ProgressBar(progress_bar_frame,"残り枚数",4,_test_update_progress)
+        return progress_bar_frame
 
     def _create_sensor_status_labels(self):
         # センサーステータス用のラベルを作成して配置
