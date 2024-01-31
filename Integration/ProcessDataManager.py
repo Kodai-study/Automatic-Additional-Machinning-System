@@ -77,6 +77,7 @@ class ProcessDataManager:
             json_data = self._get_processing_data_from_json(
                 item["data_file_path"])
             item["hole_informations"] = json_data
+        self.completed_data = []
 
     def get_next_process_data(self):
         """次の加工データを取得する
@@ -114,7 +115,7 @@ class ProcessDataManager:
             self.process_data_list[0]["bad_count"] += 1
 
         if self.process_data_list[0]["regist_process_count"] - self.process_data_list[0]["good_count"] == 0:
-            self.process_data_list.pop(0)
+            self.completed_data.append(self.process_data_list.pop(0))
             return True
         return False
     
@@ -126,8 +127,10 @@ class ProcessDataManager:
     def get_good_and_bad_count(self):
         """良品数の合計を取得する
         """
-        good_count = sum([item["good_count"] for item in self.process_data_list])
-        bad_count = sum([item["bad_count"] for item in self.process_data_list])
+        good_count = sum([item["good_count"] for item in self.process_data_list]) +\
+              sum([item["good_count"] for item in self.completed_data])
+        bad_count = sum([item["bad_count"] for item in self.process_data_list]) + \
+            sum([item["bad_count"] for item in self.completed_data])
         return good_count, bad_count
 
     def _get_processing_data_from_json(self, json_file_path: str):
