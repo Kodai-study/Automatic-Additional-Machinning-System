@@ -1,3 +1,4 @@
+import random
 import time
 import copy
 
@@ -120,22 +121,26 @@ class ProcessingProgress(ScreenBase):
         self.tkraise()
         self.old_robot_status = copy.deepcopy(self.robot_status)
         self.process_data_manager = self.selected_items()
+        self.process_count_sum = self.process_data_manager.get_process_count_sum()
         self.reaming_second_sum = self.process_data_manager.get_reaming_time_sum().total_seconds()
         self._set_robot_status(self.robot_status, self.label_status_dict)
         self._update_progress_state()
 
     def _update_progress_state(self):
         self._update_current_data_label()
-        self.process_data_manager.processing_finished(True)
-        self.process_data_manager.processing_finished(False)
-        self.process_data_manager.processing_finished(True)
+        # 8割の確率で良品を加工する
+        is_good = True
+        if random.random() < 0.2:
+            is_good = False
+        self.process_data_manager.processing_finished(is_good)
 
         good_sum, bad_sum = self.process_data_manager.get_good_and_bad_count()
-        self.progress_percent.update_progress(sum_count=self.process_data_manager.get_process_count_sum(),
+        self.progress_percent.update_progress(sum_count=self.process_count_sum,
                                                current_count=good_sum)
         self.good_rate.update_progress(good_sum=good_sum, bad_sum=bad_sum)
         self.remaining_time.update_progress(reaming_time_second=self.process_data_manager.get_reaming_time_sum().total_seconds())
         self.remaining_count.update_progress(process_data=self.process_data_manager.process_data_list[0])
+        self.after(1000, self._update_progress_state)
 
     def _update_current_data_label(self):
         current_data_name = self.process_data_manager.process_data_list[0]["process_data"].model_number
