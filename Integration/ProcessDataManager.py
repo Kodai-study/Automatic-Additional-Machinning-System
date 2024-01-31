@@ -89,6 +89,15 @@ class ProcessDataManager:
         is_last_work = self.process_data_list[0]["regist_process_count"] - \
             self.process_data_list[0]["good_count"] == 1
         return is_last_work, self.process_data_list[0]["hole_informations"]
+    
+    def get_reaming_time_sum(self):
+        """残りの加工時間の合計を取得する
+        """
+        roaming_time = datetime.timedelta(seconds=0)
+        for process_item in self.process_data_list:
+            roaming_time += process_item["process_data"].average_processing_time * (
+                process_item["regist_process_count"] - process_item["good_count"])
+        return roaming_time
 
     def processing_finished(self, is_good: bool) -> bool:
         """加工が終了したことを通知する
@@ -178,7 +187,7 @@ class ProcessDataManager:
             for i in range(10):
                 process_info = {
                     "regist_process_count": 0,
-                    "process_data": ProcessingData(i, f"加工データ(型番){i}", datetime.timedelta(minutes=i, seconds=i*10+i+1), WorkPieceShape.CIRCLE, 10.0, f"加工者{i}", datetime.datetime.now()),
+                    "process_data": ProcessingData(i, f"加工データ(型番){i}", datetime.timedelta(minutes=i), WorkPieceShape.CIRCLE, 10.0, f"加工者{i}", datetime.datetime.now()),
                     "process_time": datetime.timedelta(seconds=0),
                     "good_count": 0,
                     "data_file_path": f"test/test{i%10 + 1}.json",
