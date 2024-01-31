@@ -127,6 +127,7 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
+    integration_instance.gui_request_queue.put((GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
     send_to_CFD(integration_instance,
                 f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
     return preprocess_inspection_result.result
