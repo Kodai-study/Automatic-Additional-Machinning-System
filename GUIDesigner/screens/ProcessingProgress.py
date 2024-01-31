@@ -126,10 +126,13 @@ class ProcessingProgress(ScreenBase):
     def _update_progress_state(self):
         self._update_current_data_label()
         self.process_data_manager.processing_finished(True)
-        good_sum,_ = self.process_data_manager.get_good_and_bad_count()
+        self.process_data_manager.processing_finished(False)
+        self.process_data_manager.processing_finished(True)
+
+        good_sum, bad_sum = self.process_data_manager.get_good_and_bad_count()
         self.progress_percent.update_progress(sum_count=self.process_data_manager.get_process_count_sum(),
                                                current_count=good_sum)
-        self.good_rate.update_progress(value=50)
+        self.good_rate.update_progress(good_sum=good_sum, bad_sum=bad_sum)
         self.remaining_time.update_progress(value=50)
         self.remaining_count.update_progress(value=50)
 
@@ -179,10 +182,15 @@ class ProcessingProgress(ScreenBase):
             progress_percent = round(progress_percent, 1)
             return progress_percent, f"{progress_percent:.1f}% ({sum_count}個中{current_count}個加工済み)"
         
+        def update_good_rate(good_sum, bad_sum):
+            good_rate = (good_sum/(good_sum+bad_sum)) * 100
+            good_rate = round(good_rate, 1)
+            return good_rate, f"{good_rate:.1f}%"
+        
         progress_bar_frame = tk.Frame(self)
         progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.progress_percent = ProgressBar(progress_bar_frame,"加工進捗",1,update_progress_percent)
-        self.good_rate = ProgressBar(progress_bar_frame,"良品率",2,_test_update_progress)
+        self.good_rate = ProgressBar(progress_bar_frame,"良品率",2,update_good_rate)
         self.remaining_time = ProgressBar(progress_bar_frame,"残り時間",3,_test_update_progress)
         self.remaining_count = ProgressBar(progress_bar_frame,"残り枚数",4,_test_update_progress)
         return progress_bar_frame
