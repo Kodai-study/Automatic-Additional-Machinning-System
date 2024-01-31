@@ -125,6 +125,5 @@ class GuiResponceHandler:
 
     def _get_process_data_list(self):
         self.integration.process_data_manager.refresh_process_data()
-        self.integration.regist_process_datas()
         self.gui_request_queue.put(
             (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, self.integration.process_data_manager))

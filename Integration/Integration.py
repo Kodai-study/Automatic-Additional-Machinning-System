@@ -80,7 +80,6 @@ class Integration:
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
         ]
-        self.process_data_list = []
         self.image_inspection_controller = ImageInspectionController(
             self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
@@ -153,8 +152,6 @@ class Integration:
         self.gui_request_queue.put(
             (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
 
-    def regist_process_datas(self):
-        self.process_data_list = self.process_data_manager.refresh_process_data()
 
     def main(self):
         # 通信スレッドを立ち上げる
