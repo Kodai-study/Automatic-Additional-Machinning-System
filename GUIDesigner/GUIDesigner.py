@@ -63,7 +63,7 @@ class GUIDesigner(tk.Tk):
         self.previous_screen = None
         self.screens: Dict[Frames, ScreenBase] = {}
         self.current_screen = Frames.CREATE_SELECTION
-        self.data_list = []
+        self.process_data_manager = None
         self.robot_status = {}
         self.image_resources["red_lamp"] = tk.PhotoImage(
             file="./resource/images/red_lamp.png")
@@ -73,21 +73,21 @@ class GUIDesigner(tk.Tk):
         self.image_resources["work"] = tk.PhotoImage(
             file="./resource/images/work.png")
 
-    def set_data_list(self, new_data_list):
-        self.data_list[:] = new_data_list
+    def set_process_data_manager(self, process_data_manager):
+        self.process_data_manager = process_data_manager
 
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
             self, self.get_request_queue)
         self.screens[Frames.LOGIN] = Login(self, self.send_message_queue)
         self.screens[Frames.CREATE_SELECTION] = CreateSelection(
-            self, self.send_message_queue, self.set_data_list)
+            self, self.send_message_queue, self.set_process_data_manager)
         self.screens[Frames.CHECK_SELECTION] = CheckSelection(
-            self, self.data_list, self.image_resources, self.send_message_queue)
+            self, self.process_data_manager, self.image_resources, self.send_message_queue)
         self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
-            self, self.image_resources, self.data_list, self.robot_status)
+            self, self.image_resources, self.process_data_manager, self.robot_status)
         self.screens[Frames.WORK_RESULT_OVERVIEW] = WorkResultOverview(
-            self, self.data_list)
+            self, self.process_data_manager)
         self.screens[Frames.MONITORING] = Monitoring(
             self, self.robot_status, self.send_message_queue)
         self.screens[Frames.EMERGENCY_STOP] = EmergencyStop(self)

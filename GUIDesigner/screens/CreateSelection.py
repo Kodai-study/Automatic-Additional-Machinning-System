@@ -33,12 +33,12 @@ class CreateSelection(ScreenBase):
                 self.after(500, lambda: self.send_to_integration_queue.put(
                     (GUIRequestType.REQUEST_PROCESSING_DATA_LIST, )))
                 return
-
             self.update_option_menu(request_data)
             self._update_selection_table()
 
     def update_option_menu(self, request_data):
-        self.data_list = request_data
+        self.data_list = request_data.process_data_list
+        self.process_data_setter(request_data)
         self.combobox_options = [d["process_data"].model_number
                                  for d in self.data_list if 'process_data' in d]
         menu = self.model_select_combobox["menu"]
