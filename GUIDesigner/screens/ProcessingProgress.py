@@ -119,8 +119,9 @@ class ProcessingProgress(ScreenBase):
     def create_frame(self):
         self.tkraise()
         self.old_robot_status = copy.deepcopy(self.robot_status)
-        self._set_robot_status(self.robot_status, self.label_status_dict)
         self.process_data_manager = self.selected_items()
+        self.reaming_second_sum = self.process_data_manager.get_reaming_time_sum().total_seconds()
+        self._set_robot_status(self.robot_status, self.label_status_dict)
         self._update_progress_state()
 
     def _update_progress_state(self):
@@ -133,7 +134,7 @@ class ProcessingProgress(ScreenBase):
         self.progress_percent.update_progress(sum_count=self.process_data_manager.get_process_count_sum(),
                                                current_count=good_sum)
         self.good_rate.update_progress(good_sum=good_sum, bad_sum=bad_sum)
-        self.remaining_time.update_progress(value=50)
+        self.remaining_time.update_progress(reaming_time_second=self.process_data_manager.get_reaming_time_sum().total_seconds())
         self.remaining_count.update_progress(value=50)
 
     def _update_current_data_label(self):
@@ -187,11 +188,21 @@ class ProcessingProgress(ScreenBase):
             good_rate = round(good_rate, 1)
             return good_rate, f"{good_rate:.1f}%"
         
+        def update_remaining_time(reaming_time_second):
+            hours, remainder = divmod(int(reaming_time_second), 3600)
+            minutes, seconds = divmod(remainder, 60)
+            if hours:
+                time_str = f"{hours:2d}時間{minutes:2d}分{seconds:2d}秒"
+            else:
+                time_str = f"{minutes:2d}分{seconds:2d}秒"
+            reaming_rate = (reaming_time_second/self.reaming_second_sum) * 100
+            return 100-reaming_rate, time_str
+        
         progress_bar_frame = tk.Frame(self)
         progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.progress_percent = ProgressBar(progress_bar_frame,"加工進捗",1,update_progress_percent)
         self.good_rate = ProgressBar(progress_bar_frame,"良品率",2,update_good_rate)
-        self.remaining_time = ProgressBar(progress_bar_frame,"残り時間",3,_test_update_progress)
+        self.remaining_time = ProgressBar(progress_bar_frame,"残り時間",3,update_remaining_time)
         self.remaining_count = ProgressBar(progress_bar_frame,"残り枚数",4,_test_update_progress)
         return progress_bar_frame
 
