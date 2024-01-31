@@ -8,9 +8,9 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = True
-CYLINDRE_WAIT_TIME = 2
-
+TEST_WAIT_COMMAND = False
+CYLINDRE_WAIT_TIME = 0
+TEST_UNUSE_GUI = False
 
 def reservation_process():
     print("加工の予約が行われました")
@@ -25,15 +25,16 @@ def _test_regist_process_count(integration_instance):
 
 def start_process(integration_instance):
     # initial_tool_inspection(integration_instance)
-    send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
+    if TEST_UNUSE_GUI:
+        send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
+        integration_instance.process_data_manager.register_process_number()
     # TODO ワークの個数を取得する
     time.sleep(1)
     send_to_CFD(integration_instance, "STM 0,SEARCH")
-    integration_instance.process_data_manager.register_process_number()
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
 
     while not work_process(integration_instance, process_data_manager):
-        pass
+        time.sleep(5)
 
 
 def initial_tool_inspection(integration_instance):
@@ -142,6 +143,7 @@ def create_inspection_information(json_data):
         )
     return hole_check_informations
 
+drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL", "M6_DRILL", "M3_TAP", "M4_TAP", "M5_TAP", "M6_TAP"]
 
 def drill_process(integration_instance):
     previous_x_position = 0
@@ -154,7 +156,7 @@ def drill_process(integration_instance):
         (x_position, y_position,
          drill_speed), tool_degree = next_process_data
 
-        if tool_degree:
+        if tool_degree is not None:
             send_to_CFD(integration_instance, "DRL 0,0,0,8")
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
             send_to_CFD(integration_instance, "STM 0,SEARCH")
@@ -173,7 +175,7 @@ def drill_process(integration_instance):
         wait_command(integration_instance, "CFD", "DRL 0,XYT_IS_SET")
         previous_x_position = x_position
         previous_y_position = y_position
-        print(f"{x_position} , {y_position}にM{drill_speed}の穴をあけた")
+        print(f"{x_position} , {y_position}に{drill_type_str[drill_speed-1]}の穴をあけた")
     send_to_CFD(integration_instance, "DRL 0,0,0,8")
 
 
@@ -195,7 +197,7 @@ def send_to_UR(integration_instance, message):
 
 def rotato_tool_stock(integration_instance, degress_number):
     send_to_CFD(integration_instance, f"STM 0,R,{degress_number}")
-    time.sleep(3)
+    # time.sleep(3)
     # wait_command(integration_instance, "CFD", "STM 0,TURNED")
     print(f"工具ストッカを{degress_number}個分回転させた")
 
