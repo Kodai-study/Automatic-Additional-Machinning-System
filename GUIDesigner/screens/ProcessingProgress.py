@@ -5,6 +5,7 @@ import copy
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict, List, Union
+from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from GUIDesigner.screens.ScreenBase import ScreenBase
@@ -116,6 +117,8 @@ class ProcessingProgress(ScreenBase):
         self.handle_pause_and_emergency(request_type, request_data)
         if request_type == GUISignalCategory.SENSOR_STATUS_UPDATE:
             self._update_ui(self.robot_status)
+        elif request_type == GUISignalCategory.PROCESSING_OUTCOME:
+            self._update_progress_state()
 
     def create_frame(self):
         self.tkraise()
@@ -127,20 +130,23 @@ class ProcessingProgress(ScreenBase):
         self._update_progress_state()
 
     def _update_progress_state(self):
-        self._update_current_data_label()
         # 8割の確率で良品を加工する
-        is_good = True
-        if random.random() < 0.2:
-            is_good = False
-        self.process_data_manager.processing_finished(is_good)
-
+        # is_good = True
+        # if random.random() < 0.2:
+        #     is_good = False
+        # self.process_data_manager.processing_finished(is_good)
+        if not len(self.process_data_manager.process_data_list):
+            print("全ての加工が終了しました")
+            self.change_frame(Frames.WORK_RESULT_OVERVIEW)
+            return
+        self._update_current_data_label()
         good_sum, bad_sum = self.process_data_manager.get_good_and_bad_count()
         self.progress_percent.update_progress(sum_count=self.process_count_sum,
                                                current_count=good_sum)
         self.good_rate.update_progress(good_sum=good_sum, bad_sum=bad_sum)
         self.remaining_time.update_progress(reaming_time_second=self.process_data_manager.get_reaming_time_sum().total_seconds())
         self.remaining_count.update_progress(process_data=self.process_data_manager.process_data_list[0])
-        self.after(1000, self._update_progress_state)
+        # self.after(1000, self._update_progress_state)
 
     def _update_current_data_label(self):
         current_data_name = self.process_data_manager.process_data_list[0]["process_data"].model_number
