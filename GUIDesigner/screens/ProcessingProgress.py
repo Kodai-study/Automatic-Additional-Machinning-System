@@ -114,6 +114,8 @@ class ProcessingProgress(ScreenBase):
         self.tkraise()
         self.old_robot_status = copy.deepcopy(self.robot_status)
         self._set_robot_status(self.robot_status, self.label_status_dict)
+        self.current_data_label.config(
+            text=f"現在加工中のデータ: {self.selected_items[0]['process_data'].model_number}")
 
     def _add_label_column(self, label_units: List[LabelUnit]):
         for i, label_unit in enumerate(label_units):
@@ -127,11 +129,11 @@ class ProcessingProgress(ScreenBase):
 
     def _create_widgets(self):
         # 進捗フレームを作成
-        self.label_strings = ["加工進捗", "良品率", "残り時間", "残り枚数"]
-        self.progress_bar_frame = tk.Frame(self)
-        self.progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        for i, label_text in enumerate(self.label_strings):
-            ProgressBar(self.progress_bar_frame, label_text, i+1)
+        label_strings = ["加工進捗", "良品率", "残り時間", "残り枚数"]
+        progress_bar_frame = tk.Frame(self)
+        progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        for i, label_text in enumerate(label_strings):
+            ProgressBar(progress_bar_frame, label_text, i+1)
 
         # ラベル用のフレーム
         self.label_frame = tk.Frame(self)
@@ -151,7 +153,7 @@ class ProcessingProgress(ScreenBase):
 
         self.current_data_name = self.selected_items[0][0] if self.selected_items else "未選択"
         self.current_data_label = tk.Label(
-            self.progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 24 ,"bold"))
+            progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 24 ,"bold"))
         self.current_data_label.grid(row=0, column=0, columnspan=2, padx=40, pady=40)  # ２列にまたがる
 
     def _create_sensor_status_labels(self):
@@ -191,7 +193,6 @@ class ProcessingProgress(ScreenBase):
         return cylinder_labels
 
     def _create_lighting_status_labels(self):
-
         lighting_name_mapping = {}
         lighting_name_mapping["back_light"] = LabelUnit("バックライト")
         lighting_name_mapping["bar_light"] = LabelUnit("バーライト")
