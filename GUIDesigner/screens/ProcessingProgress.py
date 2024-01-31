@@ -135,7 +135,7 @@ class ProcessingProgress(ScreenBase):
                                                current_count=good_sum)
         self.good_rate.update_progress(good_sum=good_sum, bad_sum=bad_sum)
         self.remaining_time.update_progress(reaming_time_second=self.process_data_manager.get_reaming_time_sum().total_seconds())
-        self.remaining_count.update_progress(value=50)
+        self.remaining_count.update_progress(process_data=self.process_data_manager.process_data_list[0])
 
     def _update_current_data_label(self):
         current_data_name = self.process_data_manager.process_data_list[0]["process_data"].model_number
@@ -175,15 +175,14 @@ class ProcessingProgress(ScreenBase):
         self.current_data_label.grid(row=0, column=0, columnspan=2, padx=40, pady=40) 
 
     def _create_progress_bars(self):
-        def _test_update_progress(value):
-            return value, f"{value:.1f}%"
-        
         def update_progress_percent(sum_count, current_count):
             progress_percent = (current_count/sum_count) * 100
             progress_percent = round(progress_percent, 1)
             return progress_percent, f"{progress_percent:.1f}% ({sum_count}個中{current_count}個加工済み)"
         
         def update_good_rate(good_sum, bad_sum):
+            if good_sum == 0 and bad_sum == 0:
+                return 0, "0%"
             good_rate = (good_sum/(good_sum+bad_sum)) * 100
             good_rate = round(good_rate, 1)
             return good_rate, f"{good_rate:.1f}%"
@@ -197,13 +196,17 @@ class ProcessingProgress(ScreenBase):
                 time_str = f"{minutes:2d}分{seconds:2d}秒"
             reaming_rate = (reaming_time_second/self.reaming_second_sum) * 100
             return 100-reaming_rate, time_str
+    
+        def update_reaming_count(process_data):
+            reaming_rate = (process_data["good_count"] / process_data["regist_process_count"]) * 100
+            return reaming_rate, f"{reaming_rate:.1f}%"
         
         progress_bar_frame = tk.Frame(self)
         progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.progress_percent = ProgressBar(progress_bar_frame,"加工進捗",1,update_progress_percent)
         self.good_rate = ProgressBar(progress_bar_frame,"良品率",2,update_good_rate)
         self.remaining_time = ProgressBar(progress_bar_frame,"残り時間",3,update_remaining_time)
-        self.remaining_count = ProgressBar(progress_bar_frame,"残り枚数",4,_test_update_progress)
+        self.remaining_count = ProgressBar(progress_bar_frame,"残り枚数",4,update_reaming_count)
         return progress_bar_frame
 
     def _create_sensor_status_labels(self):
