@@ -108,6 +108,18 @@ class ProcessDataManager:
             self.process_data_list.pop(0)
             return True
         return False
+    
+    def get_process_count_sum(self):
+        """加工数の合計を取得する
+        """
+        return sum([item["regist_process_count"] for item in self.process_data_list])
+
+    def get_good_and_bad_count(self):
+        """良品数の合計を取得する
+        """
+        good_count = sum([item["good_count"] for item in self.process_data_list])
+        bad_count = sum([item["bad_count"] for item in self.process_data_list])
+        return good_count, bad_count
 
     def _get_processing_data_from_json(self, json_file_path: str):
         """
