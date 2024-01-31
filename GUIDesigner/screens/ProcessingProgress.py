@@ -18,7 +18,7 @@ class ProgressBar:
     default_font_title = ("AR丸ゴシック体M", 20)
     default_font_progress = ("AR丸ゴシック体M", 20)
 
-    def __init__(self, root_frame, label_string: str, row, length=700) -> None:
+    def __init__(self, root_frame, label_string: str, row, view_update_handler, length=700) -> None:
         self.progress_ratio = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(
             root_frame, variable=self.progress_ratio, length=length, mode="determinate")
@@ -26,10 +26,16 @@ class ProgressBar:
             root_frame, text=label_string, font=ProgressBar.default_font_title)
         self.progress_level = tk.Label(
             root_frame, text="0", font=ProgressBar.default_font_progress)
+        self.view_update_handler = view_update_handler
 
         self.progress_bar.grid(row=row, column=1, padx=10, pady=20)
         self.title_label.grid(row=row, column=0, padx=40, pady=10)
         self.progress_level.grid(row=row, column=2, padx=10, pady=10)
+
+    def update_progress(self, **args):
+        ratio,label_str = self.view_update_handler(**args)
+        self.progress_ratio.set(ratio)
+        self.progress_level.config(text=label_str)
 
 
 class LabelUnit:
@@ -66,7 +72,7 @@ class LabelUnit:
 
 class ProcessingProgress(ScreenBase):
 
-    def __init__(self, parent: tk.Tk, image_resource: Dict[str, tk.PhotoImage],  selected_items: list, robot_status):
+    def __init__(self, parent: tk.Tk, image_resource: Dict[str, tk.PhotoImage],  selected_items, robot_status):
         super().__init__(parent)
         self.image_resource: dict = image_resource
         self.robot_status: dict = robot_status
@@ -114,8 +120,16 @@ class ProcessingProgress(ScreenBase):
         self.tkraise()
         self.old_robot_status = copy.deepcopy(self.robot_status)
         self._set_robot_status(self.robot_status, self.label_status_dict)
+        self.process_data_manager = self.selected_items()
+        self._update_progress_state()
+
+    def _update_progress_state(self):
+        self._update_current_data_label()
+
+    def _update_current_data_label(self):
+        current_data_name = self.process_data_manager.process_data_list[0]["process_data"].model_number
         self.current_data_label.config(
-            text=f"現在加工中のデータ: {self.selected_items[0]['process_data'].model_number}")
+            text=f"現在加工中のデータ: {current_data_name}")
 
     def _add_label_column(self, label_units: List[LabelUnit]):
         for i, label_unit in enumerate(label_units):
@@ -132,6 +146,7 @@ class ProcessingProgress(ScreenBase):
         label_strings = ["加工進捗", "良品率", "残り時間", "残り枚数"]
         progress_bar_frame = tk.Frame(self)
         progress_bar_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.progress_percent = ProgressBar(progress_bar_frame,"加工進捗",1)
         for i, label_text in enumerate(label_strings):
             ProgressBar(progress_bar_frame, label_text, i+1)
 
@@ -151,9 +166,7 @@ class ProcessingProgress(ScreenBase):
         self.label_status_dict["door_lock"] = self._create_door_lock_status_labels(
         )
 
-        self.current_data_name = self.selected_items[0][0] if self.selected_items else "未選択"
-        self.current_data_label = tk.Label(
-            progress_bar_frame, text=f"現在加工中のデータ: {self.current_data_name}", font=("AR丸ゴシック体M", 24 ,"bold"))
+        self.current_data_label = tk.Label(progress_bar_frame)
         self.current_data_label.grid(row=0, column=0, columnspan=2, padx=40, pady=40)  # ２列にまたがる
 
     def _create_sensor_status_labels(self):
