@@ -8,7 +8,7 @@ from GUIDesigner.screens.ScreenBase import ScreenBase
 
 
 class CheckSelection(ScreenBase):
-    def __init__(self, parent: tk.Tk, selected_items: list, image_resource: dict, send_to_integration_queue: Queue):
+    def __init__(self, parent: tk.Tk, selected_items, image_resource: dict, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.selected_items = selected_items
         self.image_resource = image_resource
@@ -24,7 +24,7 @@ class CheckSelection(ScreenBase):
 
     def create_frame(self):
         self.listbox.delete(0, tk.END)
-        for item in self.selected_items:
+        for item in self.selected_items().process_data_list:
             self.listbox.insert(tk.END, f"{item['process_data'].model_number} - 個数: {item['regist_process_count']}")
         self.tkraise()
 

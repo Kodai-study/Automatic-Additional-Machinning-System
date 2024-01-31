@@ -76,6 +76,9 @@ class GUIDesigner(tk.Tk):
     def set_process_data_manager(self, process_data_manager):
         self.process_data_manager = process_data_manager
 
+    def get_process_data_manager(self):
+        return self.process_data_manager
+
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
             self, self.get_request_queue)
@@ -83,11 +86,11 @@ class GUIDesigner(tk.Tk):
         self.screens[Frames.CREATE_SELECTION] = CreateSelection(
             self, self.send_message_queue, self.set_process_data_manager)
         self.screens[Frames.CHECK_SELECTION] = CheckSelection(
-            self, self.process_data_manager, self.image_resources, self.send_message_queue)
+            self, self.get_process_data_manager, self.image_resources, self.send_message_queue)
         self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
-            self, self.image_resources, self.process_data_manager, self.robot_status)
+            self, self.image_resources, self.get_process_data_manager, self.robot_status)
         self.screens[Frames.WORK_RESULT_OVERVIEW] = WorkResultOverview(
-            self, self.process_data_manager)
+            self, self.get_process_data_manager)
         self.screens[Frames.MONITORING] = Monitoring(
             self, self.robot_status, self.send_message_queue)
         self.screens[Frames.EMERGENCY_STOP] = EmergencyStop(self)
