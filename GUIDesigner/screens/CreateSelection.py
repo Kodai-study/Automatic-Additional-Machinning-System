@@ -38,6 +38,7 @@ class CreateSelection(ScreenBase):
 
     def update_option_menu(self, request_data):
         self.data_list = request_data.process_data_list
+        self.process_data_manager = request_data
         self.process_data_setter(request_data)
         self.combobox_options = [d["process_data"].model_number
                                  for d in self.data_list if 'process_data' in d]
@@ -61,12 +62,7 @@ class CreateSelection(ScreenBase):
 
         def determine_process_data():
             self._regist_processing_order()
-            # regist_process_countが0以外の要素をフィルタリング
-            filtered_data = [
-                item for item in self.data_list if item['regist_process_count'] > 0]
-            sorted_data = sorted(
-                filtered_data, key=lambda item: item['order_number'])
-            self.process_data_setter(sorted_data)
+            self.process_data_manager.register_process_number()
             self.change_frame(Frames.CHECK_SELECTION)
 
         go_check_button = tk.Button(

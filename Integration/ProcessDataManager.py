@@ -69,8 +69,10 @@ class ProcessDataManager:
         """加工数を登録したことを通知する
         process_data_listのregist_process_count  を変更した後に呼び出す
         """
-        self.process_data_list = [
+        filtered_data = [
             item for item in self.process_data_list if item["regist_process_count"] != 0]
+        self.process_data_list = sorted(
+            filtered_data, key=lambda item: item['order_number'])
         for item in self.process_data_list:
             json_data = self._get_processing_data_from_json(
                 item["data_file_path"])
