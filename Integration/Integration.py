@@ -74,9 +74,9 @@ class Integration:
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M3_TAP, tool_length=10.0, drill_diameter=3.0),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M5_TAP, tool_length=10.0, drill_diameter=3.0),
-            ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M4_TAP, tool_length=10.0, drill_diameter=3.0),
+            ToolInspectionResult(result=True, error_items=None,
+                                 tool_type=ToolType.M5_TAP, tool_length=10.0, drill_diameter=3.0),
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
         ]
