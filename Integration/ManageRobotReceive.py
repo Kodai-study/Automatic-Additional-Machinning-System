@@ -28,15 +28,19 @@ class ManageRobotReceive:
         self._integration_instance = integration_instance
         self.work_manager = WorkManager(
             self._integration_instance.database_accesser)
-        
+
         def _start_process():
-            self._integration_instance.gui_request_queue.put((GUIRequestType.UPLOAD_PROCESSING_DETAILS,True))
+            if self._integration_instance.is_processing_mode:
+                return
+            self._integration_instance.is_processing_mode = True
+            self._integration_instance.gui_request_queue.put(
+                (GUIRequestType.UPLOAD_PROCESSING_DETAILS, True))
             start_process(self._integration_instance)
 
         self._special_command_handlers = {
             "ISRESERVED": reservation_process,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
-            "TEST_START": _start_process
+            "PROC 0,START": _start_process
         }
         self._handl_selectors_with_instruction = {
             "SIG": self._select_handler_ur_sig,
@@ -102,7 +106,7 @@ class ManageRobotReceive:
                     command, self._integration_instance.send_request_queue)
             return handl
         elif detail == "ST":
-            return lambda :_send_message_to_cfd(command,self._integration_instance.send_request_queue)
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
         # detail が数字の場合
         try:
             work_count = int(detail)

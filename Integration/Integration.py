@@ -91,7 +91,7 @@ class Integration:
             self.guiDesigner = GUIDesigner()
         self.robot_message_handler = ManageRobotReceive(self)
 
-        self.is_processing_mode = True
+        self.is_processing_mode = False
         self.gui_responce_handler = GuiResponceHandler(
             self, self.send_request_queue, self.gui_request_queue)
         self.process_manager = ProcessManager(self.tool_stock_informations)
@@ -151,7 +151,6 @@ class Integration:
                 camera_type, "resource/images/title.png" if toggle_flag else "resource/images/test.png"))
         self.gui_request_queue.put(
             (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
-
 
     def main(self):
         # 通信スレッドを立ち上げる
