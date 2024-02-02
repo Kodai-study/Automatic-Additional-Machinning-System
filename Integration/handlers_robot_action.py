@@ -109,14 +109,17 @@ def work_process(integration_instance, process_data_manager):
             integration_instance, process_data_manager, m)
         wait_command(integration_instance, "UR", "SIZE 0,ST")
         if is_switch_model:
-            print("ワークの交換を行います")
+            _, next_model = process_data_manager.get_next_process_data()
+            if next_model is None:
+                return True
+            integration_instance.gui_request_queue.put((
+                GUISignalCategory.CANNOT_CONTINUE_PROCESSING, next_model))
             send_to_UR(integration_instance, "SIZE 0,0")
         else:
             skip_wait_size = True
     else:
         inspect_and_carry_out(
             integration_instance, process_data_manager, m)
-        send_to_UR
 
 
 def inspect_and_carry_out(integration_instance, process_data_manager, m):
