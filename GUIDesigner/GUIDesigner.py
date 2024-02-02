@@ -44,7 +44,6 @@ class GUIDesigner(tk.Tk):
         super().__init__()
         self.title("T5GUI")
         self.geometry("1920x1080+0+0")
-
         # ttkスタイルの設定
         style = ttk.Style()
         style.configure("Treeview.Heading", font=("AR丸ゴシック体M", 24))
@@ -79,6 +78,12 @@ class GUIDesigner(tk.Tk):
     def get_process_data_manager(self):
         return self.process_data_manager
 
+    def set_request_work_data(self, request_work_data):
+        self.request_work_data = request_work_data
+
+    def get_request_work_data(self):
+        return self.request_work_data
+
     def _initial_screens(self):
         self.screens[Frames.WAIT_CONNECTION] = WaitConnecting(
             self, self.get_request_queue)
@@ -88,7 +93,7 @@ class GUIDesigner(tk.Tk):
         self.screens[Frames.CHECK_SELECTION] = CheckSelection(
             self, self.get_process_data_manager, self.image_resources, self.send_message_queue)
         self.screens[Frames.PROCESSING_PROGRESS] = ProcessingProgress(
-            self, self.image_resources, self.get_process_data_manager, self.robot_status)
+            self, self.image_resources, self.get_process_data_manager, self.robot_status, self.set_request_work_data)
         self.screens[Frames.WORK_RESULT_OVERVIEW] = WorkResultOverview(
             self, self.get_process_data_manager)
         self.screens[Frames.MONITORING] = Monitoring(
