@@ -12,6 +12,7 @@ TEST_WAIT_COMMAND = False
 CYLINDRE_WAIT_TIME = 0
 TEST_UNUSE_GUI = False
 
+
 def reservation_process():
     print("加工の予約が行われました")
 
@@ -127,7 +128,8 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
-    integration_instance.gui_request_queue.put((GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
+    integration_instance.gui_request_queue.put(
+        (GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
     send_to_CFD(integration_instance,
                 f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
     return preprocess_inspection_result.result
@@ -144,7 +146,10 @@ def create_inspection_information(json_data):
         )
     return hole_check_informations
 
-drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL", "M6_DRILL", "M3_TAP", "M4_TAP", "M5_TAP", "M6_TAP"]
+
+drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL",
+                  "M6_DRILL", "M3_TAP", "M4_TAP", "M5_TAP", "M6_TAP"]
+
 
 def drill_process(integration_instance):
     previous_x_position = 0
@@ -176,7 +181,8 @@ def drill_process(integration_instance):
         wait_command(integration_instance, "CFD", "DRL 0,XYT_IS_SET")
         previous_x_position = x_position
         previous_y_position = y_position
-        print(f"{x_position} , {y_position}に{drill_type_str[drill_speed-1]}の穴をあけた")
+        print(f"""{x_position} , {y_position}に{
+              drill_type_str[drill_speed-1]}の穴をあけた""")
     send_to_CFD(integration_instance, "DRL 0,0,0,8")
 
 
