@@ -1,0 +1,137 @@
+import math
+from ImageInspectionController.InspectDatas import PreProcessingInspectionData
+from ImageInspectionController.InspectionResults import PreProcessingInspectionResult
+from common_data_type import WorkPieceShape
+import cv2
+import numpy as np
+from pyzbar.pyzbar import decode
+
+
+class PreProcessInspection:
+    def __init__(self):
+        self.OFFSET_X = 427
+
+    def exec_inspection(self, img_path: str, inspect_data: PreProcessingInspectionData) -> PreProcessingInspectionResult:
+        """
+        画像の前処理検査を行う関数
+        Args:
+            img_path (str): 画像のパス
+        Returns:
+            bool: 検査の合否
+        """
+        TORELANCE = 0.5
+
+        inspection_image = self._get_preprocessed_image(img_path)
+        output_image = cv2.imread(img_path, cv2.IMREAD_COLOR)
+        contor, width = self._get_contor_and_width(
+            inspection_image, output_image)
+        is_circle, output_image = self._check_circle(contor, output_image)
+        width_millis = self._get_mills_with_picxel(width)
+        cv2.imwrite('./Result_Image.png', output_image)
+        is_qr_ok, qr_data = self._search_qr_code(inspection_image)
+
+        error_items = []
+        if is_circle and inspect_data.workpiece_shape != WorkPieceShape.CIRCLE:
+            is_success = False
+            error_items.append("円形ではないワークが検出されました")
+        elif not is_circle and inspect_data.workpiece_shape == WorkPieceShape.CIRCLE:
+            is_success = False
+            error_items.append("円形のワークが検出されました")
+        else:
+            is_success = True
+
+        # 誤差の範囲内での最小幅と最大幅を計算
+        min_width = inspect_data.work_dimension - TORELANCE
+        max_width = inspect_data.work_dimension + TORELANCE
+
+        # 横幅が範囲内でなければエラー  変数を1つ使う
+        if not (min_width <= width_millis <= max_width):
+            is_success = False
+            error_items.append("ワークの大きさが範囲外です")
+
+        if not is_qr_ok:
+            is_success = False
+            error_items.append(qr_data)
+
+        return PreProcessingInspectionResult(is_success, error_items, 0, width_millis)
+
+    def _get_preprocessed_image(self, img_path):
+        # 2値画像を読み込む
+        CROPP_HEIGHT = 1970
+        CROPP_WIDTH = 1973
+        # 2値化の閾値
+        THRESHOLD = 140
+        # ノイズ除去のためのカーネルサイズ
+        NOISE_REMOVAL_KERNEL_SIZE = (5, 5)
+
+        image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        cropped_image = image[0:CROPP_HEIGHT,
+                              self.OFFSET_X:self.OFFSET_X + CROPP_WIDTH]
+
+        # 2値化する
+        _, binary_img = cv2.threshold(
+            cropped_image, THRESHOLD, 255, cv2.THRESH_BINARY)
+
+        # ノイズの除去
+        kernel = cv2.getStructuringElement(
+            cv2.MORPH_RECT, NOISE_REMOVAL_KERNEL_SIZE)
+        return cv2.morphologyEx(binary_img, cv2.MORPH_OPEN, kernel)
+
+    def _get_contor_and_width(self, image, draw_information_image=None):
+        contours, _ = cv2.findContours(
+            image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        if not contours:
+            print("物体が見つかりませんでした")
+            return None
+
+        # 最大の輪郭を取得
+        max_contour = max(contours, key=cv2.contourArea)
+        # 輪郭の外接矩形を取得
+        x, y, w, h = cv2.boundingRect(max_contour)
+
+        if draw_information_image is not None:
+            # max_countorをオフセット分だけずらす
+            max_contour = max_contour + np.array([self.OFFSET_X, 0])
+            cv2.drawContours(draw_information_image, [max_contour], -
+                             1, (0, 0, 255), 2, )  # 元の輪郭を赤色で描画
+            x += self.OFFSET_X
+            cv2.rectangle(draw_information_image, (x, y), (x + w, y + h),
+                          (255, 0, 0), 5)  # 外接矩形に青色の枠線を引く
+        return max_contour, w
+
+    def _get_mills_with_picxel(self, pixcel_width):
+        PIXELS_PER_MILLIMETER = 20.585714285714285
+        # 右側に隠れているミリ数の変数
+        HIDDEN_MILLMETERS = 5.7598889659958346
+
+        mill_width = pixcel_width / PIXELS_PER_MILLIMETER
+        print(100-mill_width)
+        real_width = mill_width + HIDDEN_MILLMETERS
+        return round(real_width, 2)
+
+    def _search_qr_code(self, image):
+        # QRコードの検出
+        qr_codes = decode(image)
+        if not qr_codes:
+            return False, "QRコードが見つかりませんでした。"
+        if len(qr_codes) >= 2:
+            return False, "error:QRコードが2個以上検出された"
+        return True, qr_codes[0].data.decode('utf-8')
+
+    def _check_circle(self, contour, draw_information_image=None):
+        # 最小外接円を取得
+        (x, y), radius = cv2.minEnclosingCircle(contour)
+        center = (int(x), int(y))
+        radius = int(radius)
+
+        # 最小外接円と輪郭の適合度を評価するロジック（カスタマイズが必要）
+        # 例: 輪郭の面積と最小外接円の面積の比較
+        contour_area = cv2.contourArea(contour)
+        circle_area = math.pi * (radius ** 2)
+        area_ratio = contour_area / circle_area
+
+        if 0.7 < area_ratio < 1.3:
+            return True, draw_information_image
+        else:
+            return False, draw_information_image
