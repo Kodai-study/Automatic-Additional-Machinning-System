@@ -41,7 +41,7 @@ def test_inspections():
     image_inspection_controller = ImageInspectionController()
 
     result = image_inspection_controller.perform_image_operation(
-        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.CIRCLE, work_dimension=30))
+        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.CIRCLE, work_dimension=100))
     print(f"PRE_PROCESSING_INSPECTION: {result}")
 
     result = image_inspection_controller.perform_image_operation(
@@ -72,3 +72,4 @@ def test_lighting():
 if __name__ == "__main__":
     test_camera_snapshot()
     test_lighting()
+    test_inspections()
