@@ -4,7 +4,7 @@ from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
 from ImageInspectionController.light import Light
-from ImageInspectionController.pre_processing_inspection import process_qr_code
+from ImageInspectionController.PreProcessInspection import PreProcessInspection
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
 from ImageInspectionController.Taking import Taking
 from common_data_type import CameraType, LightingType
@@ -28,6 +28,7 @@ class ImageInspectionController:
     def __init__(self):
         self.taking = Taking()
         self.lighting = Light()
+        self.pre_process_inspection = PreProcessInspection()
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
@@ -66,7 +67,8 @@ class ImageInspectionController:
         elif operation_type == OperationType.PRE_PROCESSING_INSPECTION:
             img_pass = self.taking.take_picuture(
                 InspectionType.PRE_PROCESSING_INSPECTION)
-            kekka = process_qr_code(img_pass)
+            kekka = self.pre_process_inspection.exec_inspection(
+                img_pass, inspection_data)
         elif operation_type == OperationType.ACCURACY_INSPECTION:
             img_pass = self.taking.take_picuture(
                 InspectionType.ACCURACY_INSPECTION)
