@@ -19,7 +19,7 @@ class PreProcessInspection:
         Returns:
             bool: 検査の合否
         """
-        TORELANCE = 0.5
+        TORELANCE = 5
 
         inspection_image = self._get_preprocessed_image(img_path)
         output_image = cv2.imread(img_path, cv2.IMREAD_COLOR)
@@ -102,6 +102,7 @@ class PreProcessInspection:
 
     def _get_mills_with_picxel(self, pixcel_width):
         PIXELS_PER_MILLIMETER = 20.585714285714285
+        PIXELS_PER_MILLIMETER = 18.942857142857143
         # 右側に隠れているミリ数の変数
         HIDDEN_MILLMETERS = 5.7598889659958346
 
