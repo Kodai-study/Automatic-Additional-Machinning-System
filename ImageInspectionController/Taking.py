@@ -1,33 +1,20 @@
 from ImageInspectionController.ProcessDatas import InspectionType
-from ImageInspectionController.light import Light
 
 
 class Taking:
-    def __init__(self):
-        self.light = Light()
-
     def take_picuture(self, kensamei: InspectionType) -> str:
-        self._test_takepicture_ok(kensamei)
+        return self._test_takepicture_ok(kensamei)
 
     def _test_takepicture_ok(self, kensamei: InspectionType) -> str:
         if (kensamei == InspectionType.PRE_PROCESSING_INSPECTION):
             ONorOFF = "ON"
-            houkoku = self.light.light_on(kensamei, ONorOFF)
-            if (houkoku == "OK"):
-                print("satuei")
-                return "ImageInspectionController/QR.png"
+            return "ImageInspectionController/test/pre_process_inspection/sample_images/circle_r0.png"
 
         elif kensamei == InspectionType.ACCURACY_INSPECTION:
             ONorOFF = "ON"
-            houkoku = self.light.light_on(kensamei, ONorOFF)
-            if (houkoku == "OK"):
-                print("satuei")
-                return "ImageInspectionController/test/ana.png"
+            return "ImageInspectionController/test/ana.png"
 
         elif kensamei == InspectionType.TOOL_INSPECTION:
             ONorOFF = "ON"
-            houkoku = self.light.light_on(kensamei, ONorOFF)
-            if (houkoku == "OK"):
-                print("satuei")
-                return "ImageInspectionController/test/drill.png"
+            return "ImageInspectionController/test/drill.png"
         return None
