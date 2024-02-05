@@ -1,9 +1,6 @@
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
 import configparser
 import serial.tools.list_ports
-if TEST_FEATURE_IMAGE_PROCESSING:
-    import yaml
-    from light_control import Light_control
 from ImageInspectionController.ProcessDatas import InspectionType
 
 
@@ -17,11 +14,13 @@ class Light:
         self.IOBOARD_PID = self.config.getint(section_name, "IOBOARD_PID")
         self.IOBOARD_VID = self.config.getint(section_name, "IOBOARD_VID")
         self.pin_number_dict = {
-            InspectionType.ACCURACY_INSPECTION: self.config.getint("Light_information","ACCURACY_INSPECTION_pinnumber"),
-            InspectionType.TOOL_INSPECTION: self.config.getint("Light_information","TOOL_INSPECTION_pinnumber"),
+            InspectionType.ACCURACY_INSPECTION: self.config.getint("Light_information", "ACCURACY_INSPECTION_pinnumber"),
+            InspectionType.TOOL_INSPECTION: self.config.getint("Light_information", "TOOL_INSPECTION_pinnumber"),
             InspectionType.PRE_PROCESSING_INSPECTION: [
-                self.config.getint("Light_information","PRE_PROCESSING_INSPECTION_pinnumber1"),
-                self.config.getint("Light_information","PRE_PROCESSING_INSPECTION_pinnumber2")
+                self.config.getint("Light_information",
+                                   "PRE_PROCESSING_INSPECTION_pinnumber1"),
+                self.config.getint("Light_information",
+                                   "PRE_PROCESSING_INSPECTION_pinnumber2")
             ]
         }
         com_num = None
@@ -43,12 +42,15 @@ class Light:
             cmd = "set"
         elif ONorOFF == "OFF":
             cmd = "clear"
-            
+
         gpio_pin_number = self._getpinnum(camera)
         if camera == InspectionType.PRE_PROCESSING_INSPECTION:
-            self.serPort.write(f"gpio {cmd} {gpio_pin_number[0]}\r".encode('utf-8'))
-            self.serPort.write(f"gpio {cmd} {gpio_pin_number[1]}\r".encode('utf-8'))
+            self.serPort.write(
+                f"gpio {cmd} {gpio_pin_number[0]}\r".encode('utf-8'))
+            self.serPort.write(
+                f"gpio {cmd} {gpio_pin_number[1]}\r".encode('utf-8'))
         else:
-            self.serPort.write(f"gpio {cmd} {gpio_pin_number}\r".encode('utf-8'))
-        
+            self.serPort.write(
+                f"gpio {cmd} {gpio_pin_number}\r".encode('utf-8'))
+
         return "OK"
