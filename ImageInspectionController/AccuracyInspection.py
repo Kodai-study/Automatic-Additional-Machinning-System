@@ -16,16 +16,17 @@ class AccuracyInspection:
 
     def exec_inspection(self, image_path: str, inspect_data: List[HoleCheckInfo]) -> AccuracyInspectionResult:
         hole_informations, work_dimension = inspect_data
-        circles = self._detect_holes(self._get_preprocessed_image(image_path))
+        circles = self._detect_holes(
+            self._get_preprocessed_image(image_path))[0]
         hole_check_informations = []
         for circle in circles:
             centor, radius = self._get_hole_informations(
                 circle, inspect_data[1])
-            target_hole = self.find_closest_hole(centor, hole_informations)
+            target_hole = self._find_closest_hole(centor, hole_informations)
             hole_check_informations.append(self._check_hole(
                 centor, radius, target_hole))
 
-        return AccuracyInspectionResult(True, None, inspect_data.serial_number, 0, 0)
+        return AccuracyInspectionResult(True, None, hole_check_informations)
 
     def _get_preprocessed_image(self, image_path):
         # 画像の読み込み
@@ -104,7 +105,7 @@ class AccuracyInspection:
 
         return HoleCheckInfo(target_data.hole_id, centor, hole_type, is_position_ok)
 
-    def find_closest_hole(self, target_hole: Point, holes: List[HoleCheckInfo]):
+    def _find_closest_hole(self, target_hole: Point, holes: List[HoleCheckInfo]):
         def calculate_distance(point1: Point, point2: Point):
             return ((point1.x_potision - point2.x_potision) ** 2 + (point1.y_potision - point2.y_potision) ** 2) ** 0.5
 
@@ -118,4 +119,10 @@ class AccuracyInspection:
                 closest_distance = distance
                 closest_hole = hole
 
-        return closest_distance, closest_hole
+        return closest_hole
+
+
+if __name__ == "__main__":
+    accuracy_inspection = AccuracyInspection()
+    accuracy_inspection.exec_inspection(
+        "Z:/source/Automatic Additional Machinning System/ImageInspectionController/test/accuracy_inspection/sample_images/multi_type_EXP500.png", [])
