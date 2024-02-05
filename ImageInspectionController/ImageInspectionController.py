@@ -111,7 +111,6 @@ class ImageInspectionController:
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.ACCURACY_INSPECTION, "OFF")
 
-            img_pass = "ImageInspectionController/test/accuracy_inspection/sample_images/multi_type_EXP500.png"
             kekka = self.accuracy_inspection.exec_inspection(
                 img_pass, inspection_data)
 
