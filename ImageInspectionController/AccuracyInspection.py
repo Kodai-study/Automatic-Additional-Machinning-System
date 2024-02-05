@@ -1,12 +1,8 @@
-import math
 from typing import List
-from ImageInspectionController.InspectDatas import PreProcessingInspectionData
 from ImageInspectionController.InspectionResults import AccuracyInspectionResult
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
-from common_data_type import Point, WorkPieceShape
+from common_data_type import Point
 import cv2
-import numpy as np
-from pyzbar.pyzbar import decode
 
 
 class AccuracyInspection:
@@ -14,19 +10,28 @@ class AccuracyInspection:
     def __init__(self):
         self.OFFSET_X = 427
 
-    def exec_inspection(self, image_path: str, inspect_data: List[HoleCheckInfo]) -> AccuracyInspectionResult:
+    def exec_inspection(self, image_path: str, inspect_data) -> AccuracyInspectionResult:
         hole_informations, work_dimension = inspect_data
         circles = self._detect_holes(
             self._get_preprocessed_image(image_path))[0]
         hole_check_informations = []
         for circle in circles:
             centor, radius = self._get_hole_informations(
-                circle, inspect_data[1])
+                circle, work_dimension)
             target_hole = self._find_closest_hole(centor, hole_informations)
             hole_check_informations.append(self._check_hole(
                 centor, radius, target_hole))
 
-        return AccuracyInspectionResult(True, None, hole_check_informations)
+        # hole_check_informationsの要素に検査不合格があるか判定
+        is_check_ok = True
+        error_messages = []
+        for hole_check_information in hole_check_informations:
+            if hole_check_information.is_position_ok == False:
+                is_check_ok = False
+                error_messages.append(
+                    f"hole_id: {hole_check_information.hole_id}の位置が不正です。")
+
+        return AccuracyInspectionResult(is_check_ok, None, hole_check_informations)
 
     def _get_preprocessed_image(self, image_path):
         # 画像の読み込み
@@ -68,24 +73,24 @@ class AccuracyInspection:
     def _get_hole_informations(self, circle, work_dimension):
         # 1ピクセル当たりのミリメートル
         PIXEL_PER_MILLI = 0.05
-        ORIGIN_X = 2513
+        ORIGIN_X = 2513 - self.OFFSET_X
         ORIGIN_Y = 36
 
         centor_mills_x = (ORIGIN_X - circle[0]) * PIXEL_PER_MILLI
-        centor_mills_y = (ORIGIN_Y - circle[1]) * PIXEL_PER_MILLI
-        radius_mills = circle[2] * PIXEL_PER_MILLI
+        centor_mills_y = (circle[1] - ORIGIN_Y) * PIXEL_PER_MILLI
+        radius_mills = circle[2] * PIXEL_PER_MILLI * 2
         cercle_position_mills = Point(
-            centor_mills_x, work_dimension - centor_mills_y)
+            work_dimension - centor_mills_x, work_dimension - centor_mills_y)
         return cercle_position_mills, radius_mills
 
     def _check_hole(self, centor: Point, radius, target_data: HoleCheckInfo):
         # 座標の誤差の範囲
-        TOLERANCE = 0.5
+        TOLERANCE = 5
 
-        THRESHOLD_M3 = 3.7
-        THRESHOLD_M4 = 4.7
-        THRESHOLD_M5 = 5.7
-        THRESHOLD_M6 = 6.7
+        THRESHOLD_M3 = 2.5
+        THRESHOLD_M4 = 3.5
+        THRESHOLD_M5 = 4.5
+        THRESHOLD_M6 = 5.5
 
         min_x = target_data.hole_position.x_potision - TOLERANCE
         max_x = target_data.hole_position.x_potision + TOLERANCE
@@ -120,9 +125,3 @@ class AccuracyInspection:
                 closest_hole = hole
 
         return closest_hole
-
-
-if __name__ == "__main__":
-    accuracy_inspection = AccuracyInspection()
-    accuracy_inspection.exec_inspection(
-        "Z:/source/Automatic Additional Machinning System/ImageInspectionController/test/accuracy_inspection/sample_images/multi_type_EXP500.png", [])
