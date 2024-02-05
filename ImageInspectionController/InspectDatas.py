@@ -53,3 +53,5 @@ class AccuracyInspectionData:
     model_id_str: str
 
     serial_number: int
+
+    work_dimension: int
