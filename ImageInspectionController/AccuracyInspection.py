@@ -26,7 +26,7 @@ class AccuracyInspection:
         is_check_ok = True
         error_messages = []
         for hole_check_information in hole_check_informations:
-            if hole_check_information.is_position_ok == False:
+            if hole_check_information.hole_check_info == False:
                 is_check_ok = False
                 error_messages.append(
                     f"hole_id: {hole_check_information.hole_id}の位置が不正です。")
@@ -85,7 +85,7 @@ class AccuracyInspection:
 
     def _check_hole(self, centor: Point, radius, target_data: HoleCheckInfo):
         # 座標の誤差の範囲
-        TOLERANCE = 5
+        TOLERANCE = 2
 
         THRESHOLD_M3 = 2.5
         THRESHOLD_M4 = 3.5
