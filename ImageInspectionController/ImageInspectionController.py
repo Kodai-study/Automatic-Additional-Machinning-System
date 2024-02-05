@@ -37,7 +37,7 @@ def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
 
 class ImageInspectionController:
 
-    def __init__(self):
+    def __init__(self, tool_stock_informations=None):
         self.taking = Taking()
         self.lighting = Light()
         self.pre_process_inspection = PreProcessInspection()
@@ -45,6 +45,10 @@ class ImageInspectionController:
         self.ROOT_IMAGE_DIR = "/home/kuga/img"
         self.TOOL_IMAGE_DIR = os.path.join(
             self.ROOT_IMAGE_DIR, "tools")
+        if tool_stock_informations:
+            self.tool_informations = tool_stock_informations
+        else:
+            self.tool_informations = [None] * 9
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
