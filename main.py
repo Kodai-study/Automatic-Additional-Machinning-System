@@ -3,9 +3,10 @@ from GUIDesigner.GUIDesigner import GUIDesigner
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
+from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from Integration.Integration import Integration
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
-from common_data_type import CameraType, LightingType, WorkPieceShape
+from common_data_type import CameraType, LightingType, Point, WorkPieceShape
 
 
 def test_gui():
@@ -43,9 +44,27 @@ def test_inspections():
     result = image_inspection_controller.perform_image_operation(
         OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.CIRCLE, work_dimension=100))
     print(f"PRE_PROCESSING_INSPECTION: {result}")
-
+    test_hole_infos = [
+        HoleCheckInfo(1, Point(100 - 20.003, 100 - 20.115),
+                      HoleType.M3_HOLE, None),
+        HoleCheckInfo(2, Point(100 - 19.964, 100 - 30.096),
+                      HoleType.M4_HOLE, None),
+        HoleCheckInfo(3, Point(100 - 20.007, 100 - 40.092),
+                      HoleType.M5_HOLE, None),
+        HoleCheckInfo(4, Point(100 - 19.994, 100 - 50.077),
+                      HoleType.M6_HOLE, None),
+        HoleCheckInfo(5, Point(100 - 40.017, 100 - 20.1),
+                      HoleType.M3_HOLE, None),
+        HoleCheckInfo(6, Point(100 - 40.018, 100 - 30.105),
+                      HoleType.M4_HOLE, None),
+        HoleCheckInfo(7, Point(100 - 40.02, 100 - 40.097),
+                      HoleType.M5_HOLE, None),
+        HoleCheckInfo(8, Point(100 - 40.021, 100 - 50.061),
+                      HoleType.M6_HOLE, None)
+    ]
     result = image_inspection_controller.perform_image_operation(
-        OperationType.ACCURACY_INSPECTION, 5)
+        OperationType.ACCURACY_INSPECTION, (test_hole_infos, 100))
+
     print(f"ACCURACY_INSPECTION: {result}")
 
     result = image_inspection_controller.perform_image_operation(
