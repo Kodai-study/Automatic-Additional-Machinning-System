@@ -161,6 +161,9 @@ class Taking:
                     self.cam_device_seido,  self.receive_signal_seido)
                 save_path = os.path.join(
                     base_directory, ACCURACT_PICTURE_FILENAME)
+                directory = os.path.dirname(save_path)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
 
             if not cv2.imwrite(save_path, np_arr):
                 print("hosonFailed")
