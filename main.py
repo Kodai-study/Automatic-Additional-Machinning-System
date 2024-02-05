@@ -6,16 +6,19 @@ from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
 from GUIDesigner.ProcessingData import ProcessingData
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
+from ImageInspectionController.ImageInspectionController import ImageInspectionController
+from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from ImageInspectionController.OperationType import OperationType
+from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType, InspectionType
+from ImageInspectionController.Taking import Taking
 from Integration.Integration import Integration
 from Integration.ProcessManager import ProcessManager
 from Integration.ProcessDataManager import ProcessDataManager
 from Integration.WorkManager import WorkManager
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
-from common_data_type import CameraType, LightingType, ToolType, WorkPieceShape
+from common_data_type import CameraType, LightingType, Point, ToolType, WorkPieceShape
 
 
 def test_gui():
@@ -47,15 +50,44 @@ def test_camera_snapshot():
     print(list)
 
 
+def test_take_picture():
+    taking = Taking()
+    inspection_types = [
+        InspectionType.TOOL_INSPECTION,
+        InspectionType.ACCURACY_INSPECTION,
+        InspectionType.PRE_PROCESSING_INSPECTION
+    ]
+    for inspection in inspection_types:
+        print(taking.take_picture(inspection))
+
+
 def test_inspections():
     image_inspection_controller = ImageInspectionController()
 
     result = image_inspection_controller.perform_image_operation(
-        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.CIRCLE, work_dimension=30))
+        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.SQUARE, work_dimension=30))
     print(f"PRE_PROCESSING_INSPECTION: {result}")
-
+    test_hole_infos = [
+        HoleCheckInfo(1, Point(20.003, 20.115),
+                      HoleType.M3_HOLE, None),
+        HoleCheckInfo(2, Point(19.964, 30.096),
+                      HoleType.M4_HOLE, None),
+        HoleCheckInfo(3, Point(20.007, 40.092),
+                      HoleType.M5_HOLE, None),
+        HoleCheckInfo(4, Point(19.994, 50.077),
+                      HoleType.M6_HOLE, None),
+        HoleCheckInfo(5, Point(40.017, 20.1),
+                      HoleType.M3_HOLE, None),
+        HoleCheckInfo(6, Point(40.018, 30.105),
+                      HoleType.M4_HOLE, None),
+        HoleCheckInfo(7, Point(40.02, 40.097),
+                      HoleType.M5_HOLE, None),
+        HoleCheckInfo(8, Point(40.021, 50.061),
+                      HoleType.M6_HOLE, None)
+    ]
     result = image_inspection_controller.perform_image_operation(
-        OperationType.ACCURACY_INSPECTION, 5)
+        OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(test_hole_infos, "AQR", 1, 100))
+
     print(f"ACCURACY_INSPECTION: {result}")
 
     result = image_inspection_controller.perform_image_operation(
@@ -238,5 +270,8 @@ def test_load_and_process():
 
 if __name__ == "__main__":
     # # work_manager_test()
-    test_integration()
+    # test_integration()
     # test_load_and_process()
+    # test_camera_snapshot()
+    test_inspections()
+    # test_take_picture()
