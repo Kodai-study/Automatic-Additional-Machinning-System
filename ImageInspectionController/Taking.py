@@ -18,7 +18,7 @@ from ImageInspectionController.light import Light
 
 
 NUM_REQUIRED_CAMERAS = 3
-USE_TOOL_INSPECTION_CAMERA = False
+USE_TOOL_INSPECTION_CAMERA = True
 USE_PRE_PROCESSING_INSPECTION_CAMERA = True
 USE_ACCURACY_INSPECTION_CAMERA = True
 
@@ -36,11 +36,6 @@ class CaseSensitiveConfigParser(configparser.ConfigParser):
     def optionxform(self, optionstr):
         return optionstr
 
-
-NUM_REQUIRED_CAMERAS = 3
-USE_TOOL_INSPECTION_CAMERA = False
-USE_PRE_PROCESSING_INSPECTION_CAMERA = True
-USE_ACCURACY_INSPECTION_CAMERA = True
 
 cam_count = 1 if USE_TOOL_INSPECTION_CAMERA else 0
 if USE_PRE_PROCESSING_INSPECTION_CAMERA:
@@ -61,8 +56,6 @@ class Taking:
     def __init__(self):
         self.config = CaseSensitiveConfigParser()
         file_path = 'kensa.conf'
-        # with open(file_path, 'r') as yaml_file:
-        #     self.data = yaml.safe_load(yaml_file)
         self.cam_system = self._initial_cam_setting(cam_count)
         self.toggle_flag = True
         self.config.read(file_path, encoding='utf-8')
@@ -143,6 +136,7 @@ class Taking:
                 np_arr = self._get_image_data(
                     self.cam_device_tool,  self.receive_signal_tool)
                 image_file_name = "a.png" if self.toggle_flag else "a_2.png"
+
             elif kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
                 if not USE_PRE_PROCESSING_INSPECTION_CAMERA:
                     raise Exception("カメラを使わない設定になっています", kensamei)
