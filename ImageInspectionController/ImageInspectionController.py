@@ -1,5 +1,6 @@
 # coding: utf-8
 import os
+import time
 from ImageInspectionController.AccuracyInspection import AccuracyInspection
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
 if TEST_FEATURE_IMAGE_PROCESSING:
@@ -113,8 +114,11 @@ class ImageInspectionController:
 
             base_dir = os.path.join(
                 self.ROOT_IMAGE_DIR, f"{inspection_data.model_id_str}/{inspection_data.serial_number}")
+
+            time.sleep(0.5)
             img_pass = self.taking.take_picture(
                 InspectionType.ACCURACY_INSPECTION, base_dir)
+            time.sleep(0.5)
 
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.ACCURACY_INSPECTION, "OFF")
@@ -126,6 +130,16 @@ class ImageInspectionController:
                 img_pass, inspection_data)
 
         elif operation_type == OperationType.TOOL_INSPECTION:
+            test_tool_list = [
+                ToolType.M3_DRILL,
+                ToolType.M4_DRILL,
+                ToolType.M5_DRILL,
+                ToolType.M6_DRILL,
+                ToolType.M3_TAP,
+                ToolType.M4_TAP,
+                ToolType.M5_TAP,
+                ToolType.M6_TAP,
+            ]
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.TOOL_INSPECTION, "ON")
             if lighting_return_code != "OK":
@@ -140,7 +154,7 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.TOOL_INSPECTION, "OFF")
-            kekka = (img_pass)
+            return ToolInspectionResult(True, None, test_tool_list[1], 0, 0)
 
         return kekka
 
