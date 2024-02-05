@@ -8,6 +8,7 @@
 #
 
 import configparser
+import os
 from typing import Tuple
 import numpy as np
 import pytelicam
@@ -15,6 +16,7 @@ import yaml
 import cv2
 from ImageInspectionController.ProcessDatas import InspectionType
 from ImageInspectionController.light import Light
+import datetime as dt
 
 
 NUM_REQUIRED_CAMERAS = 3
@@ -125,41 +127,47 @@ class Taking:
         cam_device.cam_stream.open(receive_signal)
         return cam_device, receive_signal
 
-    def take_picture(self, kensamei: InspectionType) -> str:
+    def take_picture(self, kensamei: InspectionType, base_directory: str) -> str:
         if self.cam_system == None:
             return "era"
-        image_file_name = None
+
+        PREPROCESS_PICTURE_FILENAME = "PREPROCESS_ORIGINAL.png"
+        ACCURACT_PICTURE_FILENAME = "ACCURACY_ORIGINAL.png"
+
         try:
             if kensamei == InspectionType.TOOL_INSPECTION:
                 if not USE_TOOL_INSPECTION_CAMERA:
                     raise Exception("カメラを使わない設定になっています", kensamei)
                 np_arr = self._get_image_data(
                     self.cam_device_tool,  self.receive_signal_tool)
-                image_file_name = "a.png" if self.toggle_flag else "a_2.png"
+                save_path = os.path.join(
+                    base_directory, dt.datetime.now().strftime('%Y/%m/%d/%H_%M_%S.png'))
+                directory = os.path.dirname(save_path)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
 
             elif kensamei == InspectionType.PRE_PROCESSING_INSPECTION:
                 if not USE_PRE_PROCESSING_INSPECTION_CAMERA:
                     raise Exception("カメラを使わない設定になっています", kensamei)
                 np_arr = self._get_image_data(
                     self.cam_device_kakou,  self.receive_signal_kakou)
-                image_file_name = "b.png" if self.toggle_flag else "b_2.png"
+                save_path = os.path.join(PREPROCESS_PICTURE_FILENAME)
 
             elif kensamei == InspectionType.ACCURACY_INSPECTION:
                 if not USE_ACCURACY_INSPECTION_CAMERA:
                     raise Exception("カメラを使わない設定になっています", kensamei)
                 np_arr = self._get_image_data(
                     self.cam_device_seido,  self.receive_signal_seido)
-                image_file_name = "c.png" if self.toggle_flag else "c_2.png"
+                save_path = os.path.join(ACCURACT_PICTURE_FILENAME)
 
-            self.toggle_flag = not self.toggle_flag
-            write_image_path = f"/home/kuga/img/{image_file_name}"
-            if not cv2.imwrite(write_image_path, np_arr):
+            if not cv2.imwrite(save_path, np_arr):
                 print("hosonFailed")
+                return None
         except Exception as e:
             print("カメラ撮影でエラーです", e)
             return None
 
-        return write_image_path
+        return save_path
 
     def check_camera_connection(self) -> bool:
         if not self.cam_system:
