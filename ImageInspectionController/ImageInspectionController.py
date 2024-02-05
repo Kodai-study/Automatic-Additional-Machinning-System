@@ -67,20 +67,60 @@ class ImageInspectionController:
                 return LightningControlResult(is_success=False, lighting_type=lightning_type, lighting_state=not is_on)
 
         elif operation_type == OperationType.PRE_PROCESSING_INSPECTION:
+            lighting_return_code = self.lighting.light_on(
+                InspectionType.PRE_PROCESSING_INSPECTION, True)
+            if lighting_return_code != "OK":
+                return PreProcessingInspectionResult(is_check_ok=False, error_message=["照明の点灯に失敗しました。"],None,None)
+            
             img_pass = self.taking.take_picuture(
                 InspectionType.PRE_PROCESSING_INSPECTION)
+            
+            lighting_return_code = self.lighting.light_on(
+                InspectionType.PRE_PROCESSING_INSPECTION, False)
+            if lighting_return_code != "OK":
+                lighting_return_code = self.lighting.light_on(
+                    InspectionType.PRE_PROCESSING_INSPECTION, False)
+                
             kekka = self.pre_process_inspection.exec_inspection(
                 img_pass, inspection_data)
+
         elif operation_type == OperationType.ACCURACY_INSPECTION:
+            
+            lighting_return_code = self.lighting.light_on(
+                InspectionType.ACCURACY_INSPECTION, True)
+            if lighting_return_code != "OK":
+                return AccuracyInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"], hole_result=None)
+            
             img_pass = self.taking.take_picuture(
                 InspectionType.ACCURACY_INSPECTION)
+            
+            lighting_return_code = self.lighting.light_on(
+                InspectionType.ACCURACY_INSPECTION, False)
+            if lighting_return_code != "OK":
+                lighting_return_code = self.lighting.light_on(
+                    InspectionType.ACCURACY_INSPECTION, False)
+
             img_pass = "ImageInspectionController/test/accuracy_inspection/sample_images/multi_type_EXP500.png"
             self.accuracy_inspection.exec_inspection(
                 img_pass, inspection_data)
             kekka = (img_pass)
+
         elif operation_type == OperationType.TOOL_INSPECTION:
+            
+            lighting_return_code = self.lighting.light_on(
+                InspectionType.TOOL_INSPECTION, True)
+            if lighting_return_code != "OK":
+                return ToolInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"],
+                                             tool_type=None, tool_length=None, drill_diameter=None)
+            
             img_pass = self.taking.take_picuture(
                 InspectionType.TOOL_INSPECTION)
+            
+            lighting_return_code = self.lighting.light_on(
+                InspectionType.TOOL_INSPECTION, False)
+            if lighting_return_code != "OK":
+                lighting_return_code = self.lighting.light_on(
+                    InspectionType.TOOL_INSPECTION, False)
             kekka = (img_pass)
 
         return kekka
