@@ -107,8 +107,10 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 return AccuracyInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"], hole_result=None)
 
+            base_dir = os.path.join(
+                self.ROOT_IMAGE_DIR, f"{inspection_data.model_id_str}/{inspection_data.serial_number}")
             img_pass = self.taking.take_picture(
-                InspectionType.ACCURACY_INSPECTION, self.ROOT_IMAGE_DIR)
+                InspectionType.ACCURACY_INSPECTION, base_dir)
 
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.ACCURACY_INSPECTION, "OFF")
