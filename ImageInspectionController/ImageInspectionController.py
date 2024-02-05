@@ -1,8 +1,9 @@
 # coding: utf-8
 
+from ImageInspectionController.AccuracyInspection import AccuracyInspection
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
-from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
+from ImageInspectionController.InspectionResults import AccuracyInspectionResult, CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
 from ImageInspectionController.light import Light
 from ImageInspectionController.PreProcessInspection import PreProcessInspection
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
@@ -29,6 +30,7 @@ class ImageInspectionController:
         self.taking = Taking()
         self.lighting = Light()
         self.pre_process_inspection = PreProcessInspection()
+        self.accuracy_inspection = AccuracyInspection()
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
@@ -72,6 +74,9 @@ class ImageInspectionController:
         elif operation_type == OperationType.ACCURACY_INSPECTION:
             img_pass = self.taking.take_picuture(
                 InspectionType.ACCURACY_INSPECTION)
+            img_pass = "ImageInspectionController/test/accuracy_inspection/sample_images/multi_type_EXP500.png"
+            self.accuracy_inspection.exec_inspection(
+                img_pass, inspection_data)
             kekka = (img_pass)
         elif operation_type == OperationType.TOOL_INSPECTION:
             img_pass = self.taking.take_picuture(
