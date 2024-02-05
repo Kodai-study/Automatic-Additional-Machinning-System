@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from typing import List
+from ImageInspectionController.ProcessDatas import HoleCheckInfo
 
 from common_data_type import WorkPieceShape
 
@@ -37,3 +39,17 @@ class PreProcessingInspectionData:
     ・正方形の場合:1辺の長さ\n
     ・円の場合:直径
     """
+
+
+@dataclass
+class AccuracyInspectionData:
+
+    hole_informations: List[HoleCheckInfo]
+    """
+    ワークの大きさ。この大きさと比較して合否を出す\n
+    ・正方形の場合:1辺の長さ\n
+    ・円の場合:直径
+    """
+    model_id_str: str
+
+    serial_number: int
