@@ -1,3 +1,5 @@
+# 工具検査のデータクラス
+from typing import Union, List
 from dataclasses import dataclass
 
 from ImageInspectionController.ProcessDatas import HoleCheckInfo

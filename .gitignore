@@ -169,8 +169,12 @@ cython_debug/
 
 # Local History for Visual Studio Code
 .history/
-
+img
 # Built Visual Studio Code Extensions
 *.vsix
 
+test/
+
 img/
+
+Thumbs.db

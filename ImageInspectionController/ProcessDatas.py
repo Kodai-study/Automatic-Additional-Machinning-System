@@ -40,7 +40,7 @@ class HoleCheckInfo:
     穴の大きさを判別する
     """
 
-    hole_check_info: bool
+    hole_check_info: bool = None
     """
     チェックが通ったかどうかを表す\n
     渡されるときはNoneになっており、検査結果を格納するときにTrue/Falseになる
@@ -65,7 +65,6 @@ class ToolsInfo:
     """
     ツールの長さ 検査した値
     """
-
 
 class InspectionType(Enum):
     ACCURACY_INSPECTION = auto(),

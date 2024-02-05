@@ -2,9 +2,20 @@ TEST_UR_CONNECTION_LOCAL = True
 """
 URとの接続をローカル別スレッドでテストする場合はTrue
 """
+
+TEST_CFD_CONNECTION_LOCAL = True
+
 TEST_PROCESSING_REPORT = True
 """
 """
 TEST_Windows = True
 """
 """
+
+TEST_FEATURE_GUI = False
+
+TEST_FEATURE_IMAGE_PROCESSING = True
+
+TEST_FEATURE_DB = False
+
+TEST_FEATURE_CONNECTION = False
