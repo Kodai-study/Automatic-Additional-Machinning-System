@@ -28,9 +28,10 @@ class ManageRobotReceive:
         self._integration_instance = integration_instance
         self.work_manager = WorkManager(
             self._integration_instance.database_accesser)
-        
+
         def _start_process():
-            self._integration_instance.gui_request_queue.put((GUIRequestType.UPLOAD_PROCESSING_DETAILS,True))
+            self._integration_instance.gui_request_queue.put(
+                (GUIRequestType.UPLOAD_PROCESSING_DETAILS, True))
             start_process(self._integration_instance)
 
         self._special_command_handlers = {
@@ -102,7 +103,7 @@ class ManageRobotReceive:
                     command, self._integration_instance.send_request_queue)
             return handl
         elif detail == "ST":
-            return lambda :_send_message_to_cfd(command,self._integration_instance.send_request_queue)
+            return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
         # detail が数字の場合
         try:
             work_count = int(detail)

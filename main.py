@@ -270,8 +270,8 @@ def test_load_and_process():
 
 if __name__ == "__main__":
     # # work_manager_test()
-    # test_integration()
+    test_integration()
     # test_load_and_process()
     # test_camera_snapshot()
-    test_inspections()
+    # test_inspections()
     # test_take_picture()

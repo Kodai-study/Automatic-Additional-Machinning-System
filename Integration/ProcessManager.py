@@ -119,9 +119,10 @@ class ProcessManager:
             return None
 
     def _get_rotation_degree(self, tool_type) -> int:
-        for i in range(1, len(self.tool_stock_informations)+1):
+        for i in range(1, len(self.tool_stock_informations) + 1):
             if self.tool_stock_informations[i].tool_type == tool_type:
                 self.current_tool_type = tool_type
+                self.tool_position_number = i
                 return i - 1
         print("工具の種類が不正です")
 

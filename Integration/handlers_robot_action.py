@@ -1,6 +1,6 @@
 import time
 from GUIDesigner.GUISignalCategory import GUISignalCategory
-from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
+from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ProcessDataManager import ProcessDataManager
 from common_data_type import TransmissionTarget, WorkPieceShape
@@ -39,7 +39,7 @@ def start_process(integration_instance):
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
 
     while not work_process(integration_instance, process_data_manager):
-        time.sleep(5)
+        time.sleep(0)
 
 
 def initial_tool_inspection(integration_instance):
@@ -80,14 +80,10 @@ def work_process(integration_instance, process_data_manager):
     time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 0,PULL")
     time.sleep(CYLINDRE_WAIT_TIME)
-
-    work_shape = WorkPieceShape.CIRCLE if m["workShape"] == "CIRCLE" else WorkPieceShape.SQUARE
-    integration_instance.image_inspection_controller.perform_image_operation(
-        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(work_shape, work_dimension=m["workSize"]))
     workShape = WorkPieceShape.get_work_shape_from_str(m["workShape"])
 
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
-        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workShape, m["holes"]))
+        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workShape, m["workSize"]))
 
     if not preprocess_inspection_result.result:
         print("加工前検査に失敗しました")
@@ -125,13 +121,18 @@ def work_process(integration_instance, process_data_manager):
         send_to_UR
 
 
+id = 1
+
+
 def inspect_and_carry_out(integration_instance, process_data_manager, m):
+    global id
     send_to_CFD(integration_instance, "CYL 4,PUSH")
     time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 3,PUSH")
     time.sleep(CYLINDRE_WAIT_TIME)
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
-        OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
+        OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(create_hole_check_list(m["holes"]), "AQR", id, 100))
+    id += 1
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
     integration_instance.gui_request_queue.put(
@@ -141,10 +142,10 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
     return preprocess_inspection_result.result
 
 
-def create_inspection_information(json_data):
-    hole_information_data = json_data["holes"]
+def create_hole_check_list(hole_informations):
     hole_check_informations = []
-    for hole_id, hole in enumerate(hole_information_data):
+
+    for hole_id, hole in enumerate(hole_informations):
         point = Point(hole["position"]["x"], hole["position"]["y"])
         hole_check_informations.append(HoleCheckInfo(
             hole_id, point,
@@ -155,6 +156,8 @@ def create_inspection_information(json_data):
 
 drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL",
                   "M6_DRILL", "M3_TAP", "M4_TAP", "M5_TAP", "M6_TAP"]
+
+previos_tool_position_number = 0
 
 
 def drill_process(integration_instance):
@@ -173,9 +176,9 @@ def drill_process(integration_instance):
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
             send_to_CFD(integration_instance, "STM 0,SEARCH")
             wait_command(integration_instance, "CFD", "STM 0,TURNED")
-            preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
-                OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.current_tool_type))
-            if not preprocess_inspection_result.result:
+            tool_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
+                OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
+            if not tool_inspection_result.result:
                 print("工具検査に失敗しました")
                 return
             rotato_tool_stock(integration_instance, tool_degree)

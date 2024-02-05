@@ -7,6 +7,7 @@ from ImageInspectionController.InspectionResults import ToolInspectionResult
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessManager import ProcessManager
 from Integration.GuiResponceHandler import GuiResponceHandler
+from Integration.handlers_robot_action import start_process
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2_RECEIV, TEST_PORT2_SEND, RobotCommunicationHandler
 from threading import Thread
@@ -152,7 +153,6 @@ class Integration:
         self.gui_request_queue.put(
             (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
 
-
     def main(self):
         # 通信スレッドを立ち上げる
         if TEST_FEATURE_CONNECTION:
@@ -180,6 +180,7 @@ class Integration:
         test_send_thread.daemon = True
         test_send_thread.start()
 
+
         if TEST_FEATURE_GUI:
             test_watching_guiResponce_queue_thread = Thread(
                 target=self._watching_guiResponce_queue)
@@ -189,4 +190,5 @@ class Integration:
             self.guiDesigner.start_gui(
                 self.gui_request_queue, self.gui_responce_queue, self.robot_status)
         else:
-            self._watching_guiResponce_queue()
+            # self._watching_guiResponce_queue()
+            start_process(self)

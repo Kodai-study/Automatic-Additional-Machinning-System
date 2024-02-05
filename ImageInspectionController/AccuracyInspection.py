@@ -86,7 +86,7 @@ class AccuracyInspection:
 
     def _check_hole(self, centor: Point, radius, target_data: HoleCheckInfo):
         # 座標の誤差の範囲
-        TOLERANCE = 2
+        TOLERANCE = 4
 
         THRESHOLD_M3 = 2.5
         THRESHOLD_M4 = 3.5
