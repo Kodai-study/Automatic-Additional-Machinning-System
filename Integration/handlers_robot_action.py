@@ -10,7 +10,8 @@ from common_data_type import Point
 
 TEST_WAIT_COMMAND = False
 CYLINDRE_WAIT_TIME = 0
-TEST_UNUSE_GUI = False
+TEST_UNUSE_GUI = True
+
 
 def reservation_process():
     print("加工の予約が行われました")
@@ -18,14 +19,18 @@ def reservation_process():
 
 def _test_regist_process_count(integration_instance):
     integration_instance.process_list = integration_instance.process_data_manager.refresh_process_data()
-    integration_instance.process_list[0]["regist_process_count"] = 3
-    integration_instance.process_list[1]["regist_process_count"] = 2
-    integration_instance.process_list[5]["regist_process_count"] = 7
+    integration_instance.process_data_manager.process_data_list[0]["regist_process_count"] = 3
+    integration_instance.process_data_manager.process_data_list[0]['order_number'] = 0
+    integration_instance.process_data_manager.process_data_list[1]["regist_process_count"] = 2
+    integration_instance.process_data_manager.process_data_list[1]['order_number'] = 1
+    integration_instance.process_data_manager.process_data_list[5]["regist_process_count"] = 7
+    integration_instance.process_data_manager.process_data_list[5]['order_number'] = 2
 
 
 def start_process(integration_instance):
     # initial_tool_inspection(integration_instance)
     if TEST_UNUSE_GUI:
+        _test_regist_process_count(integration_instance)
         send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
         integration_instance.process_data_manager.register_process_number()
     # TODO ワークの個数を取得する
@@ -74,9 +79,11 @@ def work_process(integration_instance, process_data_manager):
     send_to_CFD(integration_instance, "CYL 0,PUSH")
     time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 0,PULL")
-    # TODO 加工前検査
     time.sleep(CYLINDRE_WAIT_TIME)
-    print("加工前検査をします")
+
+    work_shape = WorkPieceShape.CIRCLE if m["workShape"] == "CIRCLE" else WorkPieceShape.SQUARE
+    integration_instance.image_inspection_controller.perform_image_operation(
+        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(work_shape, work_dimension=m["workSize"]))
     workShape = WorkPieceShape.get_work_shape_from_str(m["workShape"])
 
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
@@ -127,7 +134,8 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
         OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
-    integration_instance.gui_request_queue.put((GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
+    integration_instance.gui_request_queue.put(
+        (GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
     send_to_CFD(integration_instance,
                 f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
     return preprocess_inspection_result.result
@@ -144,7 +152,10 @@ def create_inspection_information(json_data):
         )
     return hole_check_informations
 
-drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL", "M6_DRILL", "M3_TAP", "M4_TAP", "M5_TAP", "M6_TAP"]
+
+drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL",
+                  "M6_DRILL", "M3_TAP", "M4_TAP", "M5_TAP", "M6_TAP"]
+
 
 def drill_process(integration_instance):
     previous_x_position = 0
@@ -176,7 +187,8 @@ def drill_process(integration_instance):
         wait_command(integration_instance, "CFD", "DRL 0,XYT_IS_SET")
         previous_x_position = x_position
         previous_y_position = y_position
-        print(f"{x_position} , {y_position}に{drill_type_str[drill_speed-1]}の穴をあけた")
+        print(
+            f"{x_position} , {y_position}に{drill_type_str[drill_speed-1]}の穴をあけた")
     send_to_CFD(integration_instance, "DRL 0,0,0,8")
 
 
