@@ -151,14 +151,16 @@ class Taking:
                     raise Exception("カメラを使わない設定になっています", kensamei)
                 np_arr = self._get_image_data(
                     self.cam_device_kakou,  self.receive_signal_kakou)
-                save_path = os.path.join(PREPROCESS_PICTURE_FILENAME)
+                save_path = os.path.join(
+                    base_directory, PREPROCESS_PICTURE_FILENAME)
 
             elif kensamei == InspectionType.ACCURACY_INSPECTION:
                 if not USE_ACCURACY_INSPECTION_CAMERA:
                     raise Exception("カメラを使わない設定になっています", kensamei)
                 np_arr = self._get_image_data(
                     self.cam_device_seido,  self.receive_signal_seido)
-                save_path = os.path.join(ACCURACT_PICTURE_FILENAME)
+                save_path = os.path.join(
+                    base_directory, ACCURACT_PICTURE_FILENAME)
 
             if not cv2.imwrite(save_path, np_arr):
                 print("hosonFailed")
