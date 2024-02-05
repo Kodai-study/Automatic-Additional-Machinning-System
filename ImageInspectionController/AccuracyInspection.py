@@ -1,4 +1,5 @@
 from typing import List
+from ImageInspectionController.InspectDatas import AccuracyInspectionData
 from ImageInspectionController.InspectionResults import AccuracyInspectionResult
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
@@ -10,15 +11,15 @@ class AccuracyInspection:
     def __init__(self):
         self.OFFSET_X = 427
 
-    def exec_inspection(self, image_path: str, inspect_data) -> AccuracyInspectionResult:
-        hole_informations, work_dimension = inspect_data
+    def exec_inspection(self, image_path: str, inspect_data: AccuracyInspectionData) -> AccuracyInspectionResult:
         circles = self._detect_holes(
             self._get_preprocessed_image(image_path))[0]
         hole_check_informations = []
         for circle in circles:
             centor, radius = self._get_hole_informations(
-                circle, work_dimension)
-            target_hole = self._find_closest_hole(centor, hole_informations)
+                circle, inspect_data.work_dimension)
+            target_hole = self._find_closest_hole(
+                centor, inspect_data.hole_informations)
             hole_check_informations.append(self._check_hole(
                 centor, radius, target_hole))
 
