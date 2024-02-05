@@ -2,7 +2,7 @@ from queue import Queue
 import time
 from GUIDesigner.GUIDesigner import GUIDesigner
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
+from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType, InspectionType
 from ImageInspectionController.Taking import Taking
@@ -76,7 +76,7 @@ def test_inspections():
                       HoleType.M6_HOLE, None)
     ]
     result = image_inspection_controller.perform_image_operation(
-        OperationType.ACCURACY_INSPECTION, (test_hole_infos, 100))
+        OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(test_hole_infos, "AQR", 1, 100))
 
     print(f"ACCURACY_INSPECTION: {result}")
 
