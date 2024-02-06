@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from common_data_type import ToolType
 import cv2
@@ -122,7 +123,9 @@ class ToolInspection:
         # 黒いピクセルが見つからなかった場合
         return None
 
-    def tool_inspection(self, image_path, template_path):
+    def exec_inspection(self, image_path, inspection_data=ToolInspectionData):
+        inspection_data.is_initial_phase=True
+        
         cropped_image, original_iamge = self._setup_image(image_path)
         tool_category = self._drill_tap_categorizer(original_iamge)
         width_pixcel = self._get_width_pixcel(cropped_image)
