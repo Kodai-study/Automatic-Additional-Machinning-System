@@ -53,7 +53,7 @@ class ImageInspectionController:
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
-        img_pass = self.taking.take_picture(inspection_type)
+        img_pass = self.taking.take_picture(inspection_type,"kansi")
 
         if img_pass is None:
             return CameraControlResult(is_success=False, camera_type=camera_type, image_path=None)
@@ -94,17 +94,17 @@ class ImageInspectionController:
                 InspectionType.PRE_PROCESSING_INSPECTION, "ON")
             if lighting_return_code != "OK":
                 return PreProcessingInspectionResult(is_check_ok=False, error_message=["照明の点灯に失敗しました。"], serial_number=None, dimensions=None)
-
+            time.sleep(0.5)
             img_pass = self.taking.take_picture(
                 InspectionType.PRE_PROCESSING_INSPECTION, self.ROOT_IMAGE_DIR)
+            kekka = self.pre_process_inspection.exec_inspection(
+                img_pass, inspection_data)
 
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.PRE_PROCESSING_INSPECTION, "OFF")
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.PRE_PROCESSING_INSPECTION, "OFF")
-            kekka = self.pre_process_inspection.exec_inspection(
-                img_pass, inspection_data)
 
         elif operation_type == OperationType.ACCURACY_INSPECTION:
             lighting_return_code = self.lighting.light_onoff(
@@ -115,19 +115,18 @@ class ImageInspectionController:
             base_dir = os.path.join(
                 self.ROOT_IMAGE_DIR, f"{inspection_data.model_id_str}/{inspection_data.serial_number}")
 
-            time.sleep(0.5)
             img_pass = self.taking.take_picture(
                 InspectionType.ACCURACY_INSPECTION, base_dir)
             time.sleep(0.5)
+
+            kekka = self.accuracy_inspection.exec_inspection(
+                img_pass, inspection_data)
 
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.ACCURACY_INSPECTION, "OFF")
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.ACCURACY_INSPECTION, "OFF")
-
-            kekka = self.accuracy_inspection.exec_inspection(
-                img_pass, inspection_data)
 
         elif operation_type == OperationType.TOOL_INSPECTION:
             test_tool_list = [
@@ -145,15 +144,16 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 return ToolInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"],
                                             tool_type=None, tool_length=None, drill_diameter=None)
-
+            time.sleep(0.5)
             img_pass = self.taking.take_picture(
                 InspectionType.TOOL_INSPECTION, self.TOOL_IMAGE_DIR)
-
+            time.sleep(0.5)
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.TOOL_INSPECTION, "OFF")
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.TOOL_INSPECTION, "OFF")
+                
             return ToolInspectionResult(True, None, test_tool_list[1], 0, 0)
 
         return kekka

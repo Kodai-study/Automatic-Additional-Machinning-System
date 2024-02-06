@@ -8,9 +8,9 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = False
-CYLINDRE_WAIT_TIME = 0
-TEST_UNUSE_GUI = True
+TEST_WAIT_COMMAND = True
+CYLINDRE_WAIT_TIME = 2
+TEST_UNUSE_GUI = False
 
 
 def reservation_process():
@@ -76,6 +76,8 @@ def work_process(integration_instance, process_data_manager):
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
     wait_command(integration_instance, "UR", "CYL 0,PUSH")
+    tool_degrees = integration_instance.process_manager.get_first_tool_degrees()
+    rotato_tool_stock(integration_instance, tool_degrees)
     send_to_CFD(integration_instance, "CYL 0,PUSH")
     time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 0,PULL")
@@ -89,13 +91,14 @@ def work_process(integration_instance, process_data_manager):
         print("加工前検査に失敗しました")
 
     send_to_CFD(integration_instance, "CYL 0,PUSH")
-    tool_degrees = integration_instance.process_manager.get_first_tool_degrees()
-    rotato_tool_stock(integration_instance, tool_degrees)
 
     drill_process(integration_instance)
 
     # send_to_CFD(integration_instance, "DRL 0,0,0,8")
     wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
+    integration_instance.image_inspection_controller.perform_image_operation(
+                OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
+            
     send_to_CFD(integration_instance, "CYL 0,PULL")
     send_to_UR(integration_instance, "WRK 0,MOVE_TO_INSP")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
@@ -118,8 +121,6 @@ def work_process(integration_instance, process_data_manager):
     else:
         inspect_and_carry_out(
             integration_instance, process_data_manager, m)
-        send_to_UR
-
 
 id = 1
 
@@ -127,9 +128,9 @@ id = 1
 def inspect_and_carry_out(integration_instance, process_data_manager, m):
     global id
     send_to_CFD(integration_instance, "CYL 4,PUSH")
-    time.sleep(CYLINDRE_WAIT_TIME)
+    wait_command(integration_instance,"CFD","RDSW 8,ON")
     send_to_CFD(integration_instance, "CYL 3,PUSH")
-    time.sleep(CYLINDRE_WAIT_TIME)
+    time.sleep(0.5)
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(create_hole_check_list(m["holes"]), "AQR", id, 100))
     id += 1
@@ -174,10 +175,10 @@ def drill_process(integration_instance):
         if tool_degree is not None:
             send_to_CFD(integration_instance, "DRL 0,0,0,8")
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
-            send_to_CFD(integration_instance, "STM 0,SEARCH")
-            wait_command(integration_instance, "CFD", "STM 0,TURNED")
             tool_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
+            send_to_CFD(integration_instance, "STM 0,SEARCH")
+            wait_command(integration_instance, "CFD", "STM 0,TURNED")
             if not tool_inspection_result.result:
                 print("工具検査に失敗しました")
                 return

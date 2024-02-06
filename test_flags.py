@@ -1,14 +1,14 @@
-TEST_UR_CONNECTION_LOCAL = True
+TEST_UR_CONNECTION_LOCAL = False
 """
 URとの接続をローカル別スレッドでテストする場合はTrue
 """
 
-TEST_CFD_CONNECTION_LOCAL = True
+TEST_CFD_CONNECTION_LOCAL = False
 """
 CFDとの接続をローカル別スレッドでテストする場合はTrue
 """
 
-TEST_FEATURE_GUI = False
+TEST_FEATURE_GUI = True
 """
 GUIの機能をONにする場合はTrue
 リモートデスクトップ以外の接続で動かす場合はFalseにしないと動かない
@@ -20,13 +20,13 @@ TEST_FEATURE_IMAGE_PROCESSING = True
 Telicamのインストールがされていない環境で動かす場合はFalseにしないと動かない
 """
 
-TEST_FEATURE_DB = False
+TEST_FEATURE_DB = True
 """
 データベースへの書き込み・読み込みの機能をONにする場合はTrue
 linux以外の環境で動かす場合はFalseにしないと動かない
 """
 
-TEST_FEATURE_CONNECTION = False
+TEST_FEATURE_CONNECTION = True
 """
 ロボットやテスト用のソケット通信を行う機能をONにする場合はTrue
 Windowsで接続を試す場合はTEST_UR_CONNECTION_LOCAL や TEST_CFD_CONNECTION_LOCALをTrueにして動かしてテストできる
