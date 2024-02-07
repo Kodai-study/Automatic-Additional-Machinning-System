@@ -33,10 +33,10 @@ class PreProcessInspection:
         error_items = []
         if is_circle and inspect_data.workpiece_shape != WorkPieceShape.CIRCLE:
             is_success = False
-            error_items.append("円形ではないワークが検出されました")
+            error_items.append("正方形ではないワークが検出されました")
         elif not is_circle and inspect_data.workpiece_shape == WorkPieceShape.CIRCLE:
             is_success = False
-            error_items.append("円形のワークが検出されました")
+            error_items.append("正方形が検出されました")
         else:
             is_success = True
 
