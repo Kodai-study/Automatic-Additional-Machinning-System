@@ -149,6 +149,13 @@ class ToolInspection:
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(color_image, info_text3, (1, 600),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.imwrite("./result_puttext.png", color_image)
+        import os
+
+        #追加するパス
+        addpath = "_result"
+        # パスを分割
+        file_name, file_extension = os.path.splitext(image_path)
+        newfile_name=file_name+addpath+file_extension
+        cv2.imwrite(newfile_name, color_image)
 
         return ToolInspectionResult(result=True, error_items=None, tool_type=tool_type, tool_length=tool_length_mm, drill_diameter=tool_diameter)
