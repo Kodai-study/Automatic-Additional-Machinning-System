@@ -64,7 +64,9 @@ class ToolInspection:
                     target_min_x = min_x
                     max_width = width
                     max_width_y = y
-
+        # 描写
+        cv2.line(cropped_image, (target_min_x, max_width_y),
+                 (target_max_x, max_width_y), 125, 2)
         return max_width
 
     def _tool_type_detector(self, tool, width):
@@ -126,6 +128,8 @@ class ToolInspection:
     def exec_inspection(self, image_path):
 
         cropped_image, original_iamge = self._setup_image(image_path)
+
+        color_image = cv2.cvtColor(original_iamge, cv2.COLOR_GRAY2BGR)
         tool_category = self._drill_tap_categorizer(original_iamge)
         width_pixcel = self._get_width_pixcel(cropped_image)
         tool_type = self._tool_type_detector(tool_category, width_pixcel)
@@ -139,12 +143,12 @@ class ToolInspection:
         info_text2 = f"Tool Type     : {tool_category}"
         info_text3 = f"Tool Diameter : {tool_diameter}"
         # テキストを追加
-        cv2.putText(original_iamge, info_text1, (1, 500),
+        cv2.putText(color_image, info_text1, (1, 500),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.putText(original_iamge, info_text2, (1, 550),
+        cv2.putText(color_image, info_text2, (1, 550),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.putText(original_iamge, info_text3, (1, 600),
+        cv2.putText(color_image, info_text3, (1, 600),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.imwrite("./result_puttext.png", original_iamge)
+        cv2.imwrite("./result_puttext.png", color_image)
 
         return ToolInspectionResult(result=True, error_items=None, tool_type=tool_type, tool_length=tool_length_mm, drill_diameter=tool_diameter)

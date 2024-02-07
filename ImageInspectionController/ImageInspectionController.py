@@ -2,6 +2,7 @@
 import os
 import time
 from ImageInspectionController.AccuracyInspection import AccuracyInspection
+from ImageInspectionController.ToolInspection import ToolInspection
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
 if TEST_FEATURE_IMAGE_PROCESSING:
     from ImageInspectionController.light import Light
@@ -43,6 +44,7 @@ class ImageInspectionController:
         self.lighting = Light()
         self.pre_process_inspection = PreProcessInspection()
         self.accuracy_inspection = AccuracyInspection()
+        self.toolinspection = ToolInspection()
         self.ROOT_IMAGE_DIR = "/home/kuga/img"
         self.TOOL_IMAGE_DIR = os.path.join(
             self.ROOT_IMAGE_DIR, "tools")
@@ -130,16 +132,6 @@ class ImageInspectionController:
                 img_pass, inspection_data)
 
         elif operation_type == OperationType.TOOL_INSPECTION:
-            test_tool_list = [
-                ToolType.M3_DRILL,
-                ToolType.M4_DRILL,
-                ToolType.M5_DRILL,
-                ToolType.M6_DRILL,
-                ToolType.M3_TAP,
-                ToolType.M4_TAP,
-                ToolType.M5_TAP,
-                ToolType.M6_TAP,
-            ]
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.TOOL_INSPECTION, "ON")
             if lighting_return_code != "OK":
@@ -154,8 +146,55 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.TOOL_INSPECTION, "OFF")
-            return ToolInspectionResult(True, None, test_tool_list[1], 0, 0)
+            kekka = self.toolinspection.exec_inspection(
+                img_pass)
 
+            if inspection_data.is_initial_phase == True:
+                self.tool_informations[inspection_data.tool_position_number] = kekka
+            else:
+                tool_info = self.tool_informations[inspection_data.tool_position_number]
+                tolerance_diameter = 0.5
+                tolerance_length = 2
+                error_items = [] if kekka.result else kekka.error_items
+
+                if abs(tool_info.drill_diameter - kekka.drill_diameter) >= tolerance_diameter:
+                    kekka.result = False
+                    error_items.append(
+                        f"横幅異常：工具が破損しています 横幅の差:{tool_info.drill_diameter - kekka.drill_diameter}")
+
+                if abs(tool_info.tool_length - kekka.tool_length) >= tolerance_length:
+                    kekka.result = False
+                    error_items.append(
+                        f"突き出し量異常：工具が破損しています 突き出し量の差:{tool_info.tool_length - kekka.tool_length}")
+
+                kekka.error_items = error_items
+
+            print(kekka)
+            # return ToolInspectionResult(True, None, test_tool_list[1], 0, 0)
+
+        else:
+            kekka = self.toolinspection.exec_inspection(
+                operation_type)
+
+            if inspection_data.is_initial_phase == True:
+                self.tool_informations[inspection_data.tool_position_number] = kekka
+            else:
+                tool_info = self.tool_informations[inspection_data.tool_position_number]
+                tolerance_diameter = 0.5
+                tolerance_length = 2
+                error_items = [] if kekka.result else kekka.error_items
+
+                if abs(tool_info.drill_diameter - kekka.drill_diameter) >= tolerance_diameter:
+                    kekka.result = False
+                    error_items.append(
+                        f"横幅異常：工具が破損しています 横幅の差:{tool_info.drill_diameter - kekka.drill_diameter}")
+
+                if abs(tool_info.tool_length - kekka.tool_length) >= tolerance_length:
+                    kekka.result = False
+                    error_items.append(
+                        f"突き出し量異常：工具が破損しています 突き出し量の差:{tool_info.tool_length - kekka.tool_length}")
+
+                kekka.error_items = error_items
         return kekka
 
     def _test_return_inspection_result(self, operation_type: OperationType, inspection_data):
