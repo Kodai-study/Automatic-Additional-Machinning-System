@@ -38,11 +38,13 @@ class AccuracyInspection:
         return AccuracyInspectionResult(is_check_ok, None, hole_check_informations)
 
     def _get_preprocessed_image(self, image_path):
+        BINARY_THRESHOLD = 180
         # 画像の読み込み
         CROPP_WIDTH = 2048
         image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         image = image[0:CROPP_WIDTH, self.OFFSET_X:]
-        # image = image[start_y:end_y, start_x:end_x]
+        _, image = cv2.threshold(
+            image, BINARY_THRESHOLD, 255, cv2.THRESH_BINARY)
         # グレースケール変換
         # 画像の平滑化
         blurred = cv2.GaussianBlur(image, (5, 5), 0)
@@ -50,8 +52,8 @@ class AccuracyInspection:
 
     def _detect_holes(self, image, result_image=None):
         # ハフ変換を用いて円を検出
-        PARAMETER_1 = 50
-        PARAMETER_2 = 30
+        PARAMETER_1 = 200
+        PARAMETER_2 = 15
         MIN_RADIUS = 10
         MAX_RADIUS = 100
 
