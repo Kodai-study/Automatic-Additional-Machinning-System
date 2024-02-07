@@ -11,7 +11,7 @@ class ToolInspection:
     def __init__(self):
         self.PIXEL_TO_MM_RATIO = 0.037280701754385967
         self.HIDDEN_LENGTH_MM = 31.526315789473685
-        DRILL_TEMPLATE_IMAGE_PATH = './tool_templete_tap.png'
+        DRILL_TEMPLATE_IMAGE_PATH = 'resource/images/tool_templete_tap.png'
         self.drill_template_image = cv2.imread(
             DRILL_TEMPLATE_IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
 
@@ -123,15 +123,14 @@ class ToolInspection:
         # 黒いピクセルが見つからなかった場合
         return None
 
-    def exec_inspection(self, image_path, inspection_data=ToolInspectionData):
-        inspection_data.is_initial_phase=True
-        
+    def exec_inspection(self, image_path):
+
         cropped_image, original_iamge = self._setup_image(image_path)
         tool_category = self._drill_tap_categorizer(original_iamge)
         width_pixcel = self._get_width_pixcel(cropped_image)
         tool_type = self._tool_type_detector(tool_category, width_pixcel)
         print(f"判定結果 : {tool_type}の{tool_category}")
-        tool_length_pixcel = self._get_tool_length()
+        tool_length_pixcel = self._get_tool_length(cropped_image)
         tool_diameter = round(self.PIXEL_TO_MM_RATIO * width_pixcel, 2)
         tool_length_mm = tool_length_pixcel * \
             self.PIXEL_TO_MM_RATIO + self.HIDDEN_LENGTH_MM
