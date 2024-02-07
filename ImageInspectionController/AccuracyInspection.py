@@ -70,7 +70,7 @@ class AccuracyInspection:
             maxRadius=MAX_RADIUS
         )
 
-        if result_image is not None and circles:
+        if result_image is not None and circles is not None:
             for i in circles[0, :]:
                 center = (int(i[0]), int(i[1]))
                 cv2.circle(result_image, center,
