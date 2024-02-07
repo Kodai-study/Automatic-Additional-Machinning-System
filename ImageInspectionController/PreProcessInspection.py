@@ -29,6 +29,7 @@ class PreProcessInspection:
         width_millis = self._get_mills_with_picxel(width)
         cv2.imwrite('./Result_Image.png', output_image)
         is_qr_ok, qr_data = self._search_qr_code(inspection_image)
+        print(width_millis, "円形" if is_circle else "正方形")
 
         error_items = []
         if is_circle and inspect_data.workpiece_shape != WorkPieceShape.CIRCLE:
@@ -39,7 +40,7 @@ class PreProcessInspection:
             error_items.append("正方形が検出されました")
         else:
             is_success = True
-
+            print("加工前検査おｋ")
         # 誤差の範囲内での最小幅と最大幅を計算
         min_width = inspect_data.work_dimension - TORELANCE
         max_width = inspect_data.work_dimension + TORELANCE
@@ -106,7 +107,6 @@ class PreProcessInspection:
         HIDDEN_MILLMETERS = 5.920398009950251
 
         mill_width = pixcel_width / PIXELS_PER_MILLIMETER
-        print(100-mill_width)
         real_width = mill_width + HIDDEN_MILLMETERS
         return round(real_width, 2)
 

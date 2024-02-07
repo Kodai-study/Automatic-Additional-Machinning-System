@@ -169,9 +169,6 @@ class ImageInspectionController:
 
                 kekka.error_items = error_items
 
-            print(kekka)
-            # return ToolInspectionResult(True, None, test_tool_list[1], 0, 0)
-
         else:
             kekka = self.toolinspection.exec_inspection(
                 operation_type)
