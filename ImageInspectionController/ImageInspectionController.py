@@ -3,7 +3,7 @@ import os
 import time
 from ImageInspectionController.AccuracyInspection import AccuracyInspection
 from ImageInspectionController.ToolInspection import ToolInspection
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
+from test_flags import TEST_FEATURE_IMAGE_PROCESSING
 if TEST_FEATURE_IMAGE_PROCESSING:
     from ImageInspectionController.light import Light
     from ImageInspectionController.Taking import Taking
@@ -96,9 +96,10 @@ class ImageInspectionController:
                 InspectionType.PRE_PROCESSING_INSPECTION, "ON")
             if lighting_return_code != "OK":
                 return PreProcessingInspectionResult(is_check_ok=False, error_message=["照明の点灯に失敗しました。"], serial_number=None, dimensions=None)
-            time.sleep(0.5)
+            time.sleep(1)
             img_pass = self.taking.take_picture(
                 InspectionType.PRE_PROCESSING_INSPECTION, self.ROOT_IMAGE_DIR)
+            time.sleep(1)
             kekka = self.pre_process_inspection.exec_inspection(
                 img_pass, inspection_data)
 
@@ -117,9 +118,10 @@ class ImageInspectionController:
             base_dir = os.path.join(
                 self.ROOT_IMAGE_DIR, f"{inspection_data.model_id_str}/{inspection_data.serial_number}")
 
+            time.sleep(1)
             img_pass = self.taking.take_picture(
                 InspectionType.ACCURACY_INSPECTION, base_dir)
-            time.sleep(0.5)
+            time.sleep(1)
 
             kekka = self.accuracy_inspection.exec_inspection(
                 img_pass, inspection_data)
