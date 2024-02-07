@@ -101,10 +101,9 @@ class PreProcessInspection:
         return max_contour, w
 
     def _get_mills_with_picxel(self, pixcel_width):
-        PIXELS_PER_MILLIMETER = 20.585714285714285
-        PIXELS_PER_MILLIMETER = 18.942857142857143
+        PIXELS_PER_MILLIMETER = 20.1
         # 右側に隠れているミリ数の変数
-        HIDDEN_MILLMETERS = 5.7598889659958346
+        HIDDEN_MILLMETERS = 5.920398009950251
 
         mill_width = pixcel_width / PIXELS_PER_MILLIMETER
         print(100-mill_width)
