@@ -13,7 +13,10 @@ class AccuracyInspection:
 
     def exec_inspection(self, image_path: str, inspect_data: AccuracyInspectionData) -> AccuracyInspectionResult:
         circles = self._detect_holes(
-            self._get_preprocessed_image(image_path))[0]
+            self._get_preprocessed_image(image_path))
+        if circles is None:
+            return AccuracyInspectionResult(False, None, None)
+        circles = circles[0]
         hole_check_informations = []
         for circle in circles:
             centor, radius = self._get_hole_informations(
