@@ -5,7 +5,7 @@ from ImageInspectionController.InspectionResults import ToolInspectionResult
 from common_data_type import ToolType
 import cv2
 import numpy as np
-
+import os
 
 class ToolInspection:
     def __init__(self):
@@ -142,6 +142,7 @@ class ToolInspection:
         info_text1 = f"Tool Length     : {round(tool_length_mm, 2)}"
         info_text2 = f"Tool Type     : {tool_category}"
         info_text3 = f"Tool Diameter : {tool_diameter}"
+        info_text4 = f"Tool Size : {tool_type}"
         # テキストを追加
         cv2.putText(color_image, info_text1, (1, 500),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -149,7 +150,8 @@ class ToolInspection:
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(color_image, info_text3, (1, 600),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        import os
+        cv2.putText(color_image, info_text4, (1, 650),
+                      cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         #追加するパス
         addpath = "_result"
