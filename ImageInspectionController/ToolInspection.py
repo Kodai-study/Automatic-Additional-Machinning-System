@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import os
 
+
 class ToolInspection:
     def __init__(self):
         self.PIXEL_TO_MM_RATIO = 0.037280701754385967
@@ -143,6 +144,11 @@ class ToolInspection:
         info_text2 = f"Tool Type     : {tool_category}"
         info_text3 = f"Tool Diameter : {tool_diameter}"
         info_text4 = f"Tool Size : {tool_type}"
+        print(f"Tool Length     : {round(tool_length_mm, 2)}")
+        print(f"Tool Type     : {tool_category}")
+        print(f"Tool Diameter : {tool_diameter}")
+        print(f"Tool Size : {tool_type}")
+
         # テキストを追加
         cv2.putText(color_image, info_text1, (1, 500),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -151,13 +157,13 @@ class ToolInspection:
         cv2.putText(color_image, info_text3, (1, 600),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(color_image, info_text4, (1, 650),
-                      cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-        #追加するパス
+        # 追加するパス
         addpath = "_result"
         # パスを分割
         file_name, file_extension = os.path.splitext(image_path)
-        newfile_name=file_name+addpath+file_extension
+        newfile_name = file_name+addpath+file_extension
         cv2.imwrite(newfile_name, color_image)
 
         return ToolInspectionResult(result=True, error_items=None, tool_type=tool_type, tool_length=tool_length_mm, drill_diameter=tool_diameter)

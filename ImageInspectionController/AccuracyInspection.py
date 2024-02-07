@@ -27,7 +27,10 @@ class AccuracyInspection:
                 centor, inspect_data.hole_informations)
             hole_check_informations.append(self._check_hole(
                 centor, radius, target_hole))
-
+            print(centor)
+            print(radius)
+            print(target_hole)
+        
         # hole_check_informationsの要素に検査不合格があるか判定
         is_check_ok = True
         error_messages = []
@@ -36,7 +39,9 @@ class AccuracyInspection:
                 is_check_ok = False
                 error_messages.append(
                     f"hole_id: {hole_check_information.hole_id}の位置が不正です。")
-
+            else:
+                print("おｋ")
+        
         return AccuracyInspectionResult(is_check_ok, None, hole_check_informations)
 
     def _get_preprocessed_image(self, image_path):
