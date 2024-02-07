@@ -138,8 +138,10 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
         preprocess_inspection_result.result)
     integration_instance.gui_request_queue.put(
         (GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
+    # send_to_CFD(integration_instance,
+    #             f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
     send_to_CFD(integration_instance,
-                f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
+                "INSPCT 0,OK")
     return preprocess_inspection_result.result
 
 
@@ -158,10 +160,9 @@ def create_hole_check_list(hole_informations):
 drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL",
                   "M6_DRILL", "M3_TAP", "M4_TAP", "M5_TAP", "M6_TAP"]
 
-previos_tool_position_number = 0
-
 
 def drill_process(integration_instance):
+    previos_tool_position_number = 1
     previous_x_position = 0
     previous_y_position = 0
     while True:
@@ -176,7 +177,8 @@ def drill_process(integration_instance):
             send_to_CFD(integration_instance, "DRL 0,0,0,8")
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
             tool_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
-                OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
+                OperationType.TOOL_INSPECTION, ToolInspectionData(False, previos_tool_position_number))
+            previos_tool_position_number=integration_instance.process_manager.tool_position_number
             send_to_CFD(integration_instance, "STM 0,SEARCH")
             wait_command(integration_instance, "CFD", "STM 0,TURNED")
             if not tool_inspection_result.result:

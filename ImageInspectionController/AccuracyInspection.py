@@ -12,8 +12,10 @@ class AccuracyInspection:
         self.OFFSET_X = 427
 
     def exec_inspection(self, image_path: str, inspect_data: AccuracyInspectionData) -> AccuracyInspectionResult:
+        inspect_image= self._get_preprocessed_image(image_path)
+        result_image = cv2.cvtColor(inspect_image,cv2.COLOR_GRAY2BGR)
         circles = self._detect_holes(
-            self._get_preprocessed_image(image_path))
+            inspect_image,result_image)
         if circles is None:
             return AccuracyInspectionResult(False, None, None)
         circles = circles[0]
@@ -66,12 +68,15 @@ class AccuracyInspection:
             maxRadius=MAX_RADIUS
         )
 
-        if result_image:
+        if result_image is not None and circles:
             for i in circles[0, :]:
-                center = (i[0], i[1])
+                center = (int(i[0]), int(i[1]))
                 cv2.circle(result_image, center,
-                           i[2], (0, 255, 0), 2)  # 円を描画
+                           int(i[2]), ((0, 255, 0)), 2)  # 円を描画
 
+        cv2.imshow("hofg",result_image)
+        cv2.waitKey(-1)
+        cv2.destroyAllWindows()
         return circles
 
     def _get_hole_informations(self, circle, work_dimension):
