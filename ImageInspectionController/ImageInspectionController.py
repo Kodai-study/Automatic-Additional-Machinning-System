@@ -14,7 +14,6 @@ from ImageInspectionController.InspectionResults import AccuracyInspectionResult
 from ImageInspectionController.light import Light
 from ImageInspectionController.PreProcessInspection import PreProcessInspection
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
-from ImageInspectionController.Taking import Taking
 from common_data_type import CameraType, LightingType, Point, ToolType
 from typing import Tuple, Union, List
 
@@ -40,11 +39,12 @@ def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
 class ImageInspectionController:
 
     def __init__(self, tool_stock_informations=None):
-        self.taking = Taking()
-        self.lighting = Light()
-        self.pre_process_inspection = PreProcessInspection()
-        self.accuracy_inspection = AccuracyInspection()
-        self.toolinspection = ToolInspection()
+        if TEST_FEATURE_IMAGE_PROCESSING:
+            self.taking = Taking()
+            self.lighting = Light()
+            self.pre_process_inspection = PreProcessInspection()
+            self.accuracy_inspection = AccuracyInspection()
+            self.toolinspection = ToolInspection()
         self.ROOT_IMAGE_DIR = "/home/kuga/img"
         self.TOOL_IMAGE_DIR = os.path.join(
             self.ROOT_IMAGE_DIR, "tools")
