@@ -50,7 +50,8 @@ class ManageRobotReceive:
             "EJCT": self._select_handler_ejector,
             "WRKSNS": self._select_handler_workSensor,
             "STM": self._select_handler_stepper_motor,
-            "DOOR": self._select_handler_door_state
+            "DOOR": self._select_handler_door_state,
+            "DLC": self._select_handler_door_lock
         }
 
     def _test_get_next_size(self):
@@ -196,6 +197,14 @@ class ManageRobotReceive:
             return lambda: self._change_robot_status("door", True)
         elif detail == "CLOSE":
             return lambda: self._change_robot_status("door", False)
+        
+    def _select_handler_door_lock(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
+        if dev_num != 0:
+            return self._undefine(command)
+        if detail == "LOCK":
+            return lambda: self._change_robot_status("door_lock", True)
+        elif detail == "UNLOCK":
+            return lambda: self._change_robot_status("door_lock", False)
 
     def _split_command(self, command: str):
         # 終端文字を削除
