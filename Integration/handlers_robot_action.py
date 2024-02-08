@@ -104,7 +104,6 @@ def work_process(integration_instance, process_data_manager):
     send_to_UR(integration_instance, "WRK 0,MOVE_TO_INSP")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
     send_to_CFD(integration_instance, "STM 0,SEARCH")
-    # wait_command(integration_instance, "CFD", "STM 0,TURNED")
     grip_position = integration_instance.process_manager.get_grip_position()
     send_to_UR(integration_instance,
                f"WRK 0,{grip_position[0]},{grip_position[1]}")
