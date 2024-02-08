@@ -6,10 +6,9 @@ from Integration.handlers_communication import _handle_connection_success, _noti
 from Integration.handlers_database import insert_sns_update
 from Integration.handlers_image_inspection import _start_pre_processing_inspection
 from Integration.handlers_robot_action import reservation_process
-from Integration.process_number import get_process_number
 from RobotCommunicationHandler.RobotInteractionType import RobotInteractionType
 from common_data_type import TransmissionTarget
-from .handlers_robot_action import start_process
+from Integration.handlers_robot_action import start_process
 
 
 class ManageRobotReceive:

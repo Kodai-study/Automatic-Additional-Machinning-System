@@ -1,4 +1,3 @@
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
 import configparser
 import serial.tools.list_ports
 from ImageInspectionController.ProcessDatas import InspectionType

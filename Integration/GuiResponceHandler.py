@@ -7,7 +7,7 @@ from ImageInspectionController.ImageInspectionController import ImageInspectionC
 from ImageInspectionController.InspectionResults import CameraControlResult, LightningControlResult
 from ImageInspectionController.OperationType import OperationType
 from common_data_type import CameraType, LightingType, TransmissionTarget
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
+from test_flags import TEST_CFD_CONNECTION_LOCAL
 
 
 class GuiResponceHandler:

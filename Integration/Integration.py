@@ -7,13 +7,12 @@ from ImageInspectionController.InspectionResults import ToolInspectionResult
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessManager import ProcessManager
 from Integration.GuiResponceHandler import GuiResponceHandler
-from Integration.handlers_robot_action import start_process
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2_RECEIV, TEST_PORT2_SEND, RobotCommunicationHandler
 from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_FEATURE_DB, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
+from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
 from common_data_type import ToolType, TransmissionTarget
 from Integration.ProcessDataManager import ProcessDataManager
 if TEST_FEATURE_GUI:

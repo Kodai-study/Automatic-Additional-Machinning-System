@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from common_data_type import ToolType
 import cv2
