@@ -9,7 +9,7 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = False
+TEST_WAIT_COMMAND = True
 CYLINDRE_WAIT_TIME = 2
 TEST_UNUSE_GUI = False
 
@@ -38,6 +38,7 @@ def start_process(integration_instance):
     time.sleep(1)
     send_to_CFD(integration_instance, "STM 0,SEARCH")
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
+    send_to_CFD(integration_instance, "MODE 0,DRLCHECK_FIN")
 
     while not work_process(integration_instance, process_data_manager):
         time.sleep(0)
@@ -193,7 +194,6 @@ def drill_process(integration_instance):
             wait_command(integration_instance, "CFD", "STM 0,TURNED")
             if not tool_inspection_result.result:
                 print("工具検査に失敗しました")
-                return
             rotato_tool_stock(integration_instance, tool_degree)
             previous_x_position = 0
             previous_y_position = 0
