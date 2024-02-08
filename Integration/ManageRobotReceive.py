@@ -170,7 +170,7 @@ class ManageRobotReceive:
                 command, self._integration_instance.send_request_queue)
             insert_sns_update(self._integration_instance.database_accesser,
                               dev_num, detail, sensor_time)
-            self._change_robot_status("sensor", is_on, devinum=dev_num)
+            self._change_robot_status("sensor", is_on, device_number=dev_num)
 
         return _common_sensor_handler
 
