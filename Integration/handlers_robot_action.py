@@ -120,13 +120,15 @@ def work_process(integration_instance, process_data_manager):
                 return True
             integration_instance.gui_request_queue.put((
                 GUISignalCategory.CANNOT_CONTINUE_PROCESSING, process_data_manager.process_data_list[0]))
+            
+            send_to_CFD(integration_instance, "MODE 0,RESERVE_RESET")
             while integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
                 time.sleep(0.1)
             while True:
                 if integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
                     break
                 time.sleep(0.5)
-            send_to_UR(integration_instance, "SIZE 0,0")
+            send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
         else:
             skip_wait_size = True
     else:
