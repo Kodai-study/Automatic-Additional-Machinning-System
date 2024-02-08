@@ -161,7 +161,9 @@ class ManageRobotReceive:
         sensor_time = datetime.datetime.now()
 
         if not self._integration_instance.is_processing_mode:
-            return lambda: self._change_robot_status("sensor", is_on, device_number=dev_num)
+            return lambda: (self._change_robot_status("sensor", dev_num, is_on),
+            _send_message_to_ur(
+                command, self._integration_instance.send_request_queue))
 
         def _common_sensor_handler():
             _send_message_to_ur(
