@@ -1,6 +1,5 @@
 import tkinter as tk
 from queue import Queue
-from tkinter import PhotoImage
 from typing import List, Tuple
 from GUIDesigner.Frames import Frames
 from GUIDesigner.GUIRequestType import GUIRequestType
@@ -20,7 +19,7 @@ class Monitoring(ScreenBase):
         self.send_to_integration_queue = send_to_integration_queue
         self._create_widgets()
         self.is_currentScreen = lambda: parent.current_screen == Frames.MONITORING
-        self.servo_motor_speed = 0
+        self.stm_motor_turn = 1
 
         # TODO この画面にいるときだけリクエストするように変更
         self._request_inspection_camera_update()
@@ -133,8 +132,8 @@ class Monitoring(ScreenBase):
             self, text="UR吸着", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         dlc0_label = tk.Label(
             self, text="ドアロック", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        svm_label = tk.Label(
-            self, text="サーボモータ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+        stm_label = tk.Label(
+            self, text="ステッピングモータ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         conv_label = tk.Label(
             self, text="ベルトコンベア", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         cyl_000_label = tk.Label(
@@ -188,21 +187,18 @@ class Monitoring(ScreenBase):
         # ボタンのコマンドリスト作成
         on_buttons: List[tk.Button] = []
         off_buttons: List[tk.Button] = []
-        forward_buttons: List[tk.Button] = []
-        reverse_buttons: List[tk.Button] = []
         pull_buttons: List[tk.Button] = []
         push_buttons: List[tk.Button] = []
         stop_buttons: List[tk.Button] = []
 
         on_commands = ["EJCT 0,ATTACH", "DLC 0,LOCK"]
         off_commands = ["EJCT 0,DETACH", "DLC 0,UNLOCK"]
-        forward_commands = ["SVM 0,CW,1", "CONV 0,CW"]
-        reverse_commands = ["SVM 0,BREAK,0", "CONV 0,OFF"]
         pull_commands = ["CYL 0,PULL", "CYL 3,PULL", "CYL 2,PULL",
                          "CYL 4,PULL", "CYL 1,PULL"]
         push_commands = ["CYL 0,PUSH", "CYL 3,PUSH", "CYL 2,PUSH",
                          "CYL 4,PUSH", "CYL 1,PUSH"]
-        stop_command = ["CONV 0,N", "CONV 0,N", "CONV 0,N"]
+        conv_n_commands = ["CONV 0,N", "CONV 0,N", "CONV 0,N"]
+
 
         # 照明ボタン作成
         self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
@@ -217,7 +213,7 @@ class Monitoring(ScreenBase):
                                                   command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, True)))
         self.accuracy_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#de9687",
                                                    command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, False)))
-
+        
         # シリンダボタン
         for i in range(5):
             push_button = tk.Button(self, text="PUSH", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
@@ -226,6 +222,7 @@ class Monitoring(ScreenBase):
                                     command=lambda i=i: (self.robot_oprration_request(pull_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
             push_buttons.append(push_button)
             pull_buttons.append(pull_button)
+            
         # URドアロックボタン
         for i in range(len(on_commands)):
             on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87", font=(
@@ -240,41 +237,41 @@ class Monitoring(ScreenBase):
             on_buttons.append(on_button)
             off_buttons.append(off_button)
 
-        svm_speed_up_button = tk.Button(self, text="速度＋", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                        command=lambda: svm_speed_controller(+1))
-        svm_speed_down_button = tk.Button(self, text="速度－", state="normal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                          command=lambda: svm_speed_controller(-1))
+        def enable_stm_button(flag):
+            if flag == 0: # 原点サーチ
+                stm_turn_button["state"] = "disabled"
+                stm_search_button["state"] = "disabled"
+                stm_plus_button["state"] = "disabled"
+                stm_minus_button["state"] = "disabled"
+                stm_value_label["fg"] = "#666666"
+                stm_value_label["bg"] = "#cccccc"
+            elif flag == 1: # STM 0,TURNED受信時
+                stm_turn_button["state"] = "normal"
+                stm_search_button["state"] = "normal"
+                stm_value_label["fg"] = "#000000"
+                stm_value_label["bg"] = "#ffffff"
+                if self.stm_motor_turn <= 1:
+                    stm_plus_button["state"] = "normal"
+                elif 7 <= self.stm_motor_turn:
+                    stm_minus_button["state"] = "normal"
+                else:
+                    stm_plus_button["state"] = "normal"
+                    stm_minus_button["state"] = "normal"
 
-        def on_svm_stop():
-            self.servo_motor_speed = 0
-            self.robot_oprration_request("SVM N,0")
-            svm_speed_up_button["state"] = "normal"
-            svm_speed_down_button["state"] = "normal"
-
-        svm_stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                    command=on_svm_stop)
-
-        def svm_speed_controller(change_number):
-            self.servo_motor_speed += change_number
-            if self.servo_motor_speed >= 7:
-                svm_speed_up_button["state"] = "disabled"
-            elif self.servo_motor_speed <= -7:
-                svm_speed_down_button["state"] = "disabled"
+        def stm_turn_controller(change_number):
+            self.stm_motor_turn += change_number
+            if self.stm_motor_turn >= 7:
+                self.stm_motor_turn = 7
+                stm_plus_button["state"] = "disabled"
+            elif self.stm_motor_turn <= 1:
+                self.stm_motor_turn = 1
+                stm_minus_button["state"] = "disabled"
             else:
-                svm_speed_up_button["state"] = "normal"
-                svm_speed_down_button["state"] = "normal"
-
-            if self.servo_motor_speed == 0:
-                self.robot_oprration_request("SVM N,0")
-            elif self.servo_motor_speed > 0:
-                self.robot_oprration_request(
-                    "SVM CW,"+str(self.servo_motor_speed))
-            else:
-                speed = self.servo_motor_speed * -1
-                self.robot_oprration_request("SVM CCW,"+str(speed))
+                stm_plus_button["state"] = "normal"
+                stm_minus_button["state"] = "normal"
+            stm_value_label["text"] = str(self.stm_motor_turn)
 
         def enable_conveyor_button(button_kind_list):
-
             self.robot_oprration_request("CONV 0,N")
             conveyor_rotato_good_button["state"] = "disabled"
             conveyor_rotato_bad_button["state"] = "disabled"
@@ -286,29 +283,56 @@ class Monitoring(ScreenBase):
                     conveyor_rotato_bad_button["state"] = "normal"
                 elif button_kind == "STOP":
                     conveyor_stop_button["state"] = "normal"
-        # サーボモータベルトコンベアボタン
+            
+        # ベルトコンベアボタン
         conveyor_rotato_good_button = tk.Button(
             self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
         conveyor_rotato_bad_button = tk.Button(
             self, text="後転", state="normal", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-        conveyor_stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=(
-            "MSゴシック", BUTTON_FONT_SIZE, "bold"))
-        
+        conveyor_stop_button = tk.Button(
+            self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
         conveyor_rotato_good_button["command"] = lambda: (self.robot_oprration_request("CONV 0,GOOD"),
                                                           enable_conveyor_button(["STOP"]))
         conveyor_rotato_bad_button["command"] = lambda: (self.robot_oprration_request("CONV 0,BAD"),
                                                          enable_conveyor_button(["STOP"]))
         conveyor_stop_button["command"] = lambda: (self.robot_oprration_request("CONV 0,N"),
                                                    enable_conveyor_button(["GOOD", "BAD"]))
+        # ステッピングモータボタン
+        stm_plus_button = tk.Button(
+            self, text="+1", state="normal", width=10, bg="#7ab0ff", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
+        stm_minus_button = tk.Button(
+            self, text="-1", state="disabled", width=10, bg="#7ab0ff", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
+        stm_value_label = tk.Label(   #いくつ回すかの数値表示ラベル(かテキストボックスのdisable)
+            self,text="1", state="normal", width=10, height=1, bg="#ffffff",relief = "solid",bd=1, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
+        stm_search_button = tk.Button(
+            self, text="原点", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
+        stm_turn_button = tk.Button(
+            self, text="回転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+
+        stm_plus_button["command"] = lambda: (stm_turn_controller(1))
+        stm_minus_button["command"] = lambda: (stm_turn_controller(-1))
+        stm_search_button["command"] = lambda: (self.robot_oprration_request("STM 0,SEARCH"),
+                                                print("STM 0,SEARCH"),
+                                                enable_stm_button(0))
+        stm_turn_button["command"] = lambda: (self.robot_oprration_request("STM 0,R,"+str(self.stm_motor_turn)),
+                                                print("STM 0,R,"+str(self.stm_motor_turn)),
+                                                enable_stm_button(0))
+        
         # 停止ボタン
         for i in range(2):
             stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                    command=lambda: (self.robot_oprration_request(stop_command[i])))
+                                    command=lambda: (self.robot_oprration_request(conv_n_commands[i])))
             stop_buttons.append(stop_button)
+            
         # 戻るボタン
-        back_button = tk.Button(self, text="戻る", command=lambda: self.change_frame(Frames.CREATE_SELECTION),
+        back_button = tk.Button(self, text="戻る", command=lambda: (self.change_frame(Frames.CREATE_SELECTION),enable_stm_button(1)),
                                 font=("AR丸ゴシック体M", 18), width=22)
 
         for i, (on_button, off_button) in enumerate(zip(on_buttons, off_buttons)):
@@ -316,17 +340,19 @@ class Monitoring(ScreenBase):
             on_button.grid(row=i + 4, column=2)
             off_button.grid(row=i + 4, column=3)
 
-        svm_speed_up_button.grid(row=9, column=2)
-        svm_speed_down_button.grid(row=9, column=3)
-        svm_stop_button.grid(row=9, column=4)
+        stm_plus_button.grid(row=9, column=4)
+        stm_value_label.grid(row=10,column=4)
+        stm_minus_button.grid(row=11, column=4)
+        stm_turn_button.grid(row=10,column=3)
+        stm_search_button.grid(row=10, column=2)
 
-        conveyor_rotato_good_button.grid(row=10, column=2)
-        conveyor_rotato_bad_button.grid(row=10, column=3)
-        conveyor_stop_button.grid(row=10, column=4)
+        conveyor_rotato_good_button.grid(row=13, column=2)
+        conveyor_rotato_bad_button.grid(row=13, column=3)
+        conveyor_stop_button.grid(row=13, column=4)
 
         for i in range(5):
-            push_buttons[i].grid(row=i + 11, column=2)
-            pull_buttons[i].grid(row=i + 11, column=3)
+            push_buttons[i].grid(row=i + 14, column=2)
+            pull_buttons[i].grid(row=i + 14, column=3)
 
         kara_label1.grid(row=0, column=0)
         backlight_label.grid(row=1, column=1, pady=10)
@@ -334,13 +360,13 @@ class Monitoring(ScreenBase):
         ringlight_label.grid(row=3, column=1, pady=10)
         UR_label.grid(row=4, column=1, pady=10)
         dlc0_label.grid(row=5, column=1, pady=10)
-        svm_label.grid(row=9, column=1, pady=10)
-        conv_label.grid(row=10, column=1, pady=10)
-        cyl_000_label.grid(row=11, column=1, pady=10)
-        cyl_001_label.grid(row=12, column=1, pady=10)
-        cyl_002_label.grid(row=13, column=1, pady=10)
-        cyl_003_label.grid(row=BUTTON_FONT_SIZE, column=1, pady=10)
-        cyl_004_label.grid(row=15, column=1, pady=10)
+        stm_label.grid(row=10, column=1, pady=10)
+        conv_label.grid(row=13, column=1, pady=10)
+        cyl_000_label.grid(row=14, column=1, pady=10)
+        cyl_001_label.grid(row=15, column=1, pady=10)
+        cyl_002_label.grid(row=16, column=1, pady=10)
+        cyl_003_label.grid(row=17, column=1, pady=10)
+        cyl_004_label.grid(row=18, column=1, pady=10)
         tool_label.grid(row=1, column=5, columnspan=2)
         tool1_label.grid(row=2, column=5)
         tool2_label.grid(row=2, column=7)
