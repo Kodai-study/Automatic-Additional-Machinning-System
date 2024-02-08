@@ -90,6 +90,7 @@ class ProcessingProgress(ScreenBase):
 
         self._create_widgets()
         self.connection_status_label = None
+        self.is_initial_process = False
 
     def _test_update_ui(self, new_state=True):
         # 上のものを全てTrueにした
@@ -125,9 +126,11 @@ class ProcessingProgress(ScreenBase):
     def create_frame(self):
         self.tkraise()
         self.old_robot_status = copy.deepcopy(self.robot_status)
-        self.process_data_manager = self.selected_items()
-        self.process_count_sum = self.process_data_manager.get_process_count_sum()
-        self.reaming_second_sum = self.process_data_manager.get_reaming_time_sum().total_seconds()
+        if not self.is_initial_process:
+            self.process_data_manager = self.selected_items()
+            self.process_count_sum = self.process_data_manager.get_process_count_sum()
+            self.reaming_second_sum = self.process_data_manager.get_reaming_time_sum().total_seconds()
+            self.is_initial_process = True
         self._set_robot_status(self.robot_status, self.label_status_dict)
         self._update_progress_state()
 
@@ -135,6 +138,7 @@ class ProcessingProgress(ScreenBase):
         if not len(self.process_data_manager.process_data_list):
             print("全ての加工が終了しました")
             self.change_frame(Frames.WORK_RESULT_OVERVIEW)
+            self.is_initial_process = False
             return
         self._update_current_data_label()
         good_sum, bad_sum = self.process_data_manager.get_good_and_bad_count()
