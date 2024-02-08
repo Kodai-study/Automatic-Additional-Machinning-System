@@ -296,8 +296,11 @@ class ProcessingProgress(ScreenBase):
         robot_status_differences = self.compare_dicts(
             self.old_robot_status, new_robot_status)
         for key_str in robot_status_differences.keys():
-            self._get_unit_from_keystr(key_str).update_lamp(
-                robot_status_differences[key_str])
+            try:
+                self._get_unit_from_keystr(key_str).update_lamp(
+                    robot_status_differences[key_str])
+            except:
+                print(key_str)
 
     def _get_unit_from_keystr(self, key_str):
         keys = key_str.split('.')
