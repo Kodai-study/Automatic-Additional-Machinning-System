@@ -1,4 +1,5 @@
 import time
+from GUIDesigner.Frames import Frames
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
@@ -8,7 +9,7 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = True
+TEST_WAIT_COMMAND = False
 CYLINDRE_WAIT_TIME = 2
 TEST_UNUSE_GUI = False
 
@@ -118,7 +119,13 @@ def work_process(integration_instance, process_data_manager):
             if next_model is None:
                 return True
             integration_instance.gui_request_queue.put((
-                GUISignalCategory.CANNOT_CONTINUE_PROCESSING, next_model))
+                GUISignalCategory.CANNOT_CONTINUE_PROCESSING, process_data_manager.process_data_list[0]))
+            while integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
+                time.sleep(0.1)
+            while True:
+                if integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
+                    break
+                time.sleep(0.5)
             send_to_UR(integration_instance, "SIZE 0,0")
         else:
             skip_wait_size = True
