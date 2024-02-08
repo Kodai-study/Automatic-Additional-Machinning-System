@@ -1,7 +1,4 @@
-import random
-import time
 import copy
-
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict, List, Union
@@ -122,8 +119,8 @@ class ProcessingProgress(ScreenBase):
         elif request_type == GUISignalCategory.PROCESSING_OUTCOME:
             self._update_progress_state()
         elif request_type == GUISignalCategory.CANNOT_CONTINUE_PROCESSING:
-            self.change_frame(Frames.WORK_REQUEST_OVERVIEW)
             self.request_work_data_setter(request_data)
+            self.change_frame(Frames.WORK_REQUEST_OVERVIEW)
 
     def create_frame(self):
         self.tkraise()
@@ -135,11 +132,6 @@ class ProcessingProgress(ScreenBase):
         self._update_progress_state()
 
     def _update_progress_state(self):
-        # 8割の確率で良品を加工する
-        # is_good = True
-        # if random.random() < 0.2:
-        #     is_good = False
-        # self.process_data_manager.processing_finished(is_good)
         if not len(self.process_data_manager.process_data_list):
             print("全ての加工が終了しました")
             self.change_frame(Frames.WORK_RESULT_OVERVIEW)
