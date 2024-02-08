@@ -207,7 +207,7 @@ class ImageInspectionController:
             return self._test_pass_accuracy_inspection()
 
         elif (operation_type == OperationType.CONTROL_LIGHTING):
-            return self._test_pass_control_lighting()
+            return self._test_pass_control_lighting(inspection_data)
 
         elif (operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT):
             return self._test_pass_take_inspection_snapshot()
@@ -244,11 +244,11 @@ class ImageInspectionController:
 
         return AccuracyInspectionResult(result=False, error_items=["穴の位置が一致していません", "穴の種類が一致していません"], hole_check_infos=holecheck_list)
 
-    def _test_pass_control_lighting(self, lighting_type: LightingType = LightingType.ACCURACY_LIGHTING):
-        return LightningControlResult(is_success=True,  lighting_type=lighting_type, lighting_state=True)
+    def _test_pass_control_lighting(self, inspection_data):
+        return LightningControlResult(is_success=True,  lighting_type=inspection_data[0], lighting_state=inspection_data[1])
 
-    def _test_fail_control_lighting(self, lighting_type: LightingType = LightingType.ACCURACY_LIGHTING):
-        return LightningControlResult(is_success=False,  lighting_type=lighting_type, lighting_state=False)
+    def _test_fail_control_lighting(self, inspection_data):
+        return LightningControlResult(is_success=False, lighting_type=inspection_data[0], lighting_state=inspection_data[1])
 
     def _test_pass_take_inspection_snapshot(self, camera_type: CameraType = CameraType.ACCURACY_CAMERA):
         return [CameraControlResult(is_success=True, camera_type=camera_type, image_path="test/abc.png")]
