@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import tkinter as tk
+from GUIDesigner.Frames import Frames
 from GUIDesigner.ProcessingData import ProcessingData
 from common_data_type import WorkPieceShape
 from GUIDesigner.GUISignalCategory import GUISignalCategory
@@ -32,7 +33,8 @@ class WorkRequest(ScreenBase):
         # 画像の表示
         # ボタンの配置
         kakunin_button = tk.Button(self, text="確認", font=(
-            "AR丸ゴシック体M", 18), width=22, bg="white")
+            "AR丸ゴシック体M", 18), width=22, bg="white", command=lambda:self.change_frame(Frames.PROCESSING_PROGRESS))
+
         # 文を上に配置
         self.message_label1.pack(pady=20)
         # 画像を中央に配置
