@@ -49,6 +49,7 @@ def test_camera_snapshot():
 
 
 def test_take_picture():
+    from ImageInspectionController.Taking import Taking
     taking = Taking()
     inspection_types = [
         InspectionType.TOOL_INSPECTION,
