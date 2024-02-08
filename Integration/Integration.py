@@ -53,11 +53,12 @@ class Integration:
             },
             "reed_switch": {
                 0: {"forward": False, "backward": False}, 1: {"forward": False, "backward": False}, 2: {"forward": False, "backward": False},
-                3: {"forward": False, "backward": False}, 4: {"forward": False, "backward": False}, 5: {"forward": False, "backward": False}
+                3: {"backward": False}, 4: {"forward": False, "backward": False}
             },
-            "door_lock": {
-                0: False, 1: False, 2: False, 3: False
-            }
+            "door_lock": False,
+            "door": False,
+            "limit_switch": False,
+            "stepper_motor": False
         }
         self.tool_stock_informations = [None] * 9
         self.tool_stock_informations[0] = "Do not use!!"
