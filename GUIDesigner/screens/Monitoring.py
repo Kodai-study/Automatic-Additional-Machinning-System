@@ -1,3 +1,4 @@
+import copy
 import tkinter as tk
 from queue import Queue
 from typing import List, Tuple
@@ -16,6 +17,7 @@ class Monitoring(ScreenBase):
     def __init__(self, parent, robot_status: dict, send_to_integration_queue: Queue):
         super().__init__(parent)
         self.robot_status = robot_status
+        self.old_robot_status = copy.deepcopy(robot_status)
         self.send_to_integration_queue = send_to_integration_queue
         self._create_widgets()
         self.is_currentScreen = lambda: parent.current_screen == Frames.MONITORING
@@ -62,6 +64,9 @@ class Monitoring(ScreenBase):
 
                 if target_camera_view:
                     self._update_image_from_path(target_camera_view, img_path)
+        
+        elif request_type == GUISignalCategory.SENSOR_STATUS_UPDATE:
+            self._update_button_enables(request_data)
 
     def _handle_lightning_control_responce(self, request_data):
         if request_data['target'] == LightingType.TOOL_LIGHTING:
@@ -393,6 +398,30 @@ class Monitoring(ScreenBase):
         tool6_entry.grid(row=3, column=8)
         tool7_entry.grid(row=3, column=10)
         tool8_entry.grid(row=3, column=12)
+
+    def _compare_dicts(self, old_dict, new_dict, path="") -> dict:
+        differences = {}
+        for key in old_dict:
+            # キーがdict2にない場合
+            if key not in new_dict:
+                differences[f"{path}{key}"] = (old_dict[key], None)
+            # 両方の値が辞書の場合、再帰的に比較
+            elif isinstance(old_dict[key], dict) and isinstance(new_dict[key], dict):
+                deeper_differences = self._compare_dicts(
+                    old_dict[key], new_dict[key], path=f"{path}{key}.")
+                differences.update(deeper_differences)
+            # 値が異なる場合、変更された値のみを記録
+            elif old_dict[key] != new_dict[key]:
+                differences[f"{path}{key}"] = new_dict[key]  # 変更後の値のみを保存
+        self.old_robot_status = copy.deepcopy(new_dict)
+        return differences
+    
+    def _update_button_enables(self, differences):
+        print(self._compare_dicts(self.old_robot_status, self.robot_status))
+        changed_colums = self._compare_dicts(self.old_robot_status, self.robot_status)
+        ejector_change = changed_colums.get("EJECTOR")
+        if ejector_change is not None:
+            pass
 
     def _initial_camera_view_canvases(self):
         accuracy_camera_canvas = tk.Canvas(
