@@ -100,7 +100,7 @@ class GUIDesigner(tk.Tk):
             self, self.robot_status, self.send_message_queue)
         self.screens[Frames.EMERGENCY_STOP] = EmergencyStop(self)
         self.screens[Frames.WORK_REQUEST_OVERVIEW] = WorkRequest(
-            self, self.image_resources, bg="white")
+            self, self.image_resources, self.get_request_work_data, bg="white")
         # screensのvalue全てで.grid(0,0)を実行
         for screen in self.screens.values():
             screen.grid(row=0, column=0, sticky="nsew")
