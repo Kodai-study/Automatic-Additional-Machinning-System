@@ -88,9 +88,9 @@ class ProcessingProgress(ScreenBase):
         self.off_image = self.image_resource["red_lamp"].subsample(
             2, 2)
 
-        self._create_widgets()
         self.connection_status_label = None
         self.is_initial_process = False
+        self._create_widgets()
 
     def _test_update_ui(self, new_state=True):
         # 上のものを全てTrueにした
@@ -335,7 +335,10 @@ class ProcessingProgress(ScreenBase):
             elif key in instances_dict:
                 # インスタンスに値を設定
                 # ここでは `set_value` メソッドを使って値を設定すると仮定
-                instances_dict[key].update_lamp(value)
+                try:
+                    instances_dict[key].update_lamp(value)
+                except Exception as e:
+                    print(e,key)
 
 
 if __name__ == "__main__":
