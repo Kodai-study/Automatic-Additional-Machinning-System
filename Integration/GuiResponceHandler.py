@@ -26,8 +26,8 @@ class GuiResponceHandler:
                     {"target": TransmissionTarget.CFD, "message": str(send_data[1])})
 
         elif send_data[0] == GUIRequestType.UPLOAD_PROCESSING_DETAILS:
-            target = TransmissionTarget.TEST_TARGET_2 if send_data[1] else TransmissionTarget.CFD
-            message = "MODE 0,RESERVE_SET" if send_data[1] else "MODE 0,RESERVE_RESET"
+            target = TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD
+            message = "MODE 0,RESERVE_SET\n" if send_data[1] else "MODE 0,RESERVE_RESET\n"
             self.send_request_queue.put({"target": target, "message": message})
 
         elif send_data[0] == GUIRequestType.LOGIN_REQUEST:

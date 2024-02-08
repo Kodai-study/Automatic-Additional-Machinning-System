@@ -7,6 +7,7 @@ from ImageInspectionController.InspectionResults import ToolInspectionResult
 from Integration.ManageRobotReceive import ManageRobotReceive
 from Integration.ProcessManager import ProcessManager
 from Integration.GuiResponceHandler import GuiResponceHandler
+from Integration.handlers_robot_action import start_process
 from RobotCommunicationHandler.RobotCommunicationHandler \
     import TEST_PORT1, TEST_PORT2_RECEIV, TEST_PORT2_SEND, RobotCommunicationHandler
 from threading import Thread
@@ -64,21 +65,21 @@ class Integration:
         self.tool_stock_informations = [
             None,
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M3_DRILL, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M3_DRILL, tool_length=44.5, drill_diameter=2.54),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M4_DRILL, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M4_DRILL, tool_length=49.27, drill_diameter=3.43),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M5_DRILL, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M5_DRILL, tool_length=54.01, drill_diameter=4.36),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M6_DRILL, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M6_DRILL, tool_length=54.60, drill_diameter=5.22),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M3_TAP, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M3_TAP, tool_length=36.04, drill_diameter=2.83),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M4_TAP, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M4_TAP, tool_length=36.75, drill_diameter=3.73),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M5_TAP, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M5_TAP, tool_length=42.56, drill_diameter=4.92),
             ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M6_TAP, tool_length=10.0, drill_diameter=3.0),
+                                 tool_type=ToolType.M6_TAP, tool_length=44.87, drill_diameter=5.7),
         ]
         self.image_inspection_controller = ImageInspectionController(
             self.tool_stock_informations)
@@ -96,6 +97,7 @@ class Integration:
             self, self.send_request_queue, self.gui_request_queue)
         self.process_manager = ProcessManager(self.tool_stock_informations)
         self.message_wait_conditions = {}
+        self.send_request_queue.put(({"target": TransmissionTarget.CFD, "message": "MODE 0,RESERVE_RESET\n"}))
 
     def _watching_guiResponce_queue(self):
         """
@@ -179,6 +181,7 @@ class Integration:
         test_send_thread.daemon = True
         test_send_thread.start()
 
+
         if TEST_FEATURE_GUI:
             test_watching_guiResponce_queue_thread = Thread(
                 target=self._watching_guiResponce_queue)
@@ -189,3 +192,4 @@ class Integration:
                 self.gui_request_queue, self.gui_responce_queue, self.robot_status)
         else:
             self._watching_guiResponce_queue()
+            # start_process(self)

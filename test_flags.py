@@ -14,13 +14,13 @@ GUIの機能をONにする場合はTrue
 リモートデスクトップ以外の接続で動かす場合はFalseにしないと動かない
 """
 
-TEST_FEATURE_IMAGE_PROCESSING = False
+TEST_FEATURE_IMAGE_PROCESSING = True
 """
 画像検査の機能をONにする場合はTrue
 Telicamのインストールがされていない環境で動かす場合はFalseにしないと動かない
 """
 
-TEST_FEATURE_DB = False
+TEST_FEATURE_DB = True
 """
 データベースへの書き込み・読み込みの機能をONにする場合はTrue
 linux以外の環境で動かす場合はFalseにしないと動かない

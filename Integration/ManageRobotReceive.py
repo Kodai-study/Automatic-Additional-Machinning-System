@@ -40,7 +40,8 @@ class ManageRobotReceive:
         self._special_command_handlers = {
             "ISRESERVED": reservation_process,
             "TEST_PRE_INSPECTION": lambda: _start_pre_processing_inspection(self._integration_instance.image_inspection_controller, self._integration_instance.work_list, self._integration_instance.write_list, self._integration_instance.database_accesser),
-            "PROC 0,START": _start_process
+            "PROC 0,START": _start_process,
+            "SW 0,ON": _start_process
         }
         self._handl_selectors_with_instruction = {
             "SIG": self._select_handler_ur_sig,

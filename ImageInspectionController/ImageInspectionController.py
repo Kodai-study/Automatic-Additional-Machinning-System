@@ -1,13 +1,20 @@
 # coding: utf-8
-from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI, TEST_FEATURE_IMAGE_PROCESSING
+import os
+import time
+from ImageInspectionController.AccuracyInspection import AccuracyInspection
+from ImageInspectionController.ToolInspection import ToolInspection
+from test_flags import TEST_FEATURE_IMAGE_PROCESSING
 if TEST_FEATURE_IMAGE_PROCESSING:
     from ImageInspectionController.light import Light
-    from ImageInspectionController.pre_processing_inspection import process_qr_code
     from ImageInspectionController.Taking import Taking
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType, InspectionType
-from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
-from ImageInspectionController.InspectionResults import AccuracyInspectionResult, CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
+from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
+from ImageInspectionController.InspectionResults import AccuracyInspectionResult, AccuracyInspectionResult, CameraControlResult, LightningControlResult, PreProcessingInspectionResult, ToolInspectionResult
+from ImageInspectionController.light import Light
+from ImageInspectionController.PreProcessInspection import PreProcessInspection
+from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
+from ImageInspectionController.Taking import Taking
 from common_data_type import CameraType, LightingType, Point, ToolType
 from typing import Tuple, Union, List
 
@@ -32,23 +39,30 @@ def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
 
 class ImageInspectionController:
 
-    def __init__(self, tool_informations):
-        if TEST_FEATURE_IMAGE_PROCESSING:
-            self.taking = Taking()
-            self.lighting = Light()
-
-        self.tool_informations = tool_informations
+    def __init__(self, tool_stock_informations=None):
+        self.taking = Taking()
+        self.lighting = Light()
+        self.pre_process_inspection = PreProcessInspection()
+        self.accuracy_inspection = AccuracyInspection()
+        self.toolinspection = ToolInspection()
+        self.ROOT_IMAGE_DIR = "/home/kuga/img"
+        self.TOOL_IMAGE_DIR = os.path.join(
+            self.ROOT_IMAGE_DIR, "tools")
+        if tool_stock_informations:
+            self.tool_informations = tool_stock_informations
+        else:
+            self.tool_informations = [None] * 9
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
-        img_pass = self.taking.take_picture(inspection_type)
+        img_pass = self.taking.take_picture(inspection_type,"kansi")
 
         if img_pass is None:
             return CameraControlResult(is_success=False, camera_type=camera_type, image_path=None)
 
         return CameraControlResult(is_success=True, camera_type=camera_type, image_path=img_pass)
 
-    def perform_image_operation(self, operation_type: OperationType, inspection_data: Union[PreProcessingInspectionData, ToolInspectionData, List[HoleCheckInfo], Tuple[LightingType, bool], List[CameraType]]) \
+    def perform_image_operation(self, operation_type: OperationType, inspection_data: Union[PreProcessingInspectionData, ToolInspectionData, AccuracyInspectionData, Tuple[LightingType, bool], List[CameraType]]) \
             -> Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo], LightningControlResult, CameraControlResult]:
         """
         画像検査を行って、結果を返す関数。
@@ -59,6 +73,7 @@ class ImageInspectionController:
         Returns:
             Union[PreProcessingInspectionResult, ToolInspectionResult, List[HoleCheckInfo]]: 検査の結果。合否と、検査で出された様々な値。検査の種類によって型が異なる
         """
+
         if not TEST_FEATURE_IMAGE_PROCESSING:
             return self._test_return_inspection_result(operation_type, inspection_data)
 
@@ -77,18 +92,107 @@ class ImageInspectionController:
                 return LightningControlResult(is_success=False, lighting_type=lightning_type, lighting_state=not is_on)
 
         elif operation_type == OperationType.PRE_PROCESSING_INSPECTION:
-            img_pass = self.taking.take_picuture(
-                InspectionType.PRE_PROCESSING_INSPECTION)
-            kekka = process_qr_code(img_pass)
-        elif operation_type == OperationType.ACCURACY_INSPECTION:
-            img_pass = self.taking.take_picuture(
-                InspectionType.ACCURACY_INSPECTION)
-            kekka = (img_pass)
-        elif operation_type == OperationType.TOOL_INSPECTION:
-            img_pass = self.taking.take_picuture(
-                InspectionType.TOOL_INSPECTION)
-            kekka = (img_pass)
+            lighting_return_code = self.lighting.light_onoff(
+                InspectionType.PRE_PROCESSING_INSPECTION, "ON")
+            if lighting_return_code != "OK":
+                return PreProcessingInspectionResult(is_check_ok=False, error_message=["照明の点灯に失敗しました。"], serial_number=None, dimensions=None)
+            time.sleep(1)
+            img_pass = self.taking.take_picture(
+                InspectionType.PRE_PROCESSING_INSPECTION, self.ROOT_IMAGE_DIR)
+            time.sleep(1)
+            kekka = self.pre_process_inspection.exec_inspection(
+                img_pass, inspection_data)
 
+            lighting_return_code = self.lighting.light_onoff(
+                InspectionType.PRE_PROCESSING_INSPECTION, "OFF")
+            if lighting_return_code != "OK":
+                lighting_return_code = self.lighting.light_onoff(
+                    InspectionType.PRE_PROCESSING_INSPECTION, "OFF")
+
+        elif operation_type == OperationType.ACCURACY_INSPECTION:
+            lighting_return_code = self.lighting.light_onoff(
+                InspectionType.ACCURACY_INSPECTION, "ON")
+            if lighting_return_code != "OK":
+                return AccuracyInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"], hole_result=None)
+
+            base_dir = os.path.join(
+                self.ROOT_IMAGE_DIR, f"{inspection_data.model_id_str}/{inspection_data.serial_number}")
+
+            time.sleep(1)
+            img_pass = self.taking.take_picture(
+                InspectionType.ACCURACY_INSPECTION, base_dir)
+            time.sleep(1)
+
+            kekka = self.accuracy_inspection.exec_inspection(
+                img_pass, inspection_data)
+
+            lighting_return_code = self.lighting.light_onoff(
+                InspectionType.ACCURACY_INSPECTION, "OFF")
+            if lighting_return_code != "OK":
+                lighting_return_code = self.lighting.light_onoff(
+                    InspectionType.ACCURACY_INSPECTION, "OFF")
+
+        elif operation_type == OperationType.TOOL_INSPECTION:
+            lighting_return_code = self.lighting.light_onoff(
+                InspectionType.TOOL_INSPECTION, "ON")
+            if lighting_return_code != "OK":
+                return ToolInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"],
+                                            tool_type=None, tool_length=None, drill_diameter=None)
+            time.sleep(0.5)
+            img_pass = self.taking.take_picture(
+                InspectionType.TOOL_INSPECTION, self.TOOL_IMAGE_DIR)
+            time.sleep(0.5)
+            lighting_return_code = self.lighting.light_onoff(
+                InspectionType.TOOL_INSPECTION, "OFF")
+            if lighting_return_code != "OK":
+                lighting_return_code = self.lighting.light_onoff(
+                    InspectionType.TOOL_INSPECTION, "OFF")
+            kekka = self.toolinspection.exec_inspection(
+                img_pass)
+
+            if inspection_data.is_initial_phase == True:
+                self.tool_informations[inspection_data.tool_position_number] = kekka
+            else:
+                tool_info = self.tool_informations[inspection_data.tool_position_number]
+                tolerance_diameter = 0.5
+                tolerance_length = 2
+                error_items = [] if kekka.result else kekka.error_items
+
+                if abs(tool_info.drill_diameter - kekka.drill_diameter) >= tolerance_diameter:
+                    kekka.result = False
+                    error_items.append(
+                        f"横幅異常：工具が破損しています 横幅の差:{tool_info.drill_diameter - kekka.drill_diameter}")
+
+                if abs(tool_info.tool_length - kekka.tool_length) >= tolerance_length:
+                    kekka.result = False
+                    error_items.append(
+                        f"突き出し量異常：工具が破損しています 突き出し量の差:{tool_info.tool_length - kekka.tool_length}")
+
+                kekka.error_items = error_items
+
+        else:
+            kekka = self.toolinspection.exec_inspection(
+                operation_type)
+
+            if inspection_data.is_initial_phase == True:
+                self.tool_informations[inspection_data.tool_position_number] = kekka
+            else:
+                tool_info = self.tool_informations[inspection_data.tool_position_number]
+                tolerance_diameter = 0.5
+                tolerance_length = 2
+                error_items = [] if kekka.result else kekka.error_items
+
+                if abs(tool_info.drill_diameter - kekka.drill_diameter) >= tolerance_diameter:
+                    kekka.result = False
+                    error_items.append(
+                        f"横幅異常：工具が破損しています 横幅の差:{tool_info.drill_diameter - kekka.drill_diameter}")
+
+                if abs(tool_info.tool_length - kekka.tool_length) >= tolerance_length:
+                    kekka.result = False
+                    error_items.append(
+                        f"突き出し量異常：工具が破損しています 突き出し量の差:{tool_info.tool_length - kekka.tool_length}")
+
+                kekka.error_items = error_items
         return kekka
 
     def _test_return_inspection_result(self, operation_type: OperationType, inspection_data):

@@ -1,6 +1,6 @@
 import time
 from GUIDesigner.GUISignalCategory import GUISignalCategory
-from ImageInspectionController.InspectDatas import PreProcessingInspectionData, ToolInspectionData
+from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
 from Integration.ProcessDataManager import ProcessDataManager
 from common_data_type import TransmissionTarget, WorkPieceShape
@@ -8,8 +8,8 @@ from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_UR_CONNECTION_LOCAL
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
 
-TEST_WAIT_COMMAND = False
-CYLINDRE_WAIT_TIME = 0
+TEST_WAIT_COMMAND = True
+CYLINDRE_WAIT_TIME = 2
 TEST_UNUSE_GUI = False
 
 
@@ -19,14 +19,18 @@ def reservation_process():
 
 def _test_regist_process_count(integration_instance):
     integration_instance.process_list = integration_instance.process_data_manager.refresh_process_data()
-    integration_instance.process_list[0]["regist_process_count"] = 3
-    integration_instance.process_list[1]["regist_process_count"] = 2
-    integration_instance.process_list[5]["regist_process_count"] = 7
+    integration_instance.process_data_manager.process_data_list[0]["regist_process_count"] = 3
+    integration_instance.process_data_manager.process_data_list[0]['order_number'] = 0
+    integration_instance.process_data_manager.process_data_list[1]["regist_process_count"] = 2
+    integration_instance.process_data_manager.process_data_list[1]['order_number'] = 1
+    integration_instance.process_data_manager.process_data_list[5]["regist_process_count"] = 7
+    integration_instance.process_data_manager.process_data_list[5]['order_number'] = 2
 
 
 def start_process(integration_instance):
     # initial_tool_inspection(integration_instance)
     if TEST_UNUSE_GUI:
+        _test_regist_process_count(integration_instance)
         send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
         integration_instance.process_data_manager.register_process_number()
     # TODO ワークの個数を取得する
@@ -35,7 +39,7 @@ def start_process(integration_instance):
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
 
     while not work_process(integration_instance, process_data_manager):
-        time.sleep(5)
+        time.sleep(0)
 
 
 def initial_tool_inspection(integration_instance):
@@ -72,28 +76,29 @@ def work_process(integration_instance, process_data_manager):
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
     wait_command(integration_instance, "UR", "CYL 0,PUSH")
+    tool_degrees = integration_instance.process_manager.get_first_tool_degrees()
+    rotato_tool_stock(integration_instance, tool_degrees)
     send_to_CFD(integration_instance, "CYL 0,PUSH")
     time.sleep(CYLINDRE_WAIT_TIME)
     send_to_CFD(integration_instance, "CYL 0,PULL")
-    # TODO 加工前検査
     time.sleep(CYLINDRE_WAIT_TIME)
-    print("加工前検査をします")
     workShape = WorkPieceShape.get_work_shape_from_str(m["workShape"])
 
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
-        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workShape, m["holes"]))
+        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workShape, m["workSize"]))
 
     if not preprocess_inspection_result.result:
         print("加工前検査に失敗しました")
 
     send_to_CFD(integration_instance, "CYL 0,PUSH")
-    tool_degrees = integration_instance.process_manager.get_first_tool_degrees()
-    rotato_tool_stock(integration_instance, tool_degrees)
 
     drill_process(integration_instance)
 
     # send_to_CFD(integration_instance, "DRL 0,0,0,8")
     wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
+    integration_instance.image_inspection_controller.perform_image_operation(
+                OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
+            
     send_to_CFD(integration_instance, "CYL 0,PULL")
     send_to_UR(integration_instance, "WRK 0,MOVE_TO_INSP")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
@@ -121,14 +126,18 @@ def work_process(integration_instance, process_data_manager):
         inspect_and_carry_out(
             integration_instance, process_data_manager, m)
 
+id = 1
+
 
 def inspect_and_carry_out(integration_instance, process_data_manager, m):
+    global id
     send_to_CFD(integration_instance, "CYL 4,PUSH")
-    time.sleep(CYLINDRE_WAIT_TIME)
+    wait_command(integration_instance,"CFD","RDSW 8,ON")
     send_to_CFD(integration_instance, "CYL 3,PUSH")
-    time.sleep(CYLINDRE_WAIT_TIME)
+    time.sleep(0.5)
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
-        OperationType.ACCURACY_INSPECTION, create_inspection_information(m))
+        OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(create_hole_check_list(m["holes"]), "AQR", id, 100))
+    id += 1
     process_data_manager.processing_finished(
         preprocess_inspection_result.result)
     integration_instance.gui_request_queue.put(
@@ -138,10 +147,10 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
     return preprocess_inspection_result.result
 
 
-def create_inspection_information(json_data):
-    hole_information_data = json_data["holes"]
+def create_hole_check_list(hole_informations):
     hole_check_informations = []
-    for hole_id, hole in enumerate(hole_information_data):
+
+    for hole_id, hole in enumerate(hole_informations):
         point = Point(hole["position"]["x"], hole["position"]["y"])
         hole_check_informations.append(HoleCheckInfo(
             hole_id, point,
@@ -155,6 +164,7 @@ drill_type_str = ["M3_DRILL", "M4_DRILL", "M5_DRILL",
 
 
 def drill_process(integration_instance):
+    previos_tool_position_number = 1
     previous_x_position = 0
     previous_y_position = 0
     while True:
@@ -168,11 +178,12 @@ def drill_process(integration_instance):
         if tool_degree is not None:
             send_to_CFD(integration_instance, "DRL 0,0,0,8")
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
+            tool_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
+                OperationType.TOOL_INSPECTION, ToolInspectionData(False, previos_tool_position_number))
+            previos_tool_position_number=integration_instance.process_manager.tool_position_number
             send_to_CFD(integration_instance, "STM 0,SEARCH")
             wait_command(integration_instance, "CFD", "STM 0,TURNED")
-            preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
-                OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.current_tool_type))
-            if not preprocess_inspection_result.result:
+            if not tool_inspection_result.result:
                 print("工具検査に失敗しました")
                 return
             rotato_tool_stock(integration_instance, tool_degree)

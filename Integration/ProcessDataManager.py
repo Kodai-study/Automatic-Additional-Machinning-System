@@ -45,23 +45,25 @@ class ProcessDataManager:
         self.database_accesser = database_accesser
         self.process_data_list = []
 
-    def     refresh_process_data(self) -> list:
+    def refresh_process_data(self) -> list:
         """DBから加工データのリストを(再)取得する
 
         Returns:
             list: 加工データのリスト
         """
         # 既存のリストを model_id でインデックス化
-        existing_data_index = {d["process_data"].model_id: d for d in self.process_data_list}
+        existing_data_index = {
+            d["process_data"].model_id: d for d in self.process_data_list}
 
         # データベースからの新しいデータを処理
         for new_item in self._get_process_datas():
             if new_item["process_data"].model_id in existing_data_index:
                 # model_id が一致する場合、number を保持して他のデータを更新
                 existing_item = existing_data_index[new_item["process_data"].model_id]
-                existing_item.update({k: v for k, v in new_item.items() if k != 'regist_process_count'})
+                existing_item.update(
+                    {k: v for k, v in new_item.items() if k != 'regist_process_count'})
             else:
-            # model_id が存在しない場合、新しい要素を追加
+                # model_id が存在しない場合、新しい要素を追加
                 self.process_data_list.append(new_item)
         return self.process_data_list
 
@@ -85,12 +87,12 @@ class ProcessDataManager:
         """
 
         if len(self.process_data_list) == 0:
-            return None,None
+            return None, None
         # 残りの個数
         is_last_work = self.process_data_list[0]["regist_process_count"] - \
             self.process_data_list[0]["good_count"] == 1
         return is_last_work, self.process_data_list[0]["hole_informations"]
-    
+
     def get_reaming_time_sum(self):
         """残りの加工時間の合計を取得する
         """
@@ -118,7 +120,7 @@ class ProcessDataManager:
             self.completed_data.append(self.process_data_list.pop(0))
             return True
         return False
-    
+
     def get_process_count_sum(self):
         """加工数の合計を取得する
         """
@@ -128,7 +130,7 @@ class ProcessDataManager:
         """良品数の合計を取得する
         """
         good_count = sum([item["good_count"] for item in self.process_data_list]) +\
-              sum([item["good_count"] for item in self.completed_data])
+            sum([item["good_count"] for item in self.completed_data])
         bad_count = sum([item["bad_count"] for item in self.process_data_list]) + \
             sum([item["bad_count"] for item in self.completed_data])
         return good_count, bad_count
@@ -186,17 +188,17 @@ class ProcessDataManager:
 
     @staticmethod
     def _test_create_process_data():
-            li = []
-            for i in range(10):
-                process_info = {
-                    "regist_process_count": 0,
-                    "process_data": ProcessingData(i, f"加工データ(型番){i}", datetime.timedelta(minutes=i), WorkPieceShape.CIRCLE, 10.0, f"加工者{i}", datetime.datetime.now()),
-                    "process_time": datetime.timedelta(seconds=0),
-                    "good_count": 0,
-                    "data_file_path": f"test/test{i%10 + 1}.json",
-                    "remaining_count": 0,
-                    "bad_count": 0,
-                    "average_time": datetime.timedelta(seconds=random.randint(1, 1000))
-                }
-                li.append(process_info)
-            return li
+        li = []
+        for i in range(10):
+            process_info = {
+                "regist_process_count": 0,
+                "process_data": ProcessingData(i, f"加工データ(型番){i}", datetime.timedelta(minutes=i), WorkPieceShape.CIRCLE, 10.0, f"加工者{i}", datetime.datetime.now()),
+                "process_time": datetime.timedelta(seconds=0),
+                "good_count": 0,
+                "data_file_path": f"test/test{i%10 + 1}.json",
+                "remaining_count": 0,
+                "bad_count": 0,
+                "average_time": datetime.timedelta(seconds=random.randint(1, 1000))
+            }
+            li.append(process_info)
+        return li
