@@ -198,6 +198,8 @@ class Monitoring(ScreenBase):
 
         on_commands = ["EJCT 0,ATTACH", "DLC 0,LOCK"]
         off_commands = ["EJCT 0,DETACH", "DLC 0,UNLOCK"]
+        forward_commands = ["SVM 0,CW,1", "CONV 0,GOOD"]
+        reverse_commands = ["SVM 0,BREAK,0", "CONV 0,BAD"]
         pull_commands = ["CYL 0,PULL", "CYL 3,PULL", "CYL 2,PULL",
                          "CYL 4,PULL", "CYL 1,PULL"]
         push_commands = ["CYL 0,PUSH", "CYL 3,PUSH", "CYL 2,PUSH",
@@ -277,7 +279,7 @@ class Monitoring(ScreenBase):
             stm_value_label["text"] = str(self.stm_motor_turn)
 
         def enable_conveyor_button(button_kind_list):
-            self.robot_oprration_request("CONV 0,N")
+
             conveyor_rotato_good_button["state"] = "disabled"
             conveyor_rotato_bad_button["state"] = "disabled"
             conveyor_stop_button["state"] = "disabled"
