@@ -98,7 +98,8 @@ class ProcessDataManager:
         """
         roaming_time = datetime.timedelta(seconds=0)
         for process_item in self.process_data_list:
-            roaming_time += process_item["process_data"].average_processing_time * (
+            average_second = process_item["process_data"].average_processing_time
+            roaming_time += datetime.timedelta(seconds=average_second) * (
                 process_item["regist_process_count"] - process_item["good_count"])
         return roaming_time
 

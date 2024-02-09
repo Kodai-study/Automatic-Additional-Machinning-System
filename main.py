@@ -4,22 +4,19 @@ from queue import Queue
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
-from GUIDesigner.ProcessingData import ProcessingData
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
+from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from ImageInspectionController.OperationType import OperationType
-from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType, InspectionType
-from ImageInspectionController.Taking import Taking
-from ImageInspectionController.ToolInspection import ToolInspection
+from ImageInspectionController.ProcessDatas import InspectionType
 from Integration.Integration import Integration
 from Integration.ProcessManager import ProcessManager
 from Integration.ProcessDataManager import ProcessDataManager
 from Integration.WorkManager import WorkManager
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
-from common_data_type import CameraType, LightingType, Point, ToolType, WorkPieceShape
+from common_data_type import CameraType, LightingType, ToolType
 
 
 def test_gui():
@@ -52,6 +49,7 @@ def test_camera_snapshot():
 
 
 def test_take_picture():
+    from ImageInspectionController.Taking import Taking
     taking = Taking()
     inspection_types = [
         InspectionType.TOOL_INSPECTION,
@@ -299,9 +297,9 @@ def test_tool_inspectioN():
 
 if __name__ == "__main__":
     # # work_manager_test()
-    # test_integration()
+    test_integration()
     # test_load_and_process()
     # test_camera_snapshot()
-    test_inspections()
+    # test_inspections()
     # test_take_picture()
     # test_tool_inspectioN()

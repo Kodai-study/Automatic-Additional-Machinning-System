@@ -1,21 +1,10 @@
-
-# grab_software_trigger_ndarray.py (for Python 3)
-#
-# Copyright (c) 2020 Toshiba-Teli Corporation
-#
-# This software is released under the MIT License.
-# http://opensource.org/licenses/mit-license.php
-#
-
 import configparser
 import os
 from typing import Tuple
 import numpy as np
 import pytelicam
-import yaml
 import cv2
 from ImageInspectionController.ProcessDatas import InspectionType
-from ImageInspectionController.light import Light
 import datetime as dt
 
 

@@ -67,12 +67,3 @@ def _send_to_gui(gui_request_queue: Queue, message: str):
     gui_request_queue.put(
         (RobotInteractionType.MESSAGE_RECEIVED, message))
 
-
-def _notice_finish_process(gui_request_queue: Queue, result: bool):
-    """処理が終了したことをGUIに通知する
-
-    Args:
-        message (str): ロボットから受け取ったメッセージ
-    """
-    gui_request_queue.put(
-        (GUISignalCategory.CANNOT_CONTINUE_PROCESSING, result))

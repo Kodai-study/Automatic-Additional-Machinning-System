@@ -25,7 +25,8 @@ class CheckSelection(ScreenBase):
     def create_frame(self):
         self.listbox.delete(0, tk.END)
         for item in self.selected_items().process_data_list:
-            self.listbox.insert(tk.END, f"{item['process_data'].model_number} - 個数: {item['regist_process_count']}")
+            self.listbox.insert(tk.END, f"""{
+                                item['process_data'].model_number} - 個数: {item['regist_process_count']}""")
         self.tkraise()
 
     def _create_widgets(self):
@@ -66,7 +67,7 @@ class CheckSelection(ScreenBase):
             self, text="モニタ画面", command=lambda: self.change_frame(Frames.MONITORING), font=("AR丸ゴシック体M", 18), width=22)
         go_check_button = tk.Button(self, text="進捗画面", command=lambda: self.change_frame(
             Frames.PROCESSING_PROGRESS), font=("AR丸ゴシック体M", 18), width=22)
-        
+
         go_monitor_button.place(rely=0.85, relx=0.1)
         go_check_button.place(rely=0.65, relx=0.1)
 

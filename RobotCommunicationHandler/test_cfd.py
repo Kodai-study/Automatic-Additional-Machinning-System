@@ -1,6 +1,5 @@
 import socket
 from threading import Thread
-import time
 import tkinter as tk
 import atexit
 import select

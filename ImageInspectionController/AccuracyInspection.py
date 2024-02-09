@@ -81,9 +81,6 @@ class AccuracyInspection:
                 cv2.circle(result_image, center,
                            int(i[2]), ((0, 255, 0)), 2)  # 円を描画
 
-        cv2.imshow("hofg",result_image)
-        cv2.waitKey(-1)
-        cv2.destroyAllWindows()
         return circles
 
     def _get_hole_informations(self, circle, work_dimension):

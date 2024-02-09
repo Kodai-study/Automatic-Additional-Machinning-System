@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from ImageInspectionController.InspectDatas import ToolInspectionData
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from common_data_type import ToolType
 import cv2
@@ -127,43 +126,45 @@ class ToolInspection:
         return None
 
     def exec_inspection(self, image_path):
+        try:
+            cropped_image, original_iamge = self._setup_image(image_path)
 
-        cropped_image, original_iamge = self._setup_image(image_path)
+            color_image = cv2.cvtColor(original_iamge, cv2.COLOR_GRAY2BGR)
+            tool_category = self._drill_tap_categorizer(original_iamge)
+            width_pixcel = self._get_width_pixcel(cropped_image)
+            tool_type = self._tool_type_detector(tool_category, width_pixcel)
+            print(f"判定結果 : {tool_type}の{tool_category}")
+            tool_length_pixcel = self._get_tool_length(cropped_image)
+            tool_diameter = round(self.PIXEL_TO_MM_RATIO * width_pixcel, 2)
+            tool_length_mm = tool_length_pixcel * \
+                self.PIXEL_TO_MM_RATIO + self.HIDDEN_LENGTH_MM
 
-        color_image = cv2.cvtColor(original_iamge, cv2.COLOR_GRAY2BGR)
-        tool_category = self._drill_tap_categorizer(original_iamge)
-        width_pixcel = self._get_width_pixcel(cropped_image)
-        tool_type = self._tool_type_detector(tool_category, width_pixcel)
-        print(f"判定結果 : {tool_type}の{tool_category}")
-        tool_length_pixcel = self._get_tool_length(cropped_image)
-        tool_diameter = round(self.PIXEL_TO_MM_RATIO * width_pixcel, 2)
-        tool_length_mm = tool_length_pixcel * \
-            self.PIXEL_TO_MM_RATIO + self.HIDDEN_LENGTH_MM
+            info_text1 = f"Tool Length     : {round(tool_length_mm, 2)}"
+            info_text2 = f"Tool Type     : {tool_category}"
+            info_text3 = f"Tool Diameter : {tool_diameter}"
+            info_text4 = f"Tool Size : {tool_type}"
+            print(f"Tool Length     : {round(tool_length_mm, 2)}")
+            print(f"Tool Type     : {tool_category}")
+            print(f"Tool Diameter : {tool_diameter}")
+            print(f"Tool Size : {tool_type}")
 
-        info_text1 = f"Tool Length     : {round(tool_length_mm, 2)}"
-        info_text2 = f"Tool Type     : {tool_category}"
-        info_text3 = f"Tool Diameter : {tool_diameter}"
-        info_text4 = f"Tool Size : {tool_type}"
-        print(f"Tool Length     : {round(tool_length_mm, 2)}")
-        print(f"Tool Type     : {tool_category}")
-        print(f"Tool Diameter : {tool_diameter}")
-        print(f"Tool Size : {tool_type}")
+            # テキストを追加
+            cv2.putText(color_image, info_text1, (1, 500),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(color_image, info_text2, (1, 550),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(color_image, info_text3, (1, 600),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(color_image, info_text4, (1, 650),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-        # テキストを追加
-        cv2.putText(color_image, info_text1, (1, 500),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.putText(color_image, info_text2, (1, 550),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.putText(color_image, info_text3, (1, 600),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.putText(color_image, info_text4, (1, 650),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
-        # 追加するパス
-        addpath = "_result"
-        # パスを分割
-        file_name, file_extension = os.path.splitext(image_path)
-        newfile_name = file_name+addpath+file_extension
-        cv2.imwrite(newfile_name, color_image)
+            # 追加するパス
+            addpath = "_result"
+            # パスを分割
+            file_name, file_extension = os.path.splitext(image_path)
+            newfile_name = file_name+addpath+file_extension
+            cv2.imwrite(newfile_name, color_image)
+        except:
+             return ToolInspectionResult(result=False, error_items=[], tool_type="non", tool_length=0, drill_diameter=0)
 
         return ToolInspectionResult(result=True, error_items=None, tool_type=tool_type, tool_length=tool_length_mm, drill_diameter=tool_diameter)

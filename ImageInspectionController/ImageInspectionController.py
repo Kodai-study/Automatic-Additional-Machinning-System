@@ -14,7 +14,6 @@ from ImageInspectionController.InspectionResults import AccuracyInspectionResult
 from ImageInspectionController.light import Light
 from ImageInspectionController.PreProcessInspection import PreProcessInspection
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, InspectionType
-from ImageInspectionController.Taking import Taking
 from common_data_type import CameraType, LightingType, Point, ToolType
 from typing import Tuple, Union, List
 
@@ -40,11 +39,12 @@ def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
 class ImageInspectionController:
 
     def __init__(self, tool_stock_informations=None):
-        self.taking = Taking()
-        self.lighting = Light()
-        self.pre_process_inspection = PreProcessInspection()
-        self.accuracy_inspection = AccuracyInspection()
-        self.toolinspection = ToolInspection()
+        if TEST_FEATURE_IMAGE_PROCESSING:
+            self.taking = Taking()
+            self.lighting = Light()
+            self.pre_process_inspection = PreProcessInspection()
+            self.accuracy_inspection = AccuracyInspection()
+            self.toolinspection = ToolInspection()
         self.ROOT_IMAGE_DIR = "/home/kuga/img"
         self.TOOL_IMAGE_DIR = os.path.join(
             self.ROOT_IMAGE_DIR, "tools")
@@ -207,7 +207,7 @@ class ImageInspectionController:
             return self._test_pass_accuracy_inspection()
 
         elif (operation_type == OperationType.CONTROL_LIGHTING):
-            return self._test_pass_control_lighting()
+            return self._test_pass_control_lighting(inspection_data)
 
         elif (operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT):
             return self._test_pass_take_inspection_snapshot()
@@ -244,11 +244,11 @@ class ImageInspectionController:
 
         return AccuracyInspectionResult(result=False, error_items=["穴の位置が一致していません", "穴の種類が一致していません"], hole_check_infos=holecheck_list)
 
-    def _test_pass_control_lighting(self, lighting_type: LightingType = LightingType.ACCURACY_LIGHTING):
-        return LightningControlResult(is_success=True,  lighting_type=lighting_type, lighting_state=True)
+    def _test_pass_control_lighting(self, inspection_data):
+        return LightningControlResult(is_success=True,  lighting_type=inspection_data[0], lighting_state=inspection_data[1])
 
-    def _test_fail_control_lighting(self, lighting_type: LightingType = LightingType.ACCURACY_LIGHTING):
-        return LightningControlResult(is_success=False,  lighting_type=lighting_type, lighting_state=False)
+    def _test_fail_control_lighting(self, inspection_data):
+        return LightningControlResult(is_success=False, lighting_type=inspection_data[0], lighting_state=inspection_data[1])
 
     def _test_pass_take_inspection_snapshot(self, camera_type: CameraType = CameraType.ACCURACY_CAMERA):
         return [CameraControlResult(is_success=True, camera_type=camera_type, image_path="test/abc.png")]

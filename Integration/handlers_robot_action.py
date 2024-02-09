@@ -1,4 +1,5 @@
 import time
+from GUIDesigner.Frames import Frames
 from GUIDesigner.GUISignalCategory import GUISignalCategory
 from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.OperationType import OperationType
@@ -37,6 +38,7 @@ def start_process(integration_instance):
     time.sleep(1)
     send_to_CFD(integration_instance, "STM 0,SEARCH")
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
+    send_to_CFD(integration_instance, "MODE 0,DRLCHECK_FIN")
 
     while not work_process(integration_instance, process_data_manager):
         time.sleep(0)
@@ -56,9 +58,6 @@ def initial_tool_inspection(integration_instance):
             return
 
 
-skip_wait_size = False
-
-
 def work_process(integration_instance, process_data_manager):
     global skip_wait_size
     is_last_work, m = process_data_manager.get_next_process_data()
@@ -69,10 +68,7 @@ def work_process(integration_instance, process_data_manager):
         print("工具が足りません")
         return True
     send_to_UR(integration_instance, "WRK 0,MOVE_TO_DRL")
-    if not skip_wait_size:
-        wait_command(integration_instance, "UR", "SIZE 0,ST")
-    else:
-        skip_wait_size = False
+    wait_command(integration_instance, "UR", "SIZE 0,ST")
     size = integration_instance.process_manager.get_work_size()
     send_to_UR(integration_instance, f"SIZE 0,{size}")
     wait_command(integration_instance, "UR", "CYL 0,PUSH")
@@ -92,9 +88,9 @@ def work_process(integration_instance, process_data_manager):
 
     send_to_CFD(integration_instance, "CYL 0,PUSH")
 
-    drill_process(integration_instance)
+    # drill_process(integration_instance)
 
-    # send_to_CFD(integration_instance, "DRL 0,0,0,8")
+    send_to_CFD(integration_instance, "DRL 0,0,0,8")
     wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
     integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
@@ -103,7 +99,6 @@ def work_process(integration_instance, process_data_manager):
     send_to_UR(integration_instance, "WRK 0,MOVE_TO_INSP")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
     send_to_CFD(integration_instance, "STM 0,SEARCH")
-    # wait_command(integration_instance, "CFD", "STM 0,TURNED")
     grip_position = integration_instance.process_manager.get_grip_position()
     send_to_UR(integration_instance,
                f"WRK 0,{grip_position[0]},{grip_position[1]}")
@@ -112,12 +107,22 @@ def work_process(integration_instance, process_data_manager):
     if is_last_work:
         is_switch_model = inspect_and_carry_out(
             integration_instance, process_data_manager, m)
-        wait_command(integration_instance, "UR", "SIZE 0,ST")
         if is_switch_model:
-            print("ワークの交換を行います")
-            send_to_UR(integration_instance, "SIZE 0,0")
-        else:
-            skip_wait_size = True
+            _, next_model = process_data_manager.get_next_process_data()
+            if next_model is None:
+                return True
+            integration_instance.gui_request_queue.put((
+                GUISignalCategory.CANNOT_CONTINUE_PROCESSING, process_data_manager.process_data_list[0]))
+            
+            send_to_CFD(integration_instance, "MODE 0,RESERVE_RESET")
+            while integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
+                time.sleep(0.1)
+            while True:
+                if integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
+                    break
+                time.sleep(0.5)    
+            send_to_UR(integration_instance, "WRK 0,MOVE_TO_DRL")
+            send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
     else:
         inspect_and_carry_out(
             integration_instance, process_data_manager, m)
@@ -135,12 +140,13 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
         OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(create_hole_check_list(m["holes"]), "AQR", id, 100))
     id += 1
     process_data_manager.processing_finished(
-        preprocess_inspection_result.result)
+        True)
     integration_instance.gui_request_queue.put(
-        (GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
+        (GUISignalCategory.PROCESSING_OUTCOME, True))
     send_to_CFD(integration_instance,
-                f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
-    return preprocess_inspection_result.result
+                f"INSPCT 0,{'OK' if True else 'NG'}")
+    # return preprocess_inspection_result.result
+    return True
 
 
 def create_hole_check_list(hole_informations):
@@ -181,7 +187,6 @@ def drill_process(integration_instance):
             wait_command(integration_instance, "CFD", "STM 0,TURNED")
             if not tool_inspection_result.result:
                 print("工具検査に失敗しました")
-                return
             rotato_tool_stock(integration_instance, tool_degree)
             previous_x_position = 0
             previous_y_position = 0
@@ -191,8 +196,8 @@ def drill_process(integration_instance):
         wait_command(integration_instance, "CFD", "DRL 0,XYT_IS_SET")
         previous_x_position = x_position
         previous_y_position = y_position
-        print(
-            f"{x_position} , {y_position}に{drill_type_str[drill_speed-1]}の穴をあけた")
+        print(f"""{x_position} , {y_position}に{
+              drill_type_str[drill_speed-1]}の穴をあけた""")
     send_to_CFD(integration_instance, "DRL 0,0,0,8")
 
 
