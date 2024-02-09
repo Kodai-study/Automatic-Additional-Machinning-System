@@ -36,7 +36,13 @@ def start_process(integration_instance):
         integration_instance.process_data_manager.register_process_number()
     # TODO ワークの個数を取得する
     time.sleep(1)
+
     send_to_CFD(integration_instance, "STM 0,SEARCH")
+    wait_command(integration_instance, "CFD", "STM 0,TURNED")
+    initial_tool_inspection(integration_instance)
+
+    send_to_UR(integration_instance, "WRKSNS 0,ST")
+    wait_command(integration_instance, "UR", "WRKCOUNT_FIN")
     process_data_manager: ProcessDataManager = integration_instance.process_data_manager
     send_to_CFD(integration_instance, "MODE 0,DRLCHECK_FIN")
 
@@ -53,8 +59,8 @@ def initial_tool_inspection(integration_instance):
             OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
         print(f"工具{stock_number}個めの検査 : 結果 {result}")
         if not result.result:
-            integration_instance.gui_request_queue.put(
-                GUISignalCategory.CANNOT_CONTINUE_PROCESSING, f"{stock_number}個の工具がエラーです")
+            integration_instance.gui_request_queue.put((
+                GUISignalCategory.CANNOT_CONTINUE_PROCESSING, f"{stock_number}個の工具がエラーです"))
             return
 
 
@@ -88,13 +94,13 @@ def work_process(integration_instance, process_data_manager):
 
     send_to_CFD(integration_instance, "CYL 0,PUSH")
 
-    # drill_process(integration_instance)
+    drill_process(integration_instance)
 
-    send_to_CFD(integration_instance, "DRL 0,0,0,8")
+    # send_to_CFD(integration_instance, "DRL 0,0,0,8")
     wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
     integration_instance.image_inspection_controller.perform_image_operation(
-                OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
-            
+        OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
+
     send_to_CFD(integration_instance, "CYL 0,PULL")
     send_to_UR(integration_instance, "WRK 0,MOVE_TO_INSP")
     wait_command(integration_instance, "UR", "WRK 0,ATT_POSE")
@@ -113,19 +119,23 @@ def work_process(integration_instance, process_data_manager):
                 return True
             integration_instance.gui_request_queue.put((
                 GUISignalCategory.CANNOT_CONTINUE_PROCESSING, process_data_manager.process_data_list[0]))
-            
+
             send_to_CFD(integration_instance, "MODE 0,RESERVE_RESET")
             while integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
                 time.sleep(0.1)
             while True:
                 if integration_instance.guiDesigner.current_screen != Frames.WORK_REQUEST_OVERVIEW:
                     break
-                time.sleep(0.5)    
+                time.sleep(0.5)
+            send_to_UR(integration_instance, "WRKSNS 0,ST")
+            wait_command(integration_instance, "UR", "WRKCOUNT_FIN")
+
             send_to_UR(integration_instance, "WRK 0,MOVE_TO_DRL")
             send_to_CFD(integration_instance, "MODE 0,RESERVE_SET")
     else:
         inspect_and_carry_out(
             integration_instance, process_data_manager, m)
+
 
 id = 1
 
@@ -133,20 +143,20 @@ id = 1
 def inspect_and_carry_out(integration_instance, process_data_manager, m):
     global id
     send_to_CFD(integration_instance, "CYL 4,PUSH")
-    wait_command(integration_instance,"CFD","RDSW 8,ON")
+    wait_command(integration_instance, "CFD", "RDSW 8,ON")
     send_to_CFD(integration_instance, "CYL 3,PUSH")
     time.sleep(0.5)
     preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(create_hole_check_list(m["holes"]), "AQR", id, 100))
     id += 1
     process_data_manager.processing_finished(
-        True)
+        preprocess_inspection_result.result)
     integration_instance.gui_request_queue.put(
-        (GUISignalCategory.PROCESSING_OUTCOME, True))
+        (GUISignalCategory.PROCESSING_OUTCOME, preprocess_inspection_result.result))
     send_to_CFD(integration_instance,
-                f"INSPCT 0,{'OK' if True else 'NG'}")
-    # return preprocess_inspection_result.result
-    return True
+                f"INSPCT 0,{'OK' if preprocess_inspection_result.result else 'NG'}")
+    return preprocess_inspection_result.result
+    # return True
 
 
 def create_hole_check_list(hole_informations):
@@ -182,7 +192,7 @@ def drill_process(integration_instance):
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
             tool_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, previos_tool_position_number))
-            previos_tool_position_number=integration_instance.process_manager.tool_position_number
+            previos_tool_position_number = integration_instance.process_manager.tool_position_number
             send_to_CFD(integration_instance, "STM 0,SEARCH")
             wait_command(integration_instance, "CFD", "STM 0,TURNED")
             if not tool_inspection_result.result:
@@ -193,6 +203,7 @@ def drill_process(integration_instance):
 
         send_to_CFD(integration_instance,
                     f"DRL 0,{x_position-previous_x_position},{y_position-previous_y_position},{drill_speed}")
+
         wait_command(integration_instance, "CFD", "DRL 0,XYT_IS_SET")
         previous_x_position = x_position
         previous_y_position = y_position
@@ -229,9 +240,10 @@ def wait_command(integration, robot, command):
         return
 
     print(f"次のコマンドを待機中…    {robot}からのコマンド : {command}")
-    if not command.endswith("\n"):
+    if not (command.endswith("\n") or command.endswith("*")):
         command += "\n"
-
+    if command.endswith("*"):
+        command = command.replace("*", "")
     if robot == "CFD":
         target = TransmissionTarget.TEST_TARGET_2 if TEST_CFD_CONNECTION_LOCAL else TransmissionTarget.CFD
     elif robot == "UR":
