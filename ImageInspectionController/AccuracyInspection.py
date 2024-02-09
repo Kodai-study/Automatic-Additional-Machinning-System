@@ -12,10 +12,10 @@ class AccuracyInspection:
         self.OFFSET_X = 427
 
     def exec_inspection(self, image_path: str, inspect_data: AccuracyInspectionData) -> AccuracyInspectionResult:
-        inspect_image= self._get_preprocessed_image(image_path)
-        result_image = cv2.cvtColor(inspect_image,cv2.COLOR_GRAY2BGR)
+        inspect_image = self._get_preprocessed_image(image_path)
+        result_image = cv2.cvtColor(inspect_image, cv2.COLOR_GRAY2BGR)
         circles = self._detect_holes(
-            inspect_image,result_image)
+            inspect_image, result_image)
         if circles is None:
             return AccuracyInspectionResult(False, None, None)
         circles = circles[0]
@@ -30,7 +30,7 @@ class AccuracyInspection:
             print(centor)
             print(radius)
             print(target_hole)
-        
+
         # hole_check_informationsの要素に検査不合格があるか判定
         is_check_ok = True
         error_messages = []
@@ -41,7 +41,7 @@ class AccuracyInspection:
                     f"hole_id: {hole_check_information.hole_id}の位置が不正です。")
             else:
                 print("おｋ")
-        
+
         return AccuracyInspectionResult(is_check_ok, None, hole_check_informations)
 
     def _get_preprocessed_image(self, image_path):

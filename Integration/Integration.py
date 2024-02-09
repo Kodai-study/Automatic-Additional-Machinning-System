@@ -97,7 +97,8 @@ class Integration:
             self, self.send_request_queue, self.gui_request_queue)
         self.process_manager = ProcessManager(self.tool_stock_informations)
         self.message_wait_conditions = {}
-        self.send_request_queue.put(({"target": TransmissionTarget.CFD, "message": "MODE 0,RESERVE_RESET\n"}))
+        self.send_request_queue.put(
+            ({"target": TransmissionTarget.CFD, "message": "MODE 0,RESERVE_RESET\n"}))
 
     def _watching_guiResponce_queue(self):
         """
@@ -180,7 +181,6 @@ class Integration:
             target=self._robot_message_handle)
         test_send_thread.daemon = True
         test_send_thread.start()
-
 
         if TEST_FEATURE_GUI:
             test_watching_guiResponce_queue_thread = Thread(

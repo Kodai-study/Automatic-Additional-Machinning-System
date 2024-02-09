@@ -64,7 +64,7 @@ class Monitoring(ScreenBase):
 
                 if target_camera_view:
                     self._update_image_from_path(target_camera_view, img_path)
-        
+
         elif request_type == GUISignalCategory.SENSOR_STATUS_UPDATE:
             self._update_button_enables(request_data)
 
@@ -206,7 +206,6 @@ class Monitoring(ScreenBase):
                          "CYL 4,PUSH", "CYL 1,PUSH"]
         conv_n_commands = ["CONV 0,N", "CONV 0,N", "CONV 0,N"]
 
-
         # 照明ボタン作成
         self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
                                               command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, True)))
@@ -220,7 +219,7 @@ class Monitoring(ScreenBase):
                                                   command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, True)))
         self.accuracy_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#de9687",
                                                    command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, False)))
-        
+
         # シリンダボタン
         for i in range(5):
             push_button = tk.Button(self, text="PUSH", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
@@ -229,7 +228,7 @@ class Monitoring(ScreenBase):
                                     command=lambda i=i: (self.robot_oprration_request(pull_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
             push_buttons.append(push_button)
             pull_buttons.append(pull_button)
-            
+
         # URドアロックボタン
         for i in range(len(on_commands)):
             on_button = tk.Button(self, text="ON", state="normal", width=10, bg="#87de87", font=(
@@ -245,14 +244,14 @@ class Monitoring(ScreenBase):
             off_buttons.append(off_button)
 
         def enable_stm_button(flag):
-            if flag == 0: # 原点サーチ
+            if flag == 0:  # 原点サーチ
                 stm_turn_button["state"] = "disabled"
                 stm_search_button["state"] = "disabled"
                 stm_plus_button["state"] = "disabled"
                 stm_minus_button["state"] = "disabled"
                 stm_value_label["fg"] = "#666666"
                 stm_value_label["bg"] = "#cccccc"
-            elif flag == 1: # STM 0,TURNED受信時
+            elif flag == 1:  # STM 0,TURNED受信時
                 stm_turn_button["state"] = "normal"
                 stm_search_button["state"] = "normal"
                 stm_value_label["fg"] = "#000000"
@@ -290,7 +289,7 @@ class Monitoring(ScreenBase):
                     conveyor_rotato_bad_button["state"] = "normal"
                 elif button_kind == "STOP":
                     conveyor_stop_button["state"] = "normal"
-            
+
         # ベルトコンベアボタン
         conveyor_rotato_good_button = tk.Button(
             self, text="正転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
@@ -314,8 +313,8 @@ class Monitoring(ScreenBase):
         stm_minus_button = tk.Button(
             self, text="-1", state="disabled", width=10, bg="#7ab0ff", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-        stm_value_label = tk.Label(   #いくつ回すかの数値表示ラベル(かテキストボックスのdisable)
-            self,text="1", state="normal", width=10, height=1, bg="#ffffff",relief = "solid",bd=1, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
+        stm_value_label = tk.Label(  # いくつ回すかの数値表示ラベル(かテキストボックスのdisable)
+            self, text="1", state="normal", width=10, height=1, bg="#ffffff", relief="solid", bd=1, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
         stm_search_button = tk.Button(
             self, text="原点", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
@@ -329,17 +328,18 @@ class Monitoring(ScreenBase):
                                                 print("STM 0,SEARCH"),
                                                 enable_stm_button(0))
         stm_turn_button["command"] = lambda: (self.robot_oprration_request("STM 0,R,"+str(self.stm_motor_turn)),
-                                                print("STM 0,R,"+str(self.stm_motor_turn)),
-                                                enable_stm_button(0))
-        
+                                              print("STM 0,R," +
+                                                    str(self.stm_motor_turn)),
+                                              enable_stm_button(0))
+
         # 停止ボタン
         for i in range(2):
             stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
                                     command=lambda: (self.robot_oprration_request(conv_n_commands[i])))
             stop_buttons.append(stop_button)
-            
+
         # 戻るボタン
-        back_button = tk.Button(self, text="戻る", command=lambda: (self.change_frame(Frames.CREATE_SELECTION),enable_stm_button(1)),
+        back_button = tk.Button(self, text="戻る", command=lambda: (self.change_frame(Frames.CREATE_SELECTION), enable_stm_button(1)),
                                 font=("AR丸ゴシック体M", 18), width=22)
 
         for i, (on_button, off_button) in enumerate(zip(on_buttons, off_buttons)):
@@ -348,9 +348,9 @@ class Monitoring(ScreenBase):
             off_button.grid(row=i + 4, column=3)
 
         stm_plus_button.grid(row=9, column=4)
-        stm_value_label.grid(row=10,column=4)
+        stm_value_label.grid(row=10, column=4)
         stm_minus_button.grid(row=11, column=4)
-        stm_turn_button.grid(row=10,column=3)
+        stm_turn_button.grid(row=10, column=3)
         stm_search_button.grid(row=10, column=2)
 
         conveyor_rotato_good_button.grid(row=13, column=2)
@@ -417,10 +417,11 @@ class Monitoring(ScreenBase):
                 differences[f"{path}{key}"] = new_dict[key]  # 変更後の値のみを保存
         self.old_robot_status = copy.deepcopy(new_dict)
         return differences
-    
+
     def _update_button_enables(self, differences):
         print(self._compare_dicts(self.old_robot_status, self.robot_status))
-        changed_colums = self._compare_dicts(self.old_robot_status, self.robot_status)
+        changed_colums = self._compare_dicts(
+            self.old_robot_status, self.robot_status)
         ejector_change = changed_colums.get("EJECTOR")
         if ejector_change is not None:
             pass

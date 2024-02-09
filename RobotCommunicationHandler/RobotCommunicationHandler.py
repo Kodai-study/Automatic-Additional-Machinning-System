@@ -64,7 +64,7 @@ class RobotCommunicationHandler:
                     print("Connection closed by the server")
                     break
 
-                separate_pattern ='.+?(?:\r\n|\r|\n|$)'
+                separate_pattern = '.+?(?:\r\n|\r|\n|$)'
                 # 改行で区切って、行の数だけ繰り返す
                 for line in re.findall(separate_pattern, data.decode('utf-8')):
                     self.receive_data_queue.put(
@@ -208,7 +208,6 @@ class RobotCommunicationHandler:
                     target_socket = self.socket_ur
                 elif (send_data['target'] == TransmissionTarget.TEST_TARGET_2):
                     target_socket = self.socket_cfd_send
-
 
                 target_socket.sendall(
                     send_data['message'].encode('utf-8'))

@@ -6,17 +6,17 @@ from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
 from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectDatas import ToolInspectionData
+from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from ImageInspectionController.OperationType import OperationType
-from ImageInspectionController.ProcessDatas import InspectionType
+from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType, InspectionType
 from Integration.Integration import Integration
 from Integration.ProcessManager import ProcessManager
 from Integration.ProcessDataManager import ProcessDataManager
 from Integration.WorkManager import WorkManager
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
-from common_data_type import CameraType, LightingType, ToolType
+from common_data_type import CameraType, LightingType, Point, ToolType, WorkPieceShape
 
 
 def test_gui():
@@ -60,53 +60,54 @@ def test_take_picture():
         print(taking.take_picture(inspection))
 
 
-def test_inspections():    
+def test_inspections():
     tool_stock_informations = [
-            None,
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M3_DRILL, tool_length=44.5, drill_diameter=2.54),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M4_DRILL, tool_length=49.27, drill_diameter=3.43),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M5_DRILL, tool_length=54.01, drill_diameter=4.36),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M6_DRILL, tool_length=54.60, drill_diameter=5.22),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M3_TAP, tool_length=36.04, drill_diameter=2.83),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M4_TAP, tool_length=36.75, drill_diameter=3.73),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M5_TAP, tool_length=42.56, drill_diameter=4.92),
-            ToolInspectionResult(result=True, error_items=None,
-                                 tool_type=ToolType.M6_TAP, tool_length=44.87, drill_diameter=5.7),
-        ]
-    image_inspection_controller = ImageInspectionController(tool_stock_informations)
+        None,
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M3_DRILL, tool_length=44.5, drill_diameter=2.54),
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M4_DRILL, tool_length=49.27, drill_diameter=3.43),
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M5_DRILL, tool_length=54.01, drill_diameter=4.36),
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M6_DRILL, tool_length=54.60, drill_diameter=5.22),
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M3_TAP, tool_length=36.04, drill_diameter=2.83),
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M4_TAP, tool_length=36.75, drill_diameter=3.73),
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M5_TAP, tool_length=42.56, drill_diameter=4.92),
+        ToolInspectionResult(result=True, error_items=None,
+                             tool_type=ToolType.M6_TAP, tool_length=44.87, drill_diameter=5.7),
+    ]
+    image_inspection_controller = ImageInspectionController(
+        tool_stock_informations)
 
-    # result = image_inspection_controller.perform_image_operation(
-    #     OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.SQUARE, work_dimension=30))
-    # print(f"PRE_PROCESSING_INSPECTION: {result}")
-    # test_hole_infos = [
-    #     HoleCheckInfo(1, Point(20.003, 20.115),
-    #                   HoleType.M3_HOLE, None),
-    #     HoleCheckInfo(2, Point(19.964, 30.096),
-    #                   HoleType.M4_HOLE, None),
-    #     HoleCheckInfo(3, Point(20.007, 40.092),
-    #                   HoleType.M5_HOLE, None),
-    #     HoleCheckInfo(4, Point(19.994, 50.077),
-    #                   HoleType.M6_HOLE, None),
-    #     HoleCheckInfo(5, Point(40.017, 20.1),
-    #                   HoleType.M3_HOLE, None),
-    #     HoleCheckInfo(6, Point(40.018, 30.105),
-    #                   HoleType.M4_HOLE, None),
-    #     HoleCheckInfo(7, Point(40.02, 40.097),
-    #                   HoleType.M5_HOLE, None),
-    #     HoleCheckInfo(8, Point(40.021, 50.061),
-    #                   HoleType.M6_HOLE, None)
-    # ]
-    # result = image_inspection_controller.perform_image_operation(
-    #     OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(test_hole_infos, "AQR", 1, 100))
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(WorkPieceShape.SQUARE, work_dimension=30))
+    print(f"PRE_PROCESSING_INSPECTION: {result}")
+    test_hole_infos = [
+        HoleCheckInfo(1, Point(20.003, 20.115),
+                      HoleType.M3_HOLE, None),
+        HoleCheckInfo(2, Point(19.964, 30.096),
+                      HoleType.M4_HOLE, None),
+        HoleCheckInfo(3, Point(20.007, 40.092),
+                      HoleType.M5_HOLE, None),
+        HoleCheckInfo(4, Point(19.994, 50.077),
+                      HoleType.M6_HOLE, None),
+        HoleCheckInfo(5, Point(40.017, 20.1),
+                      HoleType.M3_HOLE, None),
+        HoleCheckInfo(6, Point(40.018, 30.105),
+                      HoleType.M4_HOLE, None),
+        HoleCheckInfo(7, Point(40.02, 40.097),
+                      HoleType.M5_HOLE, None),
+        HoleCheckInfo(8, Point(40.021, 50.061),
+                      HoleType.M6_HOLE, None)
+    ]
+    result = image_inspection_controller.perform_image_operation(
+        OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(test_hole_infos, "AQR", 1, 100))
 
-    # print(f"ACCURACY_INSPECTION: {result}")
+    print(f"ACCURACY_INSPECTION: {result}")
 
     result = image_inspection_controller.perform_image_operation(
         OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=False, tool_position_number=1))
