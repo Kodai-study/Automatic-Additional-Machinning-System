@@ -128,18 +128,18 @@ class ProcessManager:
 
     def _get_drill_speed(self, tool_type):
         if tool_type == ToolType.M3_DRILL:
-            return 1
+            return 0
         elif tool_type == ToolType.M4_DRILL:
-            return 2
+            return 1
         elif tool_type == ToolType.M5_DRILL:
-            return 3
+            return 2
         elif tool_type == ToolType.M6_DRILL:
-            return 4
+            return 3
         elif tool_type == ToolType.M3_TAP:
-            return 5
+            return 4
         elif tool_type == ToolType.M4_TAP:
-            return 6
+            return 5
         elif tool_type == ToolType.M5_TAP:
-            return 7
+            return 6
         elif tool_type == ToolType.M6_TAP:
-            return 8
+            return 7
