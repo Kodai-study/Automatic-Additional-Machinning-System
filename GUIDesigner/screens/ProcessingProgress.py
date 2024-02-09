@@ -107,10 +107,16 @@ class ProcessingProgress(ScreenBase):
             },
             "reed_switch": {
                 0: {"forward": new_state, "backward": new_state}, 1: {"forward": new_state, "backward": new_state}, 2: {"forward": new_state, "backward": new_state},
-                3: {"forward": new_state, "backward": new_state}, 4: {"forward": new_state, "backward": new_state}, 5: {"forward": new_state, "backward": new_state}
+                3: {"backward": new_state}, 4: {"forward": new_state, "backward": new_state}
+            },
+            "limit_switch": {
+                0: new_state
             },
             "door_lock": {
-                0: new_state, 1: new_state, 2: new_state, 3: new_state
+                0: new_state
+            },
+            "door": {
+                0: new_state
             }
         }
         self._update_ui(new_robot_status)
@@ -237,7 +243,7 @@ class ProcessingProgress(ScreenBase):
         # センサーステータス用のラベルを作成して配置
         sensor_labels = {}
         sensor_names = [
-            "良品センサ", "不良品センサ", "搬入部在荷センサ",
+            "不良品センサ", "良品センサ", "搬入部在荷センサ",
             "加工部在荷センサ", "検査部在荷センサ", "URファイバセンサ"
         ]
         sensor_label_row_list = []
@@ -251,16 +257,20 @@ class ProcessingProgress(ScreenBase):
     def _create_cylinder_status_labels(self):
         cylinder_labels = {}
         cylinder_label_names = [
-            "加工部位置決め", "加工部テーブル", "検査部位置決め", "検査部位置決め",
-            "ツールチェンジャー", "検査部"
+            "加工部位置決め", "加工部テーブル", "ツールチェンジャー", "検査部位置決め", "検査部壁"
         ]
 
         cylinder_forward_ravel_list = []
         cylinder_backward_ravel_list = []
         for i, cylinder_name in enumerate(cylinder_label_names):
-            label_unit_positive_edge = LabelUnit(cylinder_name+"前進端")
+            if i != 3:
+                label_unit_positive_edge = LabelUnit(cylinder_name+"前進端")
+            else:
+                label_unit_positive_edge = tk.Label(text="", state="normal")
             label_unit_negative_edge = LabelUnit(cylinder_name+"後進端")
-            cylinder_forward_ravel_list.append(label_unit_positive_edge)
+            if i != 3:
+                cylinder_forward_ravel_list.append(label_unit_positive_edge)
+
             cylinder_backward_ravel_list.append(label_unit_negative_edge)
             cylinder_labels[i] = {}
             cylinder_labels[i]["forward"] = label_unit_positive_edge
@@ -285,16 +295,22 @@ class ProcessingProgress(ScreenBase):
 
     def _create_door_lock_status_labels(self):
         # ドアロックステータス用のラベルを作成して配置
-        door_lock_status = {}
         connection_status_label = LabelUnit("ロボットとの接続")
         self.label_status_dict["is_connection"] = connection_status_label
-        door_lock_label_list = [connection_status_label, None]
-        for i in range(DOOR_LOCK_NUMBER):
-            label_unit = LabelUnit(f"ドアロック{i}")
-            door_lock_status[i] = label_unit
-            door_lock_label_list.append(label_unit)
-        self._add_label_column(door_lock_label_list)
-        return door_lock_status
+
+        door_lock_label = LabelUnit("ドア施錠")
+        self.label_status_dict["door_lock"] = door_lock_label
+
+        door_label = LabelUnit("ドア開閉検知")
+        self.label_status_dict["door"] = door_label
+
+        limit_switch_label = LabelUnit("ツールストッカ原点")
+        self.label_status_dict["limit_switch"] = limit_switch_label
+
+        label_list = [connection_status_label, door_lock_label,
+                      door_label, limit_switch_label, None]
+        self._add_label_column(label_list)
+        return connection_status_label
 
     def _update_ui(self, new_robot_status):
         robot_status_differences = self.compare_dicts(

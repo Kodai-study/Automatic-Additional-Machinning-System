@@ -75,7 +75,7 @@ class CheckSelection(ScreenBase):
         self.label.grid(row=0, column=1, pady=40)
         self.listbox.grid(row=1, column=1)
         self.scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
-        self.label_lamp.place(rely=0.80, relx=0.6)
+        self.label_lamp.place(rely=0.80, relx=0.8)
         self.ready_button.place(rely=0.80, relx=0.37)
 
     def back_to_selection_frame(self):

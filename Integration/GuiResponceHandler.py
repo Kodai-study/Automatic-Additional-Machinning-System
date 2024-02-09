@@ -83,12 +83,12 @@ class GuiResponceHandler:
 
     def _reload_status(self):
         fetch_status_commands = [
-            ("DOOR", [0, 1, 2, 3]),
-            ("DLC", [0, 1, 2, 3]),
-            ("RDSW", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            ("DOOR", [0]),
+            ("DLC", [0]),
+            ("RDSW", [0, 1, 2, 3, 4, 5, 7, 8, 9]),
             ("LMSW", [0]),
             ("EMSW", [0]),
-            ("SNS", [0, 1, 2, 3, 4, 5]),
+            ("SNS", [0, 1, 2, 3, 4]),
             ("WRKSNS", [0])
         ]
 

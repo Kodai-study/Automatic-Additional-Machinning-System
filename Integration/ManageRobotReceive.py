@@ -49,6 +49,9 @@ class ManageRobotReceive:
             "RDSW": self._select_handler_sensor_reed_switch,
             "EJCT": self._select_handler_ejector,
             "WRKSNS": self._select_handler_workSensor,
+            "DOOR": self._select_handler_door,
+            "DLC" : self._select_handler_door_lock,
+            "LMSW": self._select_handler_limit_switch,
         }
 
     def _test_get_next_size(self):
@@ -113,7 +116,21 @@ class ManageRobotReceive:
         except ValueError:
             return lambda: self._undefine(command)
         print("ワークの枚数は", work_count, "枚です")
+        
+    def _select_handler_door(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
+        self._integration_instance.robot_status["door"][dev_num] = "ON"
+        notice_change_status(
+        self._integration_instance.gui_request_queue)
 
+     
+    def _select_handler_door_lock(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
+        self._integration_instance.robot_status["door_lock"][dev_num] = (detail == "ON")
+        notice_change_status(self._integration_instance.gui_request_queue)
+        
+    def _select_handler_limit_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
+        self._integration_instance.robot_status["limit_switch"][dev_num] = "ON"
+        notice_change_status(self._integration_instance.gui_request_queue)
+       
     def _select_handler_wrk(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         """
         WRK命令のハンドラを選択する
@@ -176,7 +193,7 @@ class ManageRobotReceive:
                 print("良品ワークが排出されました")
             return _handler
 
-        elif dev_num == 2 and is_on:
+        elif dev_num == 0 and is_on:
             def _handler():
                 _common_sensor_handler()
                 _notice_finish_process(
@@ -187,15 +204,15 @@ class ManageRobotReceive:
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
         def _handler():
-            door_number = dev_num // 2
+            rdsw_number = dev_num // 2
             kind = "forward" if dev_num % 2 == 0 else "backward"
             try:
-                self._integration_instance.robot_status["reed_switch"][door_number][kind] = (
+                self._integration_instance.robot_status["reed_switch"][rdsw_number][kind] = (
                     detail == "ON")
                 notice_change_status(
                     self._integration_instance.gui_request_queue)
             except KeyError:
-                print("Error: door_number", door_number, "kind", kind)
+                print("Error: rdsw_number", rdsw_number, "kind", kind)
         return _handler
 
     def _split_command(self, command: str):
