@@ -55,7 +55,7 @@ def initial_tool_inspection(integration_instance):
         send_to_CFD(integration_instance, "STM 0,R,1")
         wait_command(integration_instance, "CFD", "STM 0,TURNED")
 
-        result = integration_instance.image_inspection_controller.perform_image_operation(
+        result, view_image_path = integration_instance.image_inspection_controller.perform_image_operation(
             OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
         print(f"工具{stock_number}個めの検査 : 結果 {result}")
         if not result.result:
@@ -86,7 +86,7 @@ def work_process(integration_instance, process_data_manager):
     time.sleep(CYLINDRE_WAIT_TIME)
     workShape = WorkPieceShape.get_work_shape_from_str(m["workShape"])
 
-    preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
+    preprocess_inspection_result, view_image_path = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workShape, m["workSize"]))
 
     if not preprocess_inspection_result.result:
@@ -95,8 +95,8 @@ def work_process(integration_instance, process_data_manager):
     send_to_CFD(integration_instance, "CYL 0,PUSH")
 
     drill_process(integration_instance)
-
     # send_to_CFD(integration_instance, "DRL 0,0,0,8")
+
     wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
     integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.TOOL_INSPECTION, ToolInspectionData(False, integration_instance.process_manager.tool_position_number))
@@ -190,7 +190,7 @@ def drill_process(integration_instance):
         if tool_degree is not None:
             send_to_CFD(integration_instance, "DRL 0,0,0,8")
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
-            tool_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
+            tool_inspection_result, view_image_path = integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, previos_tool_position_number))
             previos_tool_position_number = integration_instance.process_manager.tool_position_number
             send_to_CFD(integration_instance, "STM 0,SEARCH")
