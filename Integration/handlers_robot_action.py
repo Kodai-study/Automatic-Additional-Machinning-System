@@ -57,6 +57,8 @@ def initial_tool_inspection(integration_instance):
 
         result, view_image_path = integration_instance.image_inspection_controller.perform_image_operation(
             OperationType.TOOL_INSPECTION, ToolInspectionData(is_initial_phase=True, tool_position_number=stock_number))
+        integration_instance.gui_request_queue.put((
+            GUISignalCategory.INSPECTION_COMPLETED, view_image_path))
         print(f"工具{stock_number}個めの検査 : 結果 {result}")
         if not result.result:
             integration_instance.gui_request_queue.put((
@@ -88,6 +90,8 @@ def work_process(integration_instance, process_data_manager):
 
     preprocess_inspection_result, view_image_path = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.PRE_PROCESSING_INSPECTION, PreProcessingInspectionData(workShape, m["workSize"]))
+    integration_instance.gui_request_queue.put((
+        GUISignalCategory.INSPECTION_COMPLETED, view_image_path))
 
     if not preprocess_inspection_result.result:
         print("加工前検査に失敗しました")
@@ -192,6 +196,8 @@ def drill_process(integration_instance):
             wait_command(integration_instance, "CFD", "DRL 0,TOOL_DETACHED")
             tool_inspection_result, view_image_path = integration_instance.image_inspection_controller.perform_image_operation(
                 OperationType.TOOL_INSPECTION, ToolInspectionData(False, previos_tool_position_number))
+            integration_instance.gui_request_queue.put((
+                GUISignalCategory.INSPECTION_COMPLETED, view_image_path))
             previos_tool_position_number = integration_instance.process_manager.tool_position_number
             send_to_CFD(integration_instance, "STM 0,SEARCH")
             wait_command(integration_instance, "CFD", "STM 0,TURNED")
