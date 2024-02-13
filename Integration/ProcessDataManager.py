@@ -180,7 +180,7 @@ class ProcessDataManager:
                 "data_file_path": data["file_pass"],
                 "remaining_count": 0,
                 "bad_count": 0,
-                "average_time": datetime.timedelta(seconds=data["average_time_diff"])
+                "average_time": data["average_time_diff"]
             }
             process_info["process_data"] = self._create_processData_from_db(
                 data)
@@ -193,13 +193,13 @@ class ProcessDataManager:
         for i in range(10):
             process_info = {
                 "regist_process_count": 0,
-                "process_data": ProcessingData(i, f"加工データ(型番){i}", datetime.timedelta(minutes=i), WorkPieceShape.CIRCLE, 10.0, f"加工者{i}", datetime.datetime.now()),
+                "process_data": ProcessingData(i, f"加工データ(型番){i}", i * 60, WorkPieceShape.CIRCLE, 10.0, f"加工者{i}", datetime.datetime.now()),
                 "process_time": datetime.timedelta(seconds=0),
                 "good_count": 0,
                 "data_file_path": f"test/test{i%10 + 1}.json",
                 "remaining_count": 0,
                 "bad_count": 0,
-                "average_time": datetime.timedelta(seconds=random.randint(1, 1000))
+                "average_time": random.randint(1, 1000)
             }
             li.append(process_info)
         return li
