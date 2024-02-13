@@ -39,10 +39,8 @@ class AccuracyInspection:
                 is_check_ok = False
                 error_messages.append(
                     f"hole_id: {hole_check_information.hole_id}の位置が不正です。")
-            else:
-                print("おｋ")
 
-        return AccuracyInspectionResult(is_check_ok, None, hole_check_informations)
+        return AccuracyInspectionResult(is_check_ok, None, hole_check_informations), image_path
 
     def _get_preprocessed_image(self, image_path):
         BINARY_THRESHOLD = 180
