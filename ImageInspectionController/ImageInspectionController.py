@@ -55,7 +55,7 @@ class ImageInspectionController:
 
     def _take_inspection_snapshot(self, camera_type):
         inspection_type = get_inspectionType_with_camera(camera_type)
-        img_pass = self.taking.take_picture(inspection_type,"kansi")
+        img_pass = self.taking.take_picture(inspection_type, "kansi")
 
         if img_pass is None:
             return CameraControlResult(is_success=False, camera_type=camera_type, image_path=None)
@@ -101,7 +101,7 @@ class ImageInspectionController:
                 InspectionType.PRE_PROCESSING_INSPECTION, self.ROOT_IMAGE_DIR)
             time.sleep(1)
             kekka, result_image_path = self.pre_process_inspection.exec_inspection(
-                img_pass, inspection_data)
+                img_pass, inspection_data, self.ROOT_IMAGE_DIR)
 
             lighting_return_code = self.lighting.light_onoff(
                 InspectionType.PRE_PROCESSING_INSPECTION, "OFF")

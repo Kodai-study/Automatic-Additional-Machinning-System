@@ -1,4 +1,6 @@
 import math
+import os
+import shutil
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData
 from ImageInspectionController.InspectionResults import PreProcessingInspectionResult
 from common_data_type import WorkPieceShape
@@ -11,7 +13,7 @@ class PreProcessInspection:
     def __init__(self):
         self.OFFSET_X = 427
 
-    def exec_inspection(self, img_path: str, inspect_data: PreProcessingInspectionData) -> PreProcessingInspectionResult:
+    def exec_inspection(self, img_path: str, inspect_data: PreProcessingInspectionData, base_dir) -> PreProcessingInspectionResult:
         """
         画像の前処理検査を行う関数
         Args:
@@ -20,6 +22,8 @@ class PreProcessInspection:
             bool: 検査の合否
         """
         TORELANCE = 5
+        ORIGINAL_IMAGE_FILE_NAME = "PreProcess_Original.png"
+        PROCESSED_IMAGE_FILE_NAME = "PreProcess_Result.png"
 
         inspection_image = self._get_preprocessed_image(img_path)
         output_image = cv2.imread(img_path, cv2.IMREAD_COLOR)
@@ -27,7 +31,6 @@ class PreProcessInspection:
             inspection_image, output_image)
         is_circle, output_image = self._check_circle(contor, output_image)
         width_millis = self._get_mills_with_picxel(width)
-        cv2.imwrite('./Result_Image.png', output_image)
         is_qr_ok, qr_data = self._search_qr_code(inspection_image)
         print(width_millis, "円形" if is_circle else "正方形")
 
@@ -40,7 +43,6 @@ class PreProcessInspection:
             error_items.append("正方形が検出されました")
         else:
             is_success = True
-            print("加工前検査おｋ")
         # 誤差の範囲内での最小幅と最大幅を計算
         min_width = inspect_data.work_dimension - TORELANCE
         max_width = inspect_data.work_dimension + TORELANCE
@@ -50,11 +52,26 @@ class PreProcessInspection:
             is_success = False
             error_items.append("ワークの大きさが範囲外です")
 
-        if not is_qr_ok:
+        if is_qr_ok:
+            model, serial_str = qr_data[:3], qr_data[3:]
+            save_dir = os.path.join(
+                base_dir, f"{model}/{serial_str}")
+            directory = os.path.dirname(save_dir)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            save_path_original = os.path.join(
+                save_dir, ORIGINAL_IMAGE_FILE_NAME)
+            save_path_result = os.path.join(
+                save_dir, PROCESSED_IMAGE_FILE_NAME)
+
+            shutil.move(img_path, save_path_original)
+            cv2.imwrite(save_path_result, output_image)
+
+        else:
             is_success = False
             error_items.append(qr_data)
 
-        return PreProcessingInspectionResult(is_success, error_items, 0, width_millis)
+        return PreProcessingInspectionResult(is_success, error_items, 0, width_millis), save_path_result
 
     def _get_preprocessed_image(self, img_path):
         # 2値画像を読み込む
