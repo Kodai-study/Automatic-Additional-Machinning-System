@@ -116,12 +116,13 @@ class Taking:
         cam_device.cam_stream.open(receive_signal)
         return cam_device, receive_signal
 
-    def take_picture(self, kensamei: InspectionType, base_directory: str) -> str:
+    def take_picture(self, kensamei: InspectionType, base_directory: str, is_test_snapshot=False) -> str:
         if self.cam_system == None:
             return "era"
 
         PREPROCESS_PICTURE_FILENAME = "PREPROCESS_ORIGINAL.png"
         ACCURACT_PICTURE_FILENAME = "ACCURACY_ORIGINAL.png"
+        TEST_TOOL_PICTURE_FILENAME = "TOOL_ORIGINAL.png"
 
         try:
             if kensamei == InspectionType.TOOL_INSPECTION:
@@ -129,8 +130,11 @@ class Taking:
                     raise Exception("カメラを使わない設定になっています", kensamei)
                 np_arr = self._get_image_data(
                     self.cam_device_tool,  self.receive_signal_tool)
-                save_path = os.path.join(
-                    base_directory, dt.datetime.now().strftime('%Y/%m/%d/%H_%M_%S.png'))
+                if is_test_snapshot:
+                    save_path = os.path.join(base_directory, TEST_TOOL_PICTURE_FILENAME)
+                else :
+                    save_path = os.path.join(
+                        base_directory, dt.datetime.now().strftime('%Y/%m/%d/%H_%M_%S.png'))
                 directory = os.path.dirname(save_path)
                 if not os.path.exists(directory):
                     os.makedirs(directory)
