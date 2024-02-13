@@ -100,7 +100,7 @@ class ImageInspectionController:
             img_pass = self.taking.take_picture(
                 InspectionType.PRE_PROCESSING_INSPECTION, self.ROOT_IMAGE_DIR)
             time.sleep(1)
-            kekka = self.pre_process_inspection.exec_inspection(
+            kekka, result_image_path = self.pre_process_inspection.exec_inspection(
                 img_pass, inspection_data)
 
             lighting_return_code = self.lighting.light_onoff(
@@ -123,7 +123,7 @@ class ImageInspectionController:
                 InspectionType.ACCURACY_INSPECTION, base_dir)
             time.sleep(1)
 
-            kekka = self.accuracy_inspection.exec_inspection(
+            kekka, result_image_path = self.accuracy_inspection.exec_inspection(
                 img_pass, inspection_data)
 
             lighting_return_code = self.lighting.light_onoff(
@@ -147,7 +147,7 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.TOOL_INSPECTION, "OFF")
-            kekka = self.toolinspection.exec_inspection(
+            kekka, result_image_path = self.toolinspection.exec_inspection(
                 img_pass)
 
             if inspection_data.is_initial_phase == True:
@@ -171,7 +171,7 @@ class ImageInspectionController:
                 kekka.error_items = error_items
 
         else:
-            kekka = self.toolinspection.exec_inspection(
+            kekka, result_image_path = self.toolinspection.exec_inspection(
                 operation_type)
 
             if inspection_data.is_initial_phase == True:
@@ -193,7 +193,7 @@ class ImageInspectionController:
                         f"突き出し量異常：工具が破損しています 突き出し量の差:{tool_info.tool_length - kekka.tool_length}")
 
                 kekka.error_items = error_items
-        return kekka
+        return kekka, result_image_path
 
     def _test_return_inspection_result(self, operation_type: OperationType, inspection_data):
 

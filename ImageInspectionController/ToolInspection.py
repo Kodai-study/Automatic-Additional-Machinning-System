@@ -165,6 +165,6 @@ class ToolInspection:
             newfile_name = file_name+addpath+file_extension
             cv2.imwrite(newfile_name, color_image)
         except:
-             return ToolInspectionResult(result=False, error_items=[], tool_type="non", tool_length=0, drill_diameter=0)
+            return ToolInspectionResult(result=False, error_items=[], tool_type="non", tool_length=0, drill_diameter=0), newfile_name
 
-        return ToolInspectionResult(result=True, error_items=None, tool_type=tool_type, tool_length=tool_length_mm, drill_diameter=tool_diameter)
+        return ToolInspectionResult(result=True, error_items=None, tool_type=tool_type, tool_length=tool_length_mm, drill_diameter=tool_diameter), newfile_name
