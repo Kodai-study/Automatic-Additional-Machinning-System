@@ -1,11 +1,11 @@
-import cv2
-import numpy as np
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from common_data_type import ToolType
-import cv2
-import numpy as np
 import os
 
+from test_flags import TEST_FEATURE_IMAGE_PROCESSING
+if TEST_FEATURE_IMAGE_PROCESSING:
+    import cv2
+    import numpy as np
 
 class ToolInspection:
     def __init__(self):

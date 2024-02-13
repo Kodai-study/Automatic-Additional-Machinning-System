@@ -4,9 +4,11 @@ import shutil
 from ImageInspectionController.InspectDatas import PreProcessingInspectionData
 from ImageInspectionController.InspectionResults import PreProcessingInspectionResult
 from common_data_type import WorkPieceShape
-import cv2
-import numpy as np
-from pyzbar.pyzbar import decode
+from test_flags import TEST_FEATURE_IMAGE_PROCESSING
+if TEST_FEATURE_IMAGE_PROCESSING:
+    import cv2
+    import numpy as np
+    from pyzbar.pyzbar import decode
 
 
 class PreProcessInspection:

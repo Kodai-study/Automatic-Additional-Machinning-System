@@ -1,7 +1,9 @@
 import configparser
-import serial.tools.list_ports
 from ImageInspectionController.ProcessDatas import InspectionType
 
+from test_flags import TEST_FEATURE_IMAGE_PROCESSING
+if TEST_FEATURE_IMAGE_PROCESSING:
+    import serial.tools.list_ports
 
 class Light:
     def __init__(self):

@@ -3,7 +3,10 @@ from ImageInspectionController.InspectDatas import AccuracyInspectionData
 from ImageInspectionController.InspectionResults import AccuracyInspectionResult
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType
 from common_data_type import Point
-import cv2
+
+from test_flags import TEST_FEATURE_IMAGE_PROCESSING
+if TEST_FEATURE_IMAGE_PROCESSING:
+    import cv2
 
 
 class AccuracyInspection:

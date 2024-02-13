@@ -4,9 +4,7 @@ from queue import Queue
 import time
 from DBAccessHandler.DBAccessHandler import DBAccessHandler
 from GUIDesigner.GUIDesigner import GUIDesigner
-from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.ImageInspectionController import ImageInspectionController
-from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
+
 from ImageInspectionController.InspectionResults import ToolInspectionResult
 from ImageInspectionController.OperationType import OperationType
 from ImageInspectionController.ProcessDatas import HoleCheckInfo, HoleType, InspectionType
@@ -17,7 +15,11 @@ from Integration.WorkManager import WorkManager
 from Integration.process_number import Processes
 from RobotCommunicationHandler.RobotCommunicationHandler import RobotCommunicationHandler
 from common_data_type import CameraType, LightingType, Point, ToolType, WorkPieceShape
+from test_flags import TEST_FEATURE_IMAGE_PROCESSING
 
+if TEST_FEATURE_IMAGE_PROCESSING:
+    from ImageInspectionController.ImageInspectionController import ImageInspectionController
+    from ImageInspectionController.InspectDatas import AccuracyInspectionData, PreProcessingInspectionData, ToolInspectionData
 
 def test_gui():
     send_queue = Queue()
