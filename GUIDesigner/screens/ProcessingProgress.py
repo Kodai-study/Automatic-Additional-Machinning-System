@@ -61,9 +61,9 @@ class LabelUnit:
             image=LabelUnit.on_lamp_image if on_off else LabelUnit.off_lamp_image, anchor=tk.E
         )
 
-    def set_grid(self, row_, col,**args):
+    def set_grid(self, row_, col, **args):
         self.lamp_image.grid(row=row_, column=col,
-                             padx=10, pady=10, sticky="nsew" ,**args)
+                             padx=10, pady=10, sticky="nsew", **args)
 
     def update_lamp(self, is_on: bool):
         self.lamp_image.config(
@@ -136,6 +136,7 @@ class ProcessingProgress(ScreenBase):
             self.is_initial_process = True
         self._set_robot_status(self.robot_status, self.label_status_dict)
         self._update_progress_state()
+        self.after(1000, lambda: self._test_update_ui(True))
 
     def _update_progress_state(self):
         if not len(self.process_data_manager.process_data_list):
@@ -185,8 +186,7 @@ class ProcessingProgress(ScreenBase):
         )
         self.label_status_dict["lighting"] = self._create_lighting_status_labels(
         )
-        self.label_status_dict["door_lock"] = self._create_door_lock_status_labels(
-        )
+        self._create_door_lock_status_labels()
 
         self.current_data_label = tk.Label(progress_bar_frame)
         self.current_data_label.grid(
@@ -250,12 +250,11 @@ class ProcessingProgress(ScreenBase):
     def _create_cylinder_status_labels(self):
         cylinder_labels = {}
         cylinder_label_names = [
-            "加工部位置決め", "加工部テーブル", "ツールチェンジャー", "検査部壁", "検査部位置決め"
+            "加工部位置決め", "加工部テーブル", "ツールチェンジャー", "検査部位置決め", "検査部壁"
         ]
 
         cylinder_forward_ravel_list = []
         cylinder_backward_ravel_list = []
-        inspection_cylinder_index = -1
         for i, cylinder_name in enumerate(cylinder_label_names):
             cylinder_labels[i] = {}
             label_unit_negative_edge = LabelUnit(cylinder_name+"後進端")
@@ -315,8 +314,8 @@ class ProcessingProgress(ScreenBase):
             try:
                 self._get_unit_from_keystr(key_str).update_lamp(
                     robot_status_differences[key_str])
-            except:
-                print(key_str)
+            except Exception as e:
+                print(key_str, e)
 
     def _get_unit_from_keystr(self, key_str):
         keys = key_str.split('.')
