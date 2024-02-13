@@ -105,11 +105,12 @@ class ProcessingProgress(ScreenBase):
             },
             "reed_switch": {
                 0: {"forward": new_state, "backward": new_state}, 1: {"forward": new_state, "backward": new_state}, 2: {"forward": new_state, "backward": new_state},
-                3: {"forward": new_state, "backward": new_state}, 4: {"forward": new_state, "backward": new_state}, 5: {"forward": new_state, "backward": new_state}
+                3: {"backward": new_state}, 4: {"forward": new_state, "backward": new_state}
             },
-            "door_lock": {
-                0: new_state, 1: new_state, 2: new_state, 3: new_state
-            }
+            "door_lock": new_state,
+            "door": new_state,
+            "limit_switch": new_state,
+            "stepper_motor": new_state
         }
         self._update_ui(new_robot_status)
 
@@ -122,6 +123,8 @@ class ProcessingProgress(ScreenBase):
         elif request_type == GUISignalCategory.CANNOT_CONTINUE_PROCESSING:
             self.request_work_data_setter(request_data)
             self.change_frame(Frames.WORK_REQUEST_OVERVIEW)
+        elif request_type == GUISignalCategory.INSPECTION_COMPLETED:
+            pass
 
     def create_frame(self):
         self.tkraise()
@@ -341,7 +344,7 @@ class ProcessingProgress(ScreenBase):
                 try:
                     instances_dict[key].update_lamp(value)
                 except Exception as e:
-                    print(e,key)
+                    print(e, key)
 
 
 if __name__ == "__main__":
