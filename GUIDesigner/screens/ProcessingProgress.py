@@ -164,7 +164,8 @@ class ProcessingProgress(ScreenBase):
         )
         self._create_door_lock_status_labels()
 
-        self.current_data_label = tk.Label(progress_bar_frame)
+        self.current_data_label = tk.Label(progress_bar_frame, font=(
+                "AR丸ゴシック体M", 28))
         self.current_data_label.grid(
             row=0, column=0, columnspan=2, padx=40, pady=40)
 
@@ -265,7 +266,6 @@ class ProcessingProgress(ScreenBase):
         return lighting_name_mapping
 
     def _create_door_lock_status_labels(self):
-        # ドアロックステータス用のラベルを作成して配置
         connection_status_label = LabelUnit("ロボットとの接続")
         self.label_status_dict["is_connection"] = connection_status_label
 
