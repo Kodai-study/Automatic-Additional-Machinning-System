@@ -22,7 +22,6 @@ class Monitoring(ScreenBase):
         self._create_widgets()
         self.is_currentScreen = lambda: parent.current_screen == Frames.MONITORING
         self.stm_motor_turn = 1
-
         # TODO この画面にいるときだけリクエストするように変更
         self._request_inspection_camera_update()
 
@@ -151,43 +150,8 @@ class Monitoring(ScreenBase):
             self, text="検査部壁シリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         cyl_004_label = tk.Label(
             self, text="加工部テーブルシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool_label = tk.Label(
-            self, text="工具使用回数", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool1_label = tk.Label(
-            self, text="工具1 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool2_label = tk.Label(
-            self, text="工具2 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool3_label = tk.Label(
-            self, text="工具3 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool4_label = tk.Label(
-            self, text="工具4 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool5_label = tk.Label(
-            self, text="工具5 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool6_label = tk.Label(
-            self, text="工具6 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool7_label = tk.Label(
-            self, text="工具7 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-        tool8_label = tk.Label(
-            self, text="工具8 : ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         kara_label1 = tk.Label(
             self, text="", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
-
-        tool1_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
-        tool2_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
-        tool3_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
-        tool4_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
-        tool5_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
-        tool6_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
-        tool7_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
-        tool8_entry = tk.Entry(
-            self, font=("Arial", LABEL_FONT_SIZE), width=10, state="readonly")
 
         # ボタンのコマンドリスト作成
         on_buttons: List[tk.Button] = []
@@ -236,9 +200,9 @@ class Monitoring(ScreenBase):
             off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="#de9687", font=(
                 "MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-            on_button["command"] = command = lambda i=i: (self.robot_oprration_request(
+            on_button["command"] = lambda i=i: (self.robot_oprration_request(
                 on_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i]))
-            off_button["command"] = command = lambda i=i: (self.robot_oprration_request(
+            off_button["command"] = lambda i=i: (self.robot_oprration_request(
                 off_commands[i]), self.toggle_button(off_buttons[i], on_buttons[i]))
             on_buttons.append(on_button)
             off_buttons.append(off_button)
@@ -374,15 +338,6 @@ class Monitoring(ScreenBase):
         cyl_002_label.grid(row=16, column=1, pady=10)
         cyl_003_label.grid(row=17, column=1, pady=10)
         cyl_004_label.grid(row=18, column=1, pady=10)
-        tool_label.grid(row=1, column=5, columnspan=2)
-        tool1_label.grid(row=2, column=5)
-        tool2_label.grid(row=2, column=7)
-        tool3_label.grid(row=2, column=9)
-        tool4_label.grid(row=2, column=11)
-        tool5_label.grid(row=3, column=5)
-        tool6_label.grid(row=3, column=7)
-        tool7_label.grid(row=3, column=9)
-        tool8_label.grid(row=3, column=11)
 
         self.tool_light_on_button.grid(row=1, column=2)
         self.tool_light_off_button.grid(row=1, column=3)
@@ -391,15 +346,6 @@ class Monitoring(ScreenBase):
         self.accuracy_light_on_button.grid(row=3, column=2)
         self.accuracy_light_off_button.grid(row=3, column=3)
         back_button.place(rely=0.88, relx=0.75)
-
-        tool1_entry.grid(row=2, column=6)
-        tool2_entry.grid(row=2, column=8)
-        tool3_entry.grid(row=2, column=10)
-        tool4_entry.grid(row=2, column=12)
-        tool5_entry.grid(row=3, column=6)
-        tool6_entry.grid(row=3, column=8)
-        tool7_entry.grid(row=3, column=10)
-        tool8_entry.grid(row=3, column=12)
 
     def _compare_dicts(self, old_dict, new_dict, path="") -> dict:
         differences = {}
@@ -419,12 +365,12 @@ class Monitoring(ScreenBase):
         return differences
 
     def _update_button_enables(self, differences):
-        print(self._compare_dicts(self.old_robot_status, self.robot_status))
         changed_colums = self._compare_dicts(
             self.old_robot_status, self.robot_status)
         ejector_change = changed_colums.get("EJECTOR")
         if ejector_change is not None:
             pass
+
 
     def _initial_camera_view_canvases(self):
         accuracy_camera_canvas = tk.Canvas(
