@@ -22,7 +22,6 @@ class Monitoring(ScreenBase):
         self._create_widgets()
         self.is_currentScreen = lambda: parent.current_screen == Frames.MONITORING
         self.stm_motor_turn = 1
-        # TODO この画面にいるときだけリクエストするように変更
         self._request_inspection_camera_update()
 
     def _request_inspection_camera_update(self):
@@ -105,14 +104,6 @@ class Monitoring(ScreenBase):
         on_button["state"] = "normal"
         off_button["state"] = "disable"
 
-    def toggle_button(self, on_button, off_button):
-        if on_button["state"] == "normal" or on_button["state"] == "active":
-            on_button["state"] = "disabled"
-            off_button["state"] = "normal"
-        else:
-            on_button["state"] = "normal"
-            off_button["state"] = "disable"
-
     def resize_image(self, width, height, image):
         new_width = width
         new_height = height
@@ -162,8 +153,6 @@ class Monitoring(ScreenBase):
 
         on_commands = ["EJCT 0,ATTACH", "DLC 0,LOCK"]
         off_commands = ["EJCT 0,DETACH", "DLC 0,UNLOCK"]
-        forward_commands = ["SVM 0,CW,1", "CONV 0,GOOD"]
-        reverse_commands = ["SVM 0,BREAK,0", "CONV 0,BAD"]
         pull_commands = ["CYL 0,PULL", "CYL 3,PULL", "CYL 2,PULL",
                          "CYL 4,PULL", "CYL 1,PULL"]
         push_commands = ["CYL 0,PUSH", "CYL 3,PUSH", "CYL 2,PUSH",
@@ -187,9 +176,9 @@ class Monitoring(ScreenBase):
         # シリンダボタン
         for i in range(5):
             push_button = tk.Button(self, text="PUSH", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                    command=lambda i=i: (self.robot_oprration_request(push_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
+                                    command=lambda i=i: self.robot_oprration_request(push_commands[i]))
             pull_button = tk.Button(self, text="PULL", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                    command=lambda i=i: (self.robot_oprration_request(pull_commands[i]), self.toggle_button(push_buttons[i], pull_buttons[i])))
+                                    command=lambda i=i: self.robot_oprration_request(pull_commands[i]))
             push_buttons.append(push_button)
             pull_buttons.append(pull_button)
 
@@ -200,10 +189,8 @@ class Monitoring(ScreenBase):
             off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="#de9687", font=(
                 "MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-            on_button["command"] = lambda i=i: (self.robot_oprration_request(
-                on_commands[i]), self.toggle_button(on_buttons[i], off_buttons[i]))
-            off_button["command"] = lambda i=i: (self.robot_oprration_request(
-                off_commands[i]), self.toggle_button(off_buttons[i], on_buttons[i]))
+            on_button["command"] = lambda i=i: self.robot_oprration_request(on_commands[i])
+            off_button["command"] = lambda i=i: self.robot_oprration_request(off_commands[i])
             on_buttons.append(on_button)
             off_buttons.append(off_button)
 
