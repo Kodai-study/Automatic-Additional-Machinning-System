@@ -145,11 +145,10 @@ class Monitoring(ScreenBase):
             self, text="", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
 
         # ボタンのコマンドリスト作成
-        on_buttons: List[tk.Button] = []
-        off_buttons: List[tk.Button] = []
-        pull_buttons: List[tk.Button] = []
-        push_buttons: List[tk.Button] = []
-        stop_buttons: List[tk.Button] = []
+        self.on_buttons: List[tk.Button] = []
+        self.off_buttons: List[tk.Button] = []
+        self.pull_buttons: List[tk.Button] = []
+        self.push_buttons: List[tk.Button] = []
 
         on_commands = ["EJCT 0,ATTACH", "DLC 0,LOCK"]
         off_commands = ["EJCT 0,DETACH", "DLC 0,UNLOCK"]
@@ -179,8 +178,8 @@ class Monitoring(ScreenBase):
                                     command=lambda i=i: self.robot_oprration_request(push_commands[i]))
             pull_button = tk.Button(self, text="PULL", state="disabled", width=10, bg="#de9687", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
                                     command=lambda i=i: self.robot_oprration_request(pull_commands[i]))
-            push_buttons.append(push_button)
-            pull_buttons.append(pull_button)
+            self.push_buttons.append(push_button)
+            self.pull_buttons.append(pull_button)
 
         # URドアロックボタン
         for i in range(len(on_commands)):
@@ -191,8 +190,8 @@ class Monitoring(ScreenBase):
 
             on_button["command"] = lambda i=i: self.robot_oprration_request(on_commands[i])
             off_button["command"] = lambda i=i: self.robot_oprration_request(off_commands[i])
-            on_buttons.append(on_button)
-            off_buttons.append(off_button)
+            self.on_buttons.append(on_button)
+            self.off_buttons.append(off_button)
 
         def enable_stm_button(flag):
             if flag == 0:  # 原点サーチ
@@ -282,13 +281,6 @@ class Monitoring(ScreenBase):
                                               print("STM 0,R," +
                                                     str(self.stm_motor_turn)),
                                               enable_stm_button(0))
-
-        # 停止ボタン
-        for i in range(2):
-            stop_button = tk.Button(self, text="停止", state="normal", width=10, bg="#ffb366", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"),
-                                    command=lambda: (self.robot_oprration_request(conv_n_commands[i])))
-            stop_buttons.append(stop_button)
-
         # 戻るボタン
         back_button = tk.Button(self, text="戻る", command=lambda: (self.change_frame(Frames.CREATE_SELECTION), enable_stm_button(1)),
                                 font=("AR丸ゴシック体M", 18), width=22)
@@ -298,7 +290,7 @@ class Monitoring(ScreenBase):
         barlight_label.grid(row=2, column=1, pady=10)
         ringlight_label.grid(row=3, column=1, pady=10)
         
-        for i, (on_button, off_button) in enumerate(zip(on_buttons, off_buttons)):
+        for i, (on_button, off_button) in enumerate(zip(self.on_buttons, self.off_buttons)):
             # ボタン配置
             on_button.grid(row=i + 4, column=2)
             off_button.grid(row=i + 4, column=3)
@@ -314,8 +306,8 @@ class Monitoring(ScreenBase):
         conveyor_stop_button.grid(row=13, column=4)
 
         for i in range(5):
-            push_buttons[i].grid(row=i + 14, column=2)
-            pull_buttons[i].grid(row=i + 14, column=3)
+            self.push_buttons[i].grid(row=i + 14, column=2)
+            self.pull_buttons[i].grid(row=i + 14, column=3)
 
         UR_label.grid(row=4, column=1, pady=10)
         dlc0_label.grid(row=5, column=1, pady=10)
@@ -355,15 +347,20 @@ class Monitoring(ScreenBase):
     def _update_button_enables(self, differences):
         changed_colums = self._compare_dicts(
             self.old_robot_status, self.robot_status)
-        ejector_change = changed_colums.get("ejector")
-        if ejector_change is not None:
-            if ejector_change:
+        if "ejector" in changed_colums:
+            if changed_colums["ejector"]:
                 self.button_state_update(
-                    self.tool_light_off_button, self.tool_light_on_button)
+                    self.off_buttons[0], self.on_buttons[0])
+            else:
+                self.off_buttons[0]["state"] = "normal"
+                self.on_buttons[0]["state"] = "normal"
+        if "door_lock" in changed_colums:
+            if changed_colums["door_lock"]:
+                self.button_state_update(
+                    self.off_buttons[1], self.on_buttons[1])
             else:
                 self.button_state_update(
-                    self.tool_light_on_button, self.tool_light_off_button)
-
+                    self.on_buttons[1], self.off_buttons[1])
 
     def _initial_camera_view_canvases(self):
         accuracy_camera_canvas = tk.Canvas(
