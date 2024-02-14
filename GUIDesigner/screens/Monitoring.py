@@ -108,7 +108,6 @@ class Monitoring(ScreenBase):
     def resize_image(self, width, height, image):
         new_width = width
         new_height = height
-
         resized_image = image.subsample(
             int(image.width() / new_width), int(image.height() / new_height))
         return resized_image
@@ -157,7 +156,6 @@ class Monitoring(ScreenBase):
                          "CYL 4,PULL", "CYL 1,PULL"]
         push_commands = ["CYL 0,PUSH", "CYL 3,PUSH", "CYL 2,PUSH",
                          "CYL 4,PUSH", "CYL 1,PUSH"]
-        conv_n_commands = ["CONV 0,N", "CONV 0,N", "CONV 0,N"]
 
         # 照明ボタン作成
         self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
@@ -196,15 +194,15 @@ class Monitoring(ScreenBase):
 
         def enable_stm_button(flag):
             if flag == 0:  # 原点サーチ
-                stm_turn_button["state"] = "disabled"
-                stm_search_button["state"] = "disabled"
+                self.stm_turn_button["state"] = "disabled"
+                self.stm_search_button["state"] = "disabled"
                 stm_plus_button["state"] = "disabled"
                 stm_minus_button["state"] = "disabled"
                 stm_value_label["fg"] = "#666666"
                 stm_value_label["bg"] = "#cccccc"
             elif flag == 1:  # STM 0,TURNED受信時
-                stm_turn_button["state"] = "normal"
-                stm_search_button["state"] = "normal"
+                self.stm_turn_button["state"] = "normal"
+                self.stm_search_button["state"] = "normal"
                 stm_value_label["fg"] = "#000000"
                 stm_value_label["bg"] = "#ffffff"
                 if self.stm_motor_turn <= 1:
@@ -267,21 +265,30 @@ class Monitoring(ScreenBase):
         stm_value_label = tk.Label(  # いくつ回すかの数値表示ラベル(かテキストボックスのdisable)
             self, text="1", state="normal", width=10, height=1, bg="#ffffff", relief="solid", bd=1, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-        stm_search_button = tk.Button(
+        self.stm_search_button = tk.Button(
             self, text="原点", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-        stm_turn_button = tk.Button(
+        self.stm_turn_button = tk.Button(
             self, text="回転", state="normal", width=10, bg="#87de87", font=("MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
         stm_plus_button["command"] = lambda: (stm_turn_controller(1))
         stm_minus_button["command"] = lambda: (stm_turn_controller(-1))
-        stm_search_button["command"] = lambda: (self.robot_oprration_request("STM 0,SEARCH"),
-                                                print("STM 0,SEARCH"),
-                                                enable_stm_button(0))
-        stm_turn_button["command"] = lambda: (self.robot_oprration_request("STM 0,R,"+str(self.stm_motor_turn)),
-                                              print("STM 0,R," +
-                                                    str(self.stm_motor_turn)),
-                                              enable_stm_button(0))
+
+
+        def search_stm():
+            self.robot_oprration_request("STM 0,SEARCH")
+            self.robot_status["stepper_motor"] = True
+            self.old_robot_status["stepper_motor"] = True
+            enable_stm_button(0)
+
+        def turn_stm():
+            self.robot_oprration_request("STM 0,R,"+str(self.stm_motor_turn))
+            self.robot_status["stepper_motor"] = True
+            self.old_robot_status["stepper_motor"] = True
+            enable_stm_button(0)
+            
+        self.stm_search_button["command"] =  search_stm
+        self.stm_turn_button["command"] =  turn_stm
         # 戻るボタン
         back_button = tk.Button(self, text="戻る", command=lambda: (self.change_frame(Frames.CREATE_SELECTION), enable_stm_button(1)),
                                 font=("AR丸ゴシック体M", 18), width=22)
@@ -299,8 +306,8 @@ class Monitoring(ScreenBase):
         stm_plus_button.grid(row=9, column=4)
         stm_value_label.grid(row=10, column=4)
         stm_minus_button.grid(row=11, column=4)
-        stm_turn_button.grid(row=10, column=3)
-        stm_search_button.grid(row=10, column=2)
+        self.stm_turn_button.grid(row=10, column=3)
+        self.stm_search_button.grid(row=10, column=2)
 
         conveyor_rotato_good_button.grid(row=13, column=2)
         conveyor_rotato_bad_button.grid(row=13, column=3)
@@ -362,6 +369,10 @@ class Monitoring(ScreenBase):
             else:
                 self.button_state_update(
                     self.on_buttons[1], self.off_buttons[1])
+        if "stepper_motor" in changed_colums:
+            if not changed_colums["stepper_motor"]:
+                self.stm_search_button["state"] = "normal"
+                self.stm_turn_button["state"] = "normal"
 
     def _initial_camera_view_canvases(self):
         accuracy_camera_canvas = tk.Canvas(
