@@ -34,6 +34,7 @@ class Monitoring(ScreenBase):
     def create_frame(self):
         self.tkraise()
         self._request_inspection_camera_update()
+        self._update_button_enables()
 
     def _update_image_from_path(self, canvas_datas: Tuple[tk.Canvas, int], img_path: str):
         target_canvas = canvas_datas[0]
@@ -64,7 +65,7 @@ class Monitoring(ScreenBase):
                     self._update_image_from_path(target_camera_view, img_path)
 
         elif request_type == GUISignalCategory.SENSOR_STATUS_UPDATE:
-            self._update_button_enables(request_data)
+            self._update_button_enables()
 
     def _handle_lightning_control_responce(self, request_data):
         if request_data['target'] == LightingType.TOOL_LIGHTING:
@@ -344,7 +345,7 @@ class Monitoring(ScreenBase):
         self.old_robot_status = copy.deepcopy(new_dict)
         return differences
 
-    def _update_button_enables(self, differences):
+    def _update_button_enables(self):
         changed_colums = self._compare_dicts(
             self.old_robot_status, self.robot_status)
         if "ejector" in changed_colums:
