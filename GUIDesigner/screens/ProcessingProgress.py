@@ -92,28 +92,6 @@ class ProcessingProgress(ScreenBase):
         self.is_initial_process = False
         self._create_widgets()
 
-    def _test_update_ui(self, new_state=True):
-        # 上のものを全てTrueにした
-        new_robot_status = {
-            "is_connection": new_state,
-            "ejector": new_state,
-            "lighting": {
-                "back_light": new_state, "bar_light": new_state, "ring_light": new_state
-            },
-            "sensor": {
-                0: new_state, 1: new_state, 2: new_state, 3: new_state, 4: new_state, 5: new_state
-            },
-            "reed_switch": {
-                0: {"forward": new_state, "backward": new_state}, 1: {"forward": new_state, "backward": new_state}, 2: {"forward": new_state, "backward": new_state},
-                3: {"backward": new_state}, 4: {"forward": new_state, "backward": new_state}
-            },
-            "door_lock": new_state,
-            "door": new_state,
-            "limit_switch": new_state,
-            "stepper_motor": new_state
-        }
-        self._update_ui(new_robot_status)
-
     def handle_queued_request(self, request_type: Union[GUISignalCategory, GUIRequestType], request_data=None):
         self.handle_pause_and_emergency(request_type, request_data)
         if request_type == GUISignalCategory.SENSOR_STATUS_UPDATE:
@@ -136,7 +114,6 @@ class ProcessingProgress(ScreenBase):
             self.is_initial_process = True
         self._set_robot_status(self.robot_status, self.label_status_dict)
         self._update_progress_state()
-        self.after(1000, lambda: self._test_update_ui(True))
 
     def _update_progress_state(self):
         if not len(self.process_data_manager.process_data_list):
@@ -153,7 +130,6 @@ class ProcessingProgress(ScreenBase):
             reaming_time_second=self.process_data_manager.get_reaming_time_sum().total_seconds())
         self.remaining_count.update_progress(
             process_data=self.process_data_manager.process_data_list[0])
-        # self.after(1000, self._update_progress_state)
 
     def _update_current_data_label(self):
         current_data_name = self.process_data_manager.process_data_list[
