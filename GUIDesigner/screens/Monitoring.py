@@ -373,6 +373,34 @@ class Monitoring(ScreenBase):
             if not changed_colums["stepper_motor"]:
                 self.stm_search_button["state"] = "normal"
                 self.stm_turn_button["state"] = "normal"
+        
+        for key in changed_colums.keys():
+            self._update_cylinder_buttons(key)
+        
+    def _update_cylinder_buttons(self, change_colum_str):
+        items = change_colum_str.split(".")
+        if items[0] != "reed_switch":
+            return
+        reed_switch_number = int(items[1])
+        change_status = self.robot_status["reed_switch"][reed_switch_number][items[2]]
+        if reed_switch_number == 3:
+            if change_status:
+                self.pull_buttons[3]["state"] = "disabled"
+                self.push_buttons[3]["state"] = "normal"
+            else:
+                self.pull_buttons[3]["state"] = "normal"
+                self.push_buttons[3]["state"] = "normal"
+        else:
+            if self.robot_status["reed_switch"][reed_switch_number]["forward"]:
+                self.push_buttons[reed_switch_number]["state"] = "disabled"
+                self.pull_buttons[reed_switch_number]["state"] = "normal"
+            elif self.robot_status["reed_switch"][reed_switch_number]["backward"]:
+                self.push_buttons[reed_switch_number]["state"] = "normal"
+                self.pull_buttons[reed_switch_number]["state"] = "disabled"
+            else:
+                self.push_buttons[reed_switch_number]["state"] = "normal"
+                self.pull_buttons[reed_switch_number]["state"] = "normal"
+            
 
     def _initial_camera_view_canvases(self):
         accuracy_camera_canvas = tk.Canvas(
