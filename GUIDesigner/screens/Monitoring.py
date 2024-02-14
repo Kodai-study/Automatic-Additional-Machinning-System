@@ -161,17 +161,17 @@ class Monitoring(ScreenBase):
 
         # 照明ボタン作成
         self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
-                                              command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, True)))
+                                              command=lambda: self.lightning_control_request(LightingType.TOOL_LIGHTING, True))
         self.tool_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#de9687",
-                                               command=lambda: (self.lightning_control_request(LightingType.TOOL_LIGHTING, False)))
+                                               command=lambda: self.lightning_control_request(LightingType.TOOL_LIGHTING, False))
         self.processing_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
-                                                    command=lambda: (self.lightning_control_request(LightingType.PRE_PROCESSING_LIGHTING, True)))
+                                                    command=lambda: self.lightning_control_request(LightingType.PRE_PROCESSING_LIGHTING, True))
         self.processing_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#de9687",
-                                                     command=lambda: (self.lightning_control_request(LightingType.PRE_PROCESSING_LIGHTING, False)))
+                                                     command=lambda: self.lightning_control_request(LightingType.PRE_PROCESSING_LIGHTING, False))
         self.accuracy_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
-                                                  command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, True)))
+                                                  command=lambda: self.lightning_control_request(LightingType.ACCURACY_LIGHTING, True))
         self.accuracy_light_off_button = tk.Button(self, text="OFF", state="disable", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#de9687",
-                                                   command=lambda: (self.lightning_control_request(LightingType.ACCURACY_LIGHTING, False)))
+                                                   command=lambda: self.lightning_control_request(LightingType.ACCURACY_LIGHTING, False))
 
         # シリンダボタン
         for i in range(5):
@@ -293,6 +293,11 @@ class Monitoring(ScreenBase):
         back_button = tk.Button(self, text="戻る", command=lambda: (self.change_frame(Frames.CREATE_SELECTION), enable_stm_button(1)),
                                 font=("AR丸ゴシック体M", 18), width=22)
 
+        kara_label1.grid(row=0, column=0)
+        backlight_label.grid(row=1, column=1, pady=10)
+        barlight_label.grid(row=2, column=1, pady=10)
+        ringlight_label.grid(row=3, column=1, pady=10)
+        
         for i, (on_button, off_button) in enumerate(zip(on_buttons, off_buttons)):
             # ボタン配置
             on_button.grid(row=i + 4, column=2)
@@ -312,10 +317,6 @@ class Monitoring(ScreenBase):
             push_buttons[i].grid(row=i + 14, column=2)
             pull_buttons[i].grid(row=i + 14, column=3)
 
-        kara_label1.grid(row=0, column=0)
-        backlight_label.grid(row=1, column=1, pady=10)
-        barlight_label.grid(row=2, column=1, pady=10)
-        ringlight_label.grid(row=3, column=1, pady=10)
         UR_label.grid(row=4, column=1, pady=10)
         dlc0_label.grid(row=5, column=1, pady=10)
         stm_label.grid(row=10, column=1, pady=10)
@@ -354,9 +355,14 @@ class Monitoring(ScreenBase):
     def _update_button_enables(self, differences):
         changed_colums = self._compare_dicts(
             self.old_robot_status, self.robot_status)
-        ejector_change = changed_colums.get("EJECTOR")
+        ejector_change = changed_colums.get("ejector")
         if ejector_change is not None:
-            pass
+            if ejector_change:
+                self.button_state_update(
+                    self.tool_light_off_button, self.tool_light_on_button)
+            else:
+                self.button_state_update(
+                    self.tool_light_on_button, self.tool_light_off_button)
 
 
     def _initial_camera_view_canvases(self):
