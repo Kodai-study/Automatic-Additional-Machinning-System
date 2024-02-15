@@ -102,11 +102,7 @@ class GuiResponceHandler:
             self.send_request_queue.put({"target": target, "message": cmd})
 
     def _lighting_feed(self,  image_inspection_controller: ImageInspectionController, robot_status: dict, lighting_type: LightingType, status: bool):
-        light_type_dict = {
-            LightingType.ACCURACY_LIGHTING: "back_light",
-            LightingType.PRE_PROCESSING_LIGHTING: "ring_light",
-            LightingType.TOOL_LIGHTING: "bar_light"
-        }
+
         result: LightningControlResult = image_inspection_controller.perform_image_operation(
             OperationType.CONTROL_LIGHTING, (lighting_type, status))
         if not result or not result.is_success:
@@ -114,14 +110,6 @@ class GuiResponceHandler:
         self.gui_request_queue.put((GUIRequestType.LIGHTING_CONTROL_REQUEST, {
             "target": lighting_type, "state":  result.lighting_state}))
 
-        light_type_key = light_type_dict[lighting_type]
-        for key in robot_status["lighting"]:
-            if key == light_type_key:
-                robot_status["lighting"][key] = result.lighting_state
-            else:
-                robot_status["lighting"][key] = False
-        self.gui_request_queue.put(
-            (GUISignalCategory.SENSOR_STATUS_UPDATE, None))
 
     def _get_process_data_list(self):
         self.integration.process_data_manager.refresh_process_data()
