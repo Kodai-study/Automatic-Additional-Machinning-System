@@ -375,8 +375,7 @@ class Monitoring(ScreenBase):
                 self.stm_search_button["state"] = "normal"
                 self.stm_turn_button["state"] = "normal"
 
-        for key in changed_colums.keys():
-            self._update_cylinder_buttons(key)
+        self._update_cylinder_buttons()
 
     def _update_cylinder_buttons(self):
         for reed_switch_number in range(5):
