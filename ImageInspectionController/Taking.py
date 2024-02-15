@@ -131,8 +131,9 @@ class Taking:
                 np_arr = self._get_image_data(
                     self.cam_device_tool,  self.receive_signal_tool)
                 if is_test_snapshot:
-                    save_path = os.path.join(base_directory, TEST_TOOL_PICTURE_FILENAME)
-                else :
+                    save_path = os.path.join(
+                        base_directory, ("a"if self.toggle_flag else "b") + TEST_TOOL_PICTURE_FILENAME)
+                else:
                     save_path = os.path.join(
                         base_directory, dt.datetime.now().strftime('%Y/%m/%d/%H_%M_%S.png'))
                 directory = os.path.dirname(save_path)
@@ -145,7 +146,7 @@ class Taking:
                 np_arr = self._get_image_data(
                     self.cam_device_kakou,  self.receive_signal_kakou)
                 save_path = os.path.join(
-                    base_directory, PREPROCESS_PICTURE_FILENAME)
+                    base_directory, ("a"if self.toggle_flag else "b")+PREPROCESS_PICTURE_FILENAME)
 
             elif kensamei == InspectionType.ACCURACY_INSPECTION:
                 if not USE_ACCURACY_INSPECTION_CAMERA:
@@ -153,11 +154,11 @@ class Taking:
                 np_arr = self._get_image_data(
                     self.cam_device_seido,  self.receive_signal_seido)
                 save_path = os.path.join(
-                    base_directory, ACCURACT_PICTURE_FILENAME)
+                    base_directory, ("a"if self.toggle_flag else "b")+ACCURACT_PICTURE_FILENAME)
                 directory = os.path.dirname(save_path)
                 if not os.path.exists(directory):
                     os.makedirs(directory)
-
+            self.toggle_flag = not self.toggle_flag
             if not cv2.imwrite(save_path, np_arr):
                 print("hosonFailed")
                 return None
