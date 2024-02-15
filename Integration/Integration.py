@@ -13,7 +13,7 @@ from threading import Thread
 from RobotCommunicationHandler.test_cfd import _test_cfd
 from RobotCommunicationHandler.test_ur import _test_ur
 from test_flags import TEST_CFD_CONNECTION_LOCAL, TEST_FEATURE_CONNECTION, TEST_UR_CONNECTION_LOCAL, TEST_FEATURE_GUI
-from common_data_type import ToolType, TransmissionTarget
+from common_data_type import LightingType, ToolType, TransmissionTarget
 from Integration.ProcessDataManager import ProcessDataManager
 if TEST_FEATURE_GUI:
     from GUIDesigner.GUIDesigner import GUIDesigner
@@ -81,7 +81,7 @@ class Integration:
             ToolInspectionResult(result=True, error_items=None,
                                  tool_type=ToolType.M6_TAP, tool_length=44.87, drill_diameter=5.7),
         ]
-        self.image_inspection_controller = ImageInspectionController(
+        self.image_inspection_controller = ImageInspectionController(self._update_light_status,
             self.tool_stock_informations)
         self.database_accesser = DBAccessHandler()
         self.process_data_manager = ProcessDataManager(self.database_accesser)
@@ -161,6 +161,16 @@ class Integration:
                 camera_type, "resource/images/title.png" if toggle_flag else "resource/images/test.png"))
         self.gui_request_queue.put(
             (GUIRequestType.CAMERA_FEED_REQUEST, camera_image_list))
+
+    def _update_light_status(self, lighting_type: LightingType, status: bool):
+        light_type_dict = {
+            LightingType.ACCURACY_LIGHTING: "back_light",
+            LightingType.PRE_PROCESSING_LIGHTING: "ring_light",
+            LightingType.TOOL_LIGHTING: "bar_light"
+        }
+        self.robot_status["lighting"][light_type_dict[lighting_type]] = status
+        self.gui_responce_queue.put(
+            (GUISignalCategory.SENSOR_STATUS_UPDATE, None))
 
     def main(self):
         # 通信スレッドを立ち上げる

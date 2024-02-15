@@ -38,7 +38,7 @@ def get_inspectionType_with_camera(camera_type: CameraType) -> InspectionType:
 
 class ImageInspectionController:
 
-    def __init__(self, tool_stock_informations=None):
+    def __init__(self, _update_light_status, tool_stock_informations=None):
         if TEST_FEATURE_IMAGE_PROCESSING:
             self.taking = Taking()
             self.lighting = Light()
@@ -48,6 +48,7 @@ class ImageInspectionController:
         self.ROOT_IMAGE_DIR = "/home/kuga/img"
         self.TOOL_IMAGE_DIR = os.path.join(
             self.ROOT_IMAGE_DIR, "tools")
+        self._update_light_status = _update_light_status
         if tool_stock_informations:
             self.tool_informations = tool_stock_informations
         else:
@@ -86,6 +87,7 @@ class ImageInspectionController:
             lightning_type, is_on = inspection_data
             lightning_control_result = self.lighting.light_onoff(
                 light_to_inspect_dict[lightning_type], "ON" if is_on else "OFF")
+            self._update_light_status(lightning_type, is_on)
             if lightning_control_result == "OK":
                 return LightningControlResult(is_success=True, lighting_type=lightning_type, lighting_state=is_on)
             else:
@@ -96,6 +98,8 @@ class ImageInspectionController:
                 InspectionType.PRE_PROCESSING_INSPECTION, "ON")
             if lighting_return_code != "OK":
                 return PreProcessingInspectionResult(is_check_ok=False, error_message=["照明の点灯に失敗しました。"], serial_number=None, dimensions=None)
+            
+            self._update_light_status(LightingType.PRE_PROCESSING_LIGHTING, True)
             time.sleep(1)
             img_pass = self.taking.take_picture(
                 InspectionType.PRE_PROCESSING_INSPECTION, self.ROOT_IMAGE_DIR)
@@ -108,6 +112,7 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.PRE_PROCESSING_INSPECTION, "OFF")
+            self._update_light_status(LightingType.PRE_PROCESSING_LIGHTING, False)
 
         elif operation_type == OperationType.ACCURACY_INSPECTION:
             lighting_return_code = self.lighting.light_onoff(
@@ -115,6 +120,7 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 return AccuracyInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"], hole_result=None)
 
+            self._update_light_status(LightingType.ACCURACY_LIGHTING, True)
             base_dir = os.path.join(
                 self.ROOT_IMAGE_DIR, f"{inspection_data.model_id_str}/{inspection_data.serial_number}")
 
@@ -131,6 +137,7 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 lighting_return_code = self.lighting.light_onoff(
                     InspectionType.ACCURACY_INSPECTION, "OFF")
+            self._update_light_status(LightingType.ACCURACY_LIGHTING, False)
 
         elif operation_type == OperationType.TOOL_INSPECTION:
             lighting_return_code = self.lighting.light_onoff(
@@ -138,6 +145,7 @@ class ImageInspectionController:
             if lighting_return_code != "OK":
                 return ToolInspectionResult(result=False, error_items=["照明の点灯に失敗しました。"],
                                             tool_type=None, tool_length=None, drill_diameter=None)
+            self._update_light_status(LightingType.TOOL_LIGHTING, True)
             time.sleep(0.5)
             img_pass = self.taking.take_picture(
                 InspectionType.TOOL_INSPECTION, self.TOOL_IMAGE_DIR)
@@ -149,6 +157,7 @@ class ImageInspectionController:
                     InspectionType.TOOL_INSPECTION, "OFF")
             kekka, result_image_path = self.toolinspection.exec_inspection(
                 img_pass)
+            self._update_light_status(LightingType.TOOL_LIGHTING, False)
 
             if inspection_data.is_initial_phase == True:
                 self.tool_informations[inspection_data.tool_position_number] = kekka
@@ -198,19 +207,21 @@ class ImageInspectionController:
     def _test_return_inspection_result(self, operation_type: OperationType, inspection_data):
 
         if (operation_type == OperationType.PRE_PROCESSING_INSPECTION):
-            return self._test_pass_preprocessing()
+            return  self._test_pass_preprocessing() ,""
 
         elif (operation_type == OperationType.TOOL_INSPECTION):
-            return self._test_pass_TOOL_INSPECTION(inspection_data)
+            return  self._test_pass_TOOL_INSPECTION(inspection_data) ,""
 
         elif (operation_type == OperationType.ACCURACY_INSPECTION):
-            return self._test_pass_accuracy_inspection()
+            return  self._test_pass_accuracy_inspection() ,""
 
         elif (operation_type == OperationType.CONTROL_LIGHTING):
-            return self._test_pass_control_lighting(inspection_data)
+            return  self._test_pass_control_lighting(inspection_data) ,""
 
         elif (operation_type == OperationType.TAKE_INSPECTION_SNAPSHOT):
             return self._test_pass_take_inspection_snapshot()
+        
+
 
     def _test_pass_preprocessing(self):
         return PreProcessingInspectionResult(result=True, error_items=None, serial_number=0, dimensions=30.0)
