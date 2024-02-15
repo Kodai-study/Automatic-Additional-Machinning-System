@@ -157,21 +157,14 @@ class ManageRobotReceive:
             return lambda: _send_message_to_cfd(command, self._integration_instance.send_request_queue)
 
         is_on = detail == "ON"
-        sensor_time = datetime.datetime.now()
-
 
         def _common_sensor_handler():
             _send_message_to_ur(
                 command, self._integration_instance.send_request_queue)
-            insert_sns_update(self._integration_instance.database_accesser,
-                              dev_num, detail, sensor_time)
             self._change_robot_status("sensor", is_on, device_number=dev_num)
 
         if not self._integration_instance.is_processing_mode:
-            return lambda: (self._change_robot_status("sensor", dev_num, is_on),
-                            _common_sensor_handler(),
-            _send_message_to_ur(
-                command, self._integration_instance.send_request_queue))
+            return lambda: _common_sensor_handler()
         return _common_sensor_handler
 
     def _select_handler_sensor_reed_switch(self, dev_num: int, detail: str, command: str, serial_number: int = None, target: TransmissionTarget = None):
