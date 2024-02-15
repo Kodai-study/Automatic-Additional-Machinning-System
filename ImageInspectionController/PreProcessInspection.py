@@ -58,14 +58,13 @@ class PreProcessInspection:
             model, serial_str = qr_data[:3], qr_data[3:]
             save_dir = os.path.join(
                 base_dir, f"{model}/{serial_str}")
-            directory = os.path.dirname(save_dir)
-            if not os.path.exists(directory):
-                os.makedirs(directory)
+            if os.path.exists(save_dir):
+                shutil.rmtree(save_dir)
+            os.makedirs(save_dir)
             save_path_original = os.path.join(
                 save_dir, ORIGINAL_IMAGE_FILE_NAME)
             save_path_result = os.path.join(
                 save_dir, PROCESSED_IMAGE_FILE_NAME)
-
             shutil.move(img_path, save_path_original)
             cv2.imwrite(save_path_result, output_image)
 

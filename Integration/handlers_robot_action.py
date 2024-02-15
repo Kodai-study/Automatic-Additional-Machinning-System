@@ -39,7 +39,7 @@ def start_process(integration_instance):
 
     send_to_CFD(integration_instance, "STM 0,SEARCH")
     wait_command(integration_instance, "CFD", "STM 0,TURNED")
-    initial_tool_inspection(integration_instance)
+    # initial_tool_inspection(integration_instance)
 
     send_to_UR(integration_instance, "WRKSNS 0,ST")
     wait_command(integration_instance, "UR", "WRKCOUNT_FIN")
@@ -150,7 +150,7 @@ def inspect_and_carry_out(integration_instance, process_data_manager, m):
     wait_command(integration_instance, "CFD", "RDSW 8,ON")
     send_to_CFD(integration_instance, "CYL 3,PUSH")
     time.sleep(0.5)
-    preprocess_inspection_result = integration_instance.image_inspection_controller.perform_image_operation(
+    preprocess_inspection_result,img = integration_instance.image_inspection_controller.perform_image_operation(
         OperationType.ACCURACY_INSPECTION, AccuracyInspectionData(create_hole_check_list(m["holes"]), "AQR", id, 100))
     id += 1
     process_data_manager.processing_finished(
