@@ -134,13 +134,13 @@ class Monitoring(ScreenBase):
         cyl_000_label = tk.Label(
             self, text="加工部位置決めシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         cyl_001_label = tk.Label(
-            self, text="検査部位置決めシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="加工部テーブルシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         cyl_002_label = tk.Label(
             self, text="ツールチェンジャーシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         cyl_003_label = tk.Label(
-            self, text="検査部壁シリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="検査部位置決めシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         cyl_004_label = tk.Label(
-            self, text="加工部テーブルシリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
+            self, text="検査部壁シリンダ", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
         kara_label1 = tk.Label(
             self, text="", font=("AR丸ゴシック体M", LABEL_FONT_SIZE))
 
@@ -152,10 +152,10 @@ class Monitoring(ScreenBase):
 
         on_commands = ["EJCT 0,ATTACH", "DLC 0,LOCK"]
         off_commands = ["EJCT 0,DETACH", "DLC 0,UNLOCK"]
-        pull_commands = ["CYL 0,PULL", "CYL 3,PULL", "CYL 2,PULL",
-                         "CYL 4,PULL", "CYL 1,PULL"]
-        push_commands = ["CYL 0,PUSH", "CYL 3,PUSH", "CYL 2,PUSH",
-                         "CYL 4,PUSH", "CYL 1,PUSH"]
+        pull_commands = ["CYL 0,PULL", "CYL 1,PULL", "CYL 2,PULL",
+                         "CYL 3,PULL", "CYL 4,PULL"]
+        push_commands = ["CYL 0,PUSH", "CYL 1,PUSH", "CYL 2,PUSH",
+                         "CYL 3,PUSH", "CYL 4,PUSH"]
 
         # 照明ボタン作成
         self.tool_light_on_button = tk.Button(self, text="ON", state="normal", width=10, font=("MSゴシック", BUTTON_FONT_SIZE, "bold"), bg="#87de87",
@@ -187,8 +187,10 @@ class Monitoring(ScreenBase):
             off_button = tk.Button(self, text="OFF", state="disabled", width=10, bg="#de9687", font=(
                 "MSゴシック", BUTTON_FONT_SIZE, "bold"))
 
-            on_button["command"] = lambda i=i: self.robot_oprration_request(on_commands[i])
-            off_button["command"] = lambda i=i: self.robot_oprration_request(off_commands[i])
+            on_button["command"] = lambda i=i: self.robot_oprration_request(
+                on_commands[i])
+            off_button["command"] = lambda i=i: self.robot_oprration_request(
+                off_commands[i])
             self.on_buttons.append(on_button)
             self.off_buttons.append(off_button)
 
@@ -274,7 +276,6 @@ class Monitoring(ScreenBase):
         stm_plus_button["command"] = lambda: (stm_turn_controller(1))
         stm_minus_button["command"] = lambda: (stm_turn_controller(-1))
 
-
         def search_stm():
             self.robot_oprration_request("STM 0,SEARCH")
             self.robot_status["stepper_motor"] = True
@@ -286,9 +287,9 @@ class Monitoring(ScreenBase):
             self.robot_status["stepper_motor"] = True
             self.old_robot_status["stepper_motor"] = True
             enable_stm_button(0)
-            
-        self.stm_search_button["command"] =  search_stm
-        self.stm_turn_button["command"] =  turn_stm
+
+        self.stm_search_button["command"] = search_stm
+        self.stm_turn_button["command"] = turn_stm
         # 戻るボタン
         back_button = tk.Button(self, text="戻る", command=lambda: (self.change_frame(Frames.CREATE_SELECTION), enable_stm_button(1)),
                                 font=("AR丸ゴシック体M", 18), width=22)
@@ -297,7 +298,7 @@ class Monitoring(ScreenBase):
         backlight_label.grid(row=1, column=1, pady=10)
         barlight_label.grid(row=2, column=1, pady=10)
         ringlight_label.grid(row=3, column=1, pady=10)
-        
+
         for i, (on_button, off_button) in enumerate(zip(self.on_buttons, self.off_buttons)):
             # ボタン配置
             on_button.grid(row=i + 4, column=2)
@@ -373,11 +374,11 @@ class Monitoring(ScreenBase):
             if not changed_colums["stepper_motor"]:
                 self.stm_search_button["state"] = "normal"
                 self.stm_turn_button["state"] = "normal"
-        
+
         for key in changed_colums.keys():
             self._update_cylinder_buttons(key)
-        
-    def _update_cylinder_buttons(self, change_colum_str):
+
+    def _update_cylinder_buttons(self):
         for reed_switch_number in range(5):
             if reed_switch_number == 3:
                 if self.robot_status["reed_switch"][reed_switch_number]["backward"]:
@@ -396,7 +397,6 @@ class Monitoring(ScreenBase):
                 else:
                     self.push_buttons[reed_switch_number]["state"] = "normal"
                     self.pull_buttons[reed_switch_number]["state"] = "normal"
-            
 
     def _initial_camera_view_canvases(self):
         accuracy_camera_canvas = tk.Canvas(
