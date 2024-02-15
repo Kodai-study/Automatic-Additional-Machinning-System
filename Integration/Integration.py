@@ -43,7 +43,7 @@ class Integration:
                 self.test_cfd = _test_cfd(TEST_PORT2_SEND, TEST_PORT2_RECEIV)
 
         self.robot_status = {
-            "is_connection": False,
+            "is_connection": True,
             "ejector": False,
             "lighting": {
                 "back_light": False, "bar_light": False, "ring_light": False
@@ -99,6 +99,13 @@ class Integration:
         self.message_wait_conditions = {}
         self.send_request_queue.put(
             ({"target": TransmissionTarget.CFD, "message": "MODE 0,RESERVE_RESET\n"}))
+        
+        request_state_command = [["SNS", 0,1,2,3,4,5],["EJCT",0],["RDSW",0,1,2,3,4,5,7,8,9],["DLC",0],["DOOR",0],["LMSW",0]]
+        for commands in request_state_command:
+            for command in commands[1:]:
+                self.send_request_queue.put(
+                    ({"target": TransmissionTarget.CFD, "message": f"{commands[0]} {command},ST\n"}))
+
 
     def _watching_guiResponce_queue(self):
         """
